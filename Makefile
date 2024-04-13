@@ -60,11 +60,7 @@ compile: $(C_OBJS) $(ASM_OBJS)
 
 # Define the link target
 #WIP
-link_boot:
-	$(LINKER) $(LINKER_FLAGS) $(PROJECT_MSC)/linker.ld $(shell find -name '*.o') -o $(PROJECT_BIN)/MyOS.bin
-
-#WIP
-link_kernel:
+link:
 	$(LINKER) $(LINKER_FLAGS) $(PROJECT_MSC)/linker.ld $(shell find -name '*.o') -o $(PROJECT_BIN)/MyOS.bin
 
 
