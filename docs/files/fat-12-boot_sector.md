@@ -50,7 +50,7 @@ Space Allocation:
 * Root Directory: Sector 19 - 32
 * Data: Sector 33 - 2879
 
-This gives us a grand total of $$≈$$1.41 MB, of which $$≈$$ 1.35 MB is for data storage.
+This gives us a grand total of ≈1.41 MB, of which ≈1.35 MB is for data storage.
 
 ### File Allocation Tables
 
