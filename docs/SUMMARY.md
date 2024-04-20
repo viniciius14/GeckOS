@@ -2,7 +2,7 @@
 
 ## OS Structure
 
-* [x86 First Megabyte of Memory](README.md)
+* [First\_Megabyte](README.md)
 * [Boot\_sector](os-structure/boot\_sector.md)
 
 ## Files
@@ -12,4 +12,3 @@
 ***
 
 * [Sources](sources.md)
-* [README](readme.md)
