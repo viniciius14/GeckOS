@@ -7,9 +7,9 @@ layout:
   tableOfContents:
     visible: false
   outline:
-    visible: true
+    visible: false
   pagination:
-    visible: true
+    visible: false
 ---
 
 # 🦎 FAT 12 boot\_sector
