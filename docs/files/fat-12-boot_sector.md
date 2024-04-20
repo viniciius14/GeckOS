@@ -5,11 +5,11 @@ layout:
   description:
     visible: false
   tableOfContents:
-    visible: true
+    visible: false
   outline:
     visible: true
   pagination:
-    visible: false
+    visible: true
 ---
 
 # 🦎 FAT 12 boot\_sector
