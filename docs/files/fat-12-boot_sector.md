@@ -1,17 +1,3 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: false
-  tableOfContents:
-    visible: false
-  outline:
-    visible: false
-  pagination:
-    visible: false
----
-
 # 🦎 FAT 12 boot\_sector
 
 The FAT12 filesystem is based on the following structure:
