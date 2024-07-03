@@ -1,12 +1,3 @@
----
-description: >-
-  This page, and it's respective sub pages, will showcase and explain the
-  software flow of the entire OS.
----
+# 🦎 README
 
-# x86 First Megabyte of Memory
-
-Real Mode Address Space (first Megabyte)
-
-<table data-full-width="true"><thead><tr><th width="120" align="center">Start</th><th width="103" align="center">End</th><th width="107" align="center">Size</th><th width="283" align="center">Description</th><th align="center">Type</th></tr></thead><tbody><tr><td align="center">0x00000</td><td align="center">0x003FF</td><td align="center">1 KiB</td><td align="center">Real Mode IVT (Interrupt Vector Table)</td><td align="center">Unusable in Real Mode</td></tr><tr><td align="center">0x00400</td><td align="center">0x004FF</td><td align="center">256 Bytes</td><td align="center">BDA (BIOS data area)</td><td align="center">Unusable in Real Mode</td></tr><tr><td align="center">0x00500</td><td align="center">0x07BFF</td><td align="center">30 KiB</td><td align="center">Conventional Memory (1)</td><td align="center">Usable Memory</td></tr><tr><td align="center">0x07C00</td><td align="center">0x07DFF</td><td align="center">512 Bytes</td><td align="center">OS Bootsector</td><td align="center">Usable Memory</td></tr><tr><td align="center">0x07E00</td><td align="center">0x7FFFF</td><td align="center">480.5 KiB</td><td align="center">Conventional Memory (2)</td><td align="center">Usable Memory</td></tr><tr><td align="center">0x80000</td><td align="center">0x9FFFF</td><td align="center">128 KiB</td><td align="center">EBDA (Extended BIOS Data Area)</td><td align="center">Partially used by the EBDA</td></tr><tr><td align="center">0xA0000</td><td align="center">0xBFFFF</td><td align="center">128 KiB</td><td align="center">Video Display Memory</td><td align="center">Hardware Mapped</td></tr><tr><td align="center">0xC0000</td><td align="center">0xC7FFF</td><td align="center">32 KiB</td><td align="center">Video BIOS</td><td align="center">ROM and hardware mapped / Shadow RAM</td></tr><tr><td align="center">0xC8000</td><td align="center">0xEFFFF</td><td align="center">160 KiB</td><td align="center">BIOS Expansions</td><td align="center">ROM and hardware mapped / Shadow RAM</td></tr><tr><td align="center">0xF0000</td><td align="center">0xFFFFF</td><td align="center">64 KiB</td><td align="center">Motherboard BIOS</td><td align="center">ROM and hardware mapped / Shadow RAM</td></tr></tbody></table>
-
+This is the README file, to see a summary and the structure of the project refer to SUMMARY.md
