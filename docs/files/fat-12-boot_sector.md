@@ -36,7 +36,7 @@ large_sector_count:     dd 0                    ; Number of large sectors (only 
 
 ; Extended Boot Record
 drive_number:           db 0                    ; Drive number, 0 represents floppy
-                        db 0                    ; Flags in Windows NT. Reserved otherwise. 
+                        db 0                    ; Flags in Windows NT. Reserved otherwise.
 signature:              db 29h                  ; Signature must be either 0x28 or 0x29
 volume_id:              db 12h, 34h, 56h, 78h   ; Serial number
 volume_label:           db 'GECKOS     '        ; Name of the volume, uses 11 bytes and is padded with spaces

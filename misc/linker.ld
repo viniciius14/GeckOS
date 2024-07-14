@@ -1,26 +1,33 @@
-ENTRY(_stage2_start)
+MEMORY
+{
+    rom (rx) : ORIGIN = 0x7C00 + __HEADER_SIZE__, LENGTH = 8K
+}
+
 SECTIONS
 {
-    _stage2_start = 0x0000;
+    . = 0x7C00 + __HEADER_SIZE__;
 
-    .text BLOCK(4K) : ALIGN(4K)
+    .text :
     {
-        *(.text)
-    }
+        _start = .;    /* This will be the entry point */
+        *(.text)       /* All .text sections from input files */
+        *(.rodata)     /* All .rodata sections from input files */
+        _etext = .;    /* End of text section */
+    } > rom
 
-    .rodata BLOCK(4K) : ALIGN(4K)
+    .data :
     {
-        *(.rodata)
-    }
+        _sdata = .;    /* Start of data section */
+        *(.data)       /* All .data sections from input files */
+        _edata = .;    /* End of data section */
+    } > rom
 
-    .data BLOCK(4K) : ALIGN(4K)
+    .bss :
     {
-        *(.data)
-    }
+        _sbss = .;     /* Start of bss section */
+        *(.bss)        /* All .bss sections from input files */
+        _ebss = .;     /* End of bss section */
+    } > rom
 
-    .bss BLOCK(4K) : ALIGN(4K)
-    {
-        *(.bss)
-    }
-
+    _end = .;          /* End of all sections */
 }
