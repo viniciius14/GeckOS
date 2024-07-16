@@ -3,8 +3,7 @@
 
 [bits 16]
 
-; [global disk_read]
-; [global report_error]
+%define ENDL 0x0D, 0x0A
 
 SECTION .text
 
@@ -19,12 +18,12 @@ put_str:
     push bx
 
 .loop:
-    lodsb                               ; loads next character in al
-    or al, al                           ; verify if next character is null?
+    lodsb               ; loads next character in al
+    or al, al           ; verify if next character is null?
     jz .done
 
-    mov ah, 0x0E                        ; call bios interrupt
-    mov bh, 0                           ; set page number to 0
+    mov ah, 0x0E        ; call bios interrupt
+    mov bh, 0           ; set page number to 0
     int 0x10
 
     jmp .loop
@@ -52,20 +51,17 @@ put_str:
 ;
 
 lba_to_chs:
-
     push ax
     push dx
 
     xor dx, dx                          ; dx = 0
-
-    div word [0x7C18]                   ; address of bdb_sectors_per_track
-
+    div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
+                                        ; dx = LBA % SectorsPerTrack
     inc dx                              ; dx = (LBA % SectorsPerTrack + 1) = sector
     mov cx, dx                          ; cx = sector
 
     xor dx, dx                          ; dx = 0
-
-    div word [0x7C1A]                   ; address of bdb_heads
+    div word [bdb_heads]                ; ax = (LBA / SectorsPerTrack) / Heads = cylinder
                                         ; dx = (LBA / SectorsPerTrack) % Heads = head
     mov dh, dl                          ; dh = head
     mov ch, al                          ; ch = cylinder (lower 8 bits)
@@ -115,7 +111,7 @@ disk_read:
     jnz .retry
 
 .fail:
-    jmp report_error                    ; all attempts are exhausted
+    jmp report_error
 
 .done:
     popa
@@ -124,7 +120,7 @@ disk_read:
     pop dx
     pop cx
     pop bx
-    pop ax                              ; restore registers modified
+    pop ax
     ret
 
 
@@ -152,7 +148,8 @@ report_error:
 
     jmp $
 
+
 ; SECTION .rodata
-error_message:        db "ERROR DETECTED."
+error_message:        db "ERROR DETECTED.", ENDL, 0
 
 %endif

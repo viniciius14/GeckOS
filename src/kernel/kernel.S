@@ -1,12 +1,8 @@
-[bits 32]
-[global _kernel_start]
+[bits 16]
 
 _kernel_start:
-    ; print hello world message
     mov si, msg_hello
     call puts
-
-
 .halt:
     cli
     hlt
@@ -37,6 +33,7 @@ puts:
     pop bx
     pop ax
     pop si
+
     ret
 
 msg_hello: db 'Hello world from KERNEL!', 0

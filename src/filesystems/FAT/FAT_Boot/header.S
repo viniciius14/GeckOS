@@ -42,7 +42,7 @@ ebr_system_id:              db 'FAT12   '           ; 8 bytes
     ; TBD: Implement FAT32 specific code
 %endif
 
-_stage1_start:
+; _stage1_start:
 
 %ifdef DEBUG
 ._debug_start:
