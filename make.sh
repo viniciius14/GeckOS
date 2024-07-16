@@ -1,3 +1,6 @@
+# Make sure bin directory exists
+mkdir -p bin/
+
 # Stage 1 Bootloader
 nasm -f bin src/bootloader/stage1.S -o bin/stage1.bin -i src/filesystems/FAT/FAT_Boot -i src/bootloader
 # Stage 2 Bootloader
