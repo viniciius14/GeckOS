@@ -131,6 +131,7 @@ disk_read:
 ;
 disk_reset:
     pusha
+
     mov ah, 0
     stc
     int 13h
@@ -148,8 +149,9 @@ report_error:
 
     jmp $
 
-
-; SECTION .rodata
-error_message:        db "ERROR DETECTED.", ENDL, 0
+error_message:          db  "ERROR DETECTED.", ENDL, 0
 
 %endif
+
+
+

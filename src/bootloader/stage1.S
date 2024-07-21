@@ -1,11 +1,16 @@
 [bits 16]
 
-SECTION .text
+; TODO; Change this value, here for error throwing purposes
+%ifndef RESERVED_SECTORS
+%define RESERVED_SECTORS -1
+%endif
 
 %include "header.S"
 
-KERNEL_LOAD_SEGMENT     equ 0x2000
-KERNEL_LOAD_OFFSET      equ 0
+SECTION .text
+
+S2_LOAD_SEGMENT     equ 0x0
+S2_LOAD_OFFSET      equ 0x7E00
 
 _stage1_start:
     %ifdef DEBUG
@@ -13,34 +18,23 @@ _stage1_start:
         ; TBD: check that the value in DL is 0x80 for HDD or 0x00 for floppy
         ; TBD: check that the value in SP is 0x7C00
     %endif
-    ; TBD: Remove me
-    ; mov ah, 0x0E
-    ; mov al, 'A'
-    ; int 0x10
 
-    cli
+    cli                 ; Clear interrupt flag
+
+    cld                 ; Clear direction flag
+
 	mov ax, 0
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
 	mov sp, 0x7C00
 
-    ; pushf         ; push flags onto the stack
-    ; pop ax        ; pop flags into ax
-    ; or ax, 0400h  ; set direction flag
-    ; push ax       ; push ax
-    ; popf          ; pop into flags
+    call load_stage_2   ; put stage2 of bootloader into RAM address 0x7E00
 
-    sti
-
-    call fat_root_dir
-    call search_kernel
-
-    jmp KERNEL_LOAD_SEGMENT:KERNEL_LOAD_OFFSET
+    jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET
 
 %include "boot_utils.S"
-%include "find_root_dir.S"
-%include "find_kernel.S"
+%include "load_stage2.S"
 
 SECTION .text
 times (510 - ($ - $$))    db 0

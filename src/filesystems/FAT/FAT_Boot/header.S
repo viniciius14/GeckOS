@@ -3,19 +3,23 @@
 
 SECTION .text
 
+%ifndef RESERVED_SECTORS
+%define RESERVED_SECTORS 1
+%endif
+
 ; FAT12 header
-; %ifdef DEBUG
-; jmp short ._debug_start
-; %else
+%ifdef DEBUG
+jmp short ._debug_start
+%else
 jmp short _stage1_start
-; %endif
+%endif
 nop
 
 ; BPB (BIOS Parameter Block)
 bdb_oem:                    db 'MSWIN4.1'           ; 8 bytes
 bdb_bytes_per_sector:       dw 512
 bdb_sectors_per_cluster:    db 1
-bdb_reserved_sectors:       dw 1
+bdb_reserved_sectors:       dw RESERVED_SECTORS
 bdb_fat_count:              db 2
 bdb_dir_entries_count:      dw 0E0h
 bdb_total_sectors:          dw 2880                 ; 2880 * 512 = 1.44MB
@@ -49,4 +53,9 @@ ebr_system_id:              db 'FAT12   '           ; 8 bytes
     ; TBD: check that dl equals ebr_drive_number
     ; TBD: check that sector count is correct
     ; TBD: check that head count is correct
+
+
+    ; Since DEBUG mode will create a header only bin
+    times (510 - ($ - $$))    db 0
+    dw 0xAA55
 %endif
