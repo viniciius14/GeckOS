@@ -1,7 +1,7 @@
 [bits 16]
 [org 0x7C00]
 
-SECTION .text
+section .text
 
 %ifndef RESERVED_SECTORS
 %define RESERVED_SECTORS 1

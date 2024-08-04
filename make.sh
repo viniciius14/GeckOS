@@ -1,17 +1,53 @@
-# Make sure bin directory exists
-mkdir -p bin/
-
 # Stage 2 Bootloader
 nasm src/bootloader/stage2.S        \
     -i src/bootloader/              \
-    -f bin                          \
-    -o bin/stage2.bin
+    -f elf32                        \
+    -o bin/stage2.elf
+
+nasm src/bootloader/stage2_32.S     \
+    -i src/bootloader/              \
+    -f elf32                        \
+    -o bin/stage2_32.elf
+
+ld bin/stage2.elf bin/stage2_32.elf \
+    -m elf_i386                     \
+    -Ttext 0x7E00                   \
+    -e _stage2_start                \
+    -o bin/stage2.o
+
+objcopy bin/stage2.o                \
+    -O binary                       \
+    bin/stage2.bin
 
 # Kernel
-# nasm src/kernel/kernel.S            \
-#     -i src/bootloader/              \
-#     -f bin                          \
-#     -o bin/kernel.bin
+i386-elf-gcc                        \
+    -c src/kernel/kernel_main.c     \
+    -o bin/kernel.elf               \
+    -Wall                           \
+    -Wextra                         \
+    -m32                            \
+    -nostdlib                       \
+    -fno-builtin                    \
+    -mgeneral-regs-only
+
+ld bin/kernel.elf                   \
+    -m elf_i386                     \
+    -Ttext 0x1000000                \
+    -e _kernel_main                 \
+    -o bin/kernel.o
+
+
+objcopy bin/kernel.o                \
+    -O binary                       \
+    bin/kernel.bin
+
+
+
+# # Kernel
+# # nasm src/kernel/kernel.S            \
+# #     -i src/bootloader/              \
+# #     -f bin                          \
+# #     -o bin/kernel.bin
 
 # Get size of Stage 2 Bootloader + kernel to know how many sectors to reserve
 STAGE2_SIZE=$(stat -c %s bin/stage2.bin)
@@ -40,7 +76,7 @@ nasm src/bootloader/stage1.S        \
     -o bin/stage1.bin
 
 cat bin/stage1.bin bin/stage2.bin > bin/bootloader.bin
-# cat bin/bootloader.bin bin/kernel.bin > GeckOS.bin
+cat bin/bootloader.bin bin/kernel.bin > bin/GeckOS.bin
 
 # Create virtual floppy disk
 dd if=/dev/zero of=bin/GeckOS.img bs=512 count=2880
@@ -50,8 +86,8 @@ mkfs.fat bin/GeckOS.img             \
     -n "GECKOS"                     \
     -R $RSV_SCTRS
 
-dd if=bin/bootloader.bin of=bin/GeckOS.img bs=512 seek=0 conv=notrunc
-# dd if=bin/GeckOS.bin of=bin/GeckOS.img bs=512 seek=0 conv=notrunc
+# dd if=bin/bootloader.bin of=bin/GeckOS.img bs=512 seek=0 conv=notrunc
+dd if=bin/GeckOS.bin of=bin/GeckOS.img bs=512 seek=0 conv=notrunc
 
 # Add files
 mcopy -i bin/GeckOS.img test.txt "::test.txt"
@@ -62,3 +98,5 @@ qemu-system-x86_64 -drive format=raw,file=bin/GeckOS.img,index=0,if=floppy
 # Cleanup
 rm -f bin/*.bin
 rm -f bin/*.tags
+rm -f bin/*.elf
+rm -f bin/*.o

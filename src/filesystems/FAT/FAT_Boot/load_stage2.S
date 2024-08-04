@@ -3,7 +3,7 @@
 
 [bits 16]
 
-SECTION .text
+section .text
 
 load_stage_2:
     ; Setup to call disk_read

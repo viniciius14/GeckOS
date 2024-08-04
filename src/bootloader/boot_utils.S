@@ -5,7 +5,7 @@
 
 %define ENDL 0x0D, 0x0A
 
-SECTION .text
+section .text
 
 ;
 ; Prints a string to the screen
