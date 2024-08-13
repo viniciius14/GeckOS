@@ -1,6 +1,14 @@
 [bits 32]
 [global _stage2_32]
 
+%ifndef STAGE2_SIZE
+%define STAGE2_SIZE -1
+%endif
+
+%ifndef KERNEL_SIZE
+%define KERNEL_SIZE -1
+%endif
+
 section .text
 
 KERNEL_LOCATION equ 0xFFFF80
@@ -13,12 +21,20 @@ _stage2_32:
     mov ah, 0x0F
     mov [0xb8000], ax
 
-    jmp KERNEL_LOCATION
+
+    call KERNEL_LOCATION
 
     jmp $
+
+
+
+
+
 
 
 section .bss
 _kernel_stack_b:
     resb KERNEL_STACK_SIZE  ; Reserve 4 KiB stack space
 _kernel_stack_e:
+
+

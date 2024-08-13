@@ -37,6 +37,24 @@ _stage2_start:
     ; mov al, 0x13
     ; int 0x10
 
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Read kernel into RAM addr 0x1000
+    mov ah, 0x02            ; BIOS read sector function
+    mov al, 10              ; Number of sectors to read (depends on kernel size)
+    mov ch, 0               ; Cylinder 0
+    mov cl, 4               ; Sector 2 (bootloader is typically in sector 1)
+    mov dh, 0               ; Head 0
+    mov dl, 0               ; Drive 0 (floppy A)
+    mov bx, 0x1000          ; Offset 0x0000
+    mov es, bx              ; Segment 0x1000 (ES:BX points to 0x10000)
+    mov bx, 0x0000          ; Segment 0x1000 (ES:BX points to 0x10000)
+    int 0x13                ; Call BIOS to read sectors
+    ; jc read_error           ; Handle read error
+    ;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
     ; Switches to text mode and as a result clears the screen
     mov ah, 0x0
     mov al, 0x3

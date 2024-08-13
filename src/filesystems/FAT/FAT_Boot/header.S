@@ -3,27 +3,35 @@
 
 section .text
 
-%ifndef RESERVED_SECTORS
-%define RESERVED_SECTORS 1
+; Set to -1 for error throwing purposes
+%ifndef BOOT_2_SECTORS
+%define BOOT_2_SECTORS -1
 %endif
 
-; FAT12 header
+%ifndef KERNEL_SECTORS
+%define KERNEL_SECTORS -1
+%endif
+
+%define RESERVED_SECTORS (BOOT_2_SECTORS + KERNEL_SECTORS + 1)
+
+
 %ifdef DEBUG
 jmp short ._debug_start
 %else
 jmp short _stage1_start
 %endif
-nop
 
+; FAT Header
+nop
 ; BPB (BIOS Parameter Block)
 bdb_oem:                    db 'MSWIN4.1'           ; 8 bytes
 bdb_bytes_per_sector:       dw 512
 bdb_sectors_per_cluster:    db 1
 bdb_reserved_sectors:       dw RESERVED_SECTORS
 bdb_fat_count:              db 2
-bdb_dir_entries_count:      dw 0E0h
+bdb_dir_entries_count:      dw 0xE0
 bdb_total_sectors:          dw 2880                 ; 2880 * 512 = 1.44MB
-bdb_media_descriptor_type:  db 0F0h                 ; F0 = 3.5" floppy disk
+bdb_media_descriptor_type:  db 0xF0                 ; F0 = 3.5" floppy disk
 bdb_sectors_per_fat:        dw 9                    ; 9 sectors/fat
 bdb_sectors_per_track:      dw 18
 bdb_heads:                  dw 2
@@ -34,7 +42,7 @@ bdb_large_sector_count:     dd 0
 ebr_drive_number:           db 0                    ; 0x00 floppy, 0x80 hdd, useless
                             db 0                    ; reserved
 ebr_signature:              db 29h
-ebr_volume_id:              db 12h, 34h, 56h, 78h   ; serial number, value doesn't matter
+ebr_volume_id:              db 0x12, 0x34, 0x56, 0x78   ; serial number, value doesn't matter
 ebr_volume_label:           db 'GECKOS     '        ; 11 bytes, padded with spaces
 ebr_system_id:              db 'FAT12   '           ; 8 bytes
 
@@ -46,7 +54,6 @@ ebr_system_id:              db 'FAT12   '           ; 8 bytes
     ; TBD: Implement FAT32 specific code
 %endif
 
-; _stage1_start:
 
 %ifdef DEBUG
 ._debug_start:

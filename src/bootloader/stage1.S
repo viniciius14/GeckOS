@@ -1,10 +1,5 @@
 [bits 16]
 
-; TODO; Change this value, here for error throwing purposes
-%ifndef RESERVED_SECTORS
-%define RESERVED_SECTORS -1
-%endif
-
 %include "header.S"
 
 section .text
@@ -33,6 +28,7 @@ _stage1_start:
     ; Info to be "sent" to stage 2
     mov ax, [bdb_sectors_per_track]
     mov bx, [bdb_heads]
+    mov cx, BOOT_2_SECTORS
 
     jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET
 
