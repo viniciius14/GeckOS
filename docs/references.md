@@ -1,3 +1,8 @@
+# Design
+# Bootloader
+# GDT
+# IDT
+
 https://stackoverflow.com/questions/32701854/boot-loader-doesnt-jump-to-kernel-code/32705076#32705076
 https://littleosbook.github.io/
 https://wiki.osdev.org/
@@ -9,3 +14,7 @@ http://www.cs.cmu.edu/~410-s07/p4/p4-boot.pdf
 https://fileadmin.cs.lth.se/cs/Education/EDA385/HT09/student_doc/FinalReports/FAT12_overview.pdf
 https://academy.cba.mit.edu/classes/networking_communications/SD/FAT.pdf
 http://www.brokenthorn.com/Resources/OSDev6.html
+
+
+# Floppy Driver
+https://wiki.osdev.org/Floppy_Disk_Controller#Accessing_USB_Floppy_Drives

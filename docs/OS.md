@@ -52,6 +52,18 @@ specifically .S (capital case) because GCC treats the file extensions ".s" (lowe
    1           18          14                                                   Sector  
 Data region begins at sector 35  
 ```
+```text
++------------------------------------------------------------------------------+  
+|                                DISK                                          |  
++------------------------------------------------------------------------------+  
+| Reserved Sector(s)                    | File       | Root      | Data        |  
+|                                       | Allocation | Directory |             |  
+| +------------+------------+--------+  | Tables     |           |             |  
+| | Bootloader | Bootloader | Kernel |  |            |           |             |  
+| | (Stage 1)  | (Stage 2)  |        |  |            |           |             |  
+| +------------+------------+--------+  |            |           |             |  
++------------------------------------------------------------------------------+  
+```
 
 The size of our disk is 1.44 MB
 

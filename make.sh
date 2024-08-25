@@ -5,12 +5,15 @@ BOOT_2_SECTORS=-1
 # Ensure that bin/ exists
 mkdir -p bin/
 
+# --no-warn-rwx-segments          \
 
 # We're gonna compile eveything the opposite way around
 
 # Kernel
 i386-elf-gcc                        \
     -c src/kernel/kernel_main.c     \
+    -I include/kernel               \
+    -I include/drivers/floppy       \
     -o bin/_kernel.o                \
     -Wall                           \
     -Wextra                         \
@@ -42,26 +45,48 @@ nasm                                \
 
 nasm                                \
     src/bootloader/stage2_32.S      \
-    -i src/bootloader/              \
     -f elf32                        \
     -o bin/_stage2_32.o
 
-# i386-elf-gcc                        \
-#     -c src/bootloader/stage2.S      \
-#     -I src/bootloader/              \
-#     -o bin/_stage2.o                \
-#     -Wall                           \
-#     -Wextra                         \
-#     -nostdlib                       \
-#     -fno-builtin                    \
-#     -mgeneral-regs-only
+i386-elf-gcc                        \
+    -c src/drivers/floppy/fdc.c     \
+    -I include/kernel/              \
+    -I include/drivers/floppy/      \
+    -o bin/fdc.o                    \
+    -Wall                           \
+    -Wextra                         \
+    -nostdlib                       \
+    -fno-builtin                    \
+    -mgeneral-regs-only
+
+i386-elf-gcc                        \
+    -c src/kernel/utils.c           \
+    -I include/kernel/              \
+    -o bin/utils.o                  \
+    -Wall                           \
+    -Wextra                         \
+    -nostdlib                       \
+    -fno-builtin                    \
+    -mgeneral-regs-only
+
+i386-elf-gcc                        \
+    -c src/kernel/memory.c          \
+    -I include/kernel/              \
+    -o bin/memory.o                 \
+    -Wall                           \
+    -Wextra                         \
+    -nostdlib                       \
+    -fno-builtin                    \
+    -mgeneral-regs-only
 
 i386-elf-ld                         \
     bin/_stage2.o                   \
     bin/_stage2_32.o                \
+    bin/fdc.o                       \
+    bin/memory.o                    \
+    bin/utils.o                     \
     -m elf_i386                     \
     -T misc/bootloader.ld           \
-    --no-warn-rwx-segments          \
     -o bin/stage2.o
 
 i386-elf-objcopy                    \
