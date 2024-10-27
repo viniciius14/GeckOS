@@ -1,0 +1,12 @@
+# Ignore the following files
+**/*.log
+**/*.bin
+**/*.o
+**/*.md
+.git
+.gitignore
+LICENSE
+
+# Ignore the following directories
+**/docs
+**/bin

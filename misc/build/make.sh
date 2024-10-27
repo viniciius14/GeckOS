@@ -1,3 +1,14 @@
+# For 16-bit code:                          nasm
+
+# For compiling 32-bit code:                i386-elf-gcc
+# For linking 32-bit object files:          i386-elf-ld
+# For 32-bit binaries:                      i386-elf-objcopy
+
+# For compiling 64-bit code:                x86_64-elf-gcc
+# For linking 64-bit object files:          x86_64-elf-ld
+# For 64-bit binaries:                      x86_64-elf-objcopy
+
+
 # Variables
 KERNEL_SECTORS=-1
 BOOT_2_SECTORS=-1

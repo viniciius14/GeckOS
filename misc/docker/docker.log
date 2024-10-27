@@ -1,0 +1,53 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Reading package lists...
+Building dependency tree...
+Reading state information...
+docker.io is already the newest version (24.0.7-0ubuntu4.1).
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
+E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
+non-network local connections being added to access control list
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  4.608kB
+Step 1/12 : FROM ubuntu:22.04
+ ---> 97271d29cb79
+Step 2/12 : RUN apt-get update       &&     apt-get upgrade -y   &&     apt-get install -y          qemu                        qemu-kvm                    nasm                        gcc-multilib                binutils                    libvirt-daemon-system       libvirt-clients             bridge-utils                virt-manager                x11-apps                    build-essential             libgmp3-dev                 libmpfr-dev                 libmpc-dev                  gcc                         curl                        make                        bzip2
+ ---> Using cache
+ ---> 34e7a94aa380
+Step 3/12 : ENV PREFIX="/usr/local/i386elfgcc"
+ ---> Using cache
+ ---> ca084f618148
+Step 4/12 : ENV TARGET="i386-elf"
+ ---> Using cache
+ ---> 1894d9b63968
+Step 5/12 : ENV PATH="$PREFIX/bin:$PATH"
+ ---> Using cache
+ ---> 146971d93b84
+Step 6/12 : RUN mkdir -p /tmp/src &&     cd /tmp/src &&     curl -O http://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz &&     tar xvf binutils-2.24.tar.gz &&     mkdir binutils-build &&     cd binutils-build &&     ../binutils-2.24/configure --target=$TARGET --enable-interwork --enable-multilib --disable-nls --disable-werror --prefix=$PREFIX &&     make && make install
+ ---> Using cache
+ ---> b44d714dc278
+Step 7/12 : RUN cd /tmp/src &&     curl -O https://ftp.gnu.org/gnu/gcc/gcc-4.9.1/gcc-4.9.1.tar.bz2 &&     tar xvf gcc-4.9.1.tar.bz2 &&     mkdir gcc-build &&     cd gcc-build &&     CFLAGS="-fPIC -w" CXXFLAGS="-fPIC -w -std=gnu++98" ../gcc-4.9.1/configure --target=$TARGET --prefix=$PREFIX --disable-nls --disable-libssp --enable-languages=c --without-headers &&     make all-gcc && make all-target-libgcc && make install-gcc && make install-target-libgcc
+ ---> Using cache
+ ---> f61304c53857
+Step 8/12 : RUN $TARGET-gcc --version
+ ---> Using cache
+ ---> 0c56ced99a23
+Step 9/12 : VOLUME /root/env
+ ---> Using cache
+ ---> 20077123f055
+Step 10/12 : WORKDIR /root/env
+ ---> Using cache
+ ---> 62bc9e43d778
+Step 11/12 : ENV DISPLAY=:0
+ ---> Using cache
+ ---> a362ff7c9802
+Step 12/12 : CMD ["bash"]
+ ---> Using cache
+ ---> 9a1a5e24d5c9
+Successfully built 9a1a5e24d5c9
+Successfully tagged geckos_container:latest
