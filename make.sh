@@ -7,7 +7,7 @@ mkdir -p bin/
 
 # --no-warn-rwx-segments          \
 
-# We're gonna compile eveything the opposite way around
+# We're gonna compile everything the opposite way around
 
 # Kernel
 i386-elf-gcc                        \
@@ -150,7 +150,7 @@ get_sectors() {
 
     echo "$file_path is $file_size bytes long."
 
-    # Check if we ocuppy an uneven number of sectors
+    # Check if we occupy an uneven number of sectors
     if [ $((file_size % 512)) -ne 0 ]; then
         file_size=$(((file_size / 512) + 1))
     else
