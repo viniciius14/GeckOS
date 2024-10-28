@@ -46,16 +46,8 @@ RUN cd /tmp/src && \
     CFLAGS="-fPIC -w" CXXFLAGS="-fPIC -w -std=gnu++98" ../gcc-4.9.1/configure --target=$TARGET --prefix=$PREFIX --disable-nls --disable-libssp --enable-languages=c --without-headers && \
     make all-gcc && make all-target-libgcc && make install-gcc && make install-target-libgcc
 
-# Verify the cross-compiler installation
-RUN $TARGET-gcc --version
 
 # Set up working directory and environment for running GUI applications
 VOLUME /root/env
 WORKDIR /root/env
 ENV DISPLAY=:0
-
-# Command to keep the container running if needed
-CMD ["bash"]
-
-# Optional: add a default entry point to start QEMU
-# ENTRYPOINT ["qemu-system-x86_64"]

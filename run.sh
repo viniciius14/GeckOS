@@ -7,7 +7,7 @@ exec > >(tee -a misc/docker/docker.log) 2>&1
 # Requirements
 sudo apt install docker.io
 sudo systemctl start docker
-apt-get install x11-xserver-utils
+sudo apt-get install x11-xserver-utils
 xhost +local:docker
 
 # Make the Image
@@ -16,14 +16,12 @@ sudo docker build           \
     --tag geckos_container
 
 # Run the container
-sudo docker run                                 \
-    --rm                                        \
-    -it                                         \
-    -v                                          \
-    --env="DISPLAY"                             \
+container_id=$(sudo docker run -d -it --rm \
+    --env="DISPLAY" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-    --volume="$(pwd):/root/env"                 \
-    --device=/dev/kvm                           \
-    --privileged                                \
-    --sig-proxy=true                            \
-    geckos_container
+    --volume="$(pwd):/root/env" \
+    --device=/dev/kvm \
+    --privileged \
+    geckos_container)
+
+docker exec -it "$container_id" bash -c ". misc/build/make.sh"
