@@ -27,12 +27,8 @@ RUN apt-get update       && \
     libcanberra-gtk3-module \
     bison                   \
     flex                    \
-    texinfo
-
-#TBD
-#install home brew to be able to install  x86_64-elf-gcc
-#/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-#brew install x86_64-elf-gcc
+    texinfo                 \
+    git
 
 
 # Set up environment variables for cross-compilers
@@ -41,6 +37,14 @@ ENV TARGET_I386="i386-elf"
 ENV PREFIX_X86_64="/usr/local/x86_64elfgcc"
 ENV TARGET_X86_64="x86_64-elf"
 ENV PATH="$PREFIX_I386/bin:$PREFIX_X86_64/bin:$PATH"
+
+
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
+    echo >> /root/.bashrc && \
+    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /root/.bashrc && \
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+    brew install x86_64-elf-gcc
+
 
 # Download, build, and install binutils for i386-elf target
 RUN mkdir -p /tmp/src && \
@@ -52,12 +56,14 @@ RUN mkdir -p /tmp/src && \
     ../binutils-2.24/configure --target=$TARGET_I386 --enable-interwork --enable-multilib --disable-nls --disable-werror --prefix=$PREFIX_I386 && \
     make && make install
 
+
 # Download, build, and install binutils for x86_64-elf target
 RUN cd /tmp/src && \
     mkdir binutils-build-x86_64 && \
     cd binutils-build-x86_64 && \
     ../binutils-2.24/configure --target=$TARGET_X86_64 --disable-nls --disable-werror --prefix=$PREFIX_X86_64 && \
     make && make install
+
 
 # Download, build, and install GCC for i386-elf cross-compilation
 RUN cd /tmp/src && \
@@ -67,6 +73,7 @@ RUN cd /tmp/src && \
     cd gcc-build-i386 && \
     CFLAGS="-fPIC -w" CXXFLAGS="-fPIC -w -std=gnu++98" ../gcc-4.9.1/configure --target=$TARGET_I386 --prefix=$PREFIX_I386 --disable-nls --disable-libssp --enable-languages=c --without-headers && \
     make all-gcc && make all-target-libgcc && make install-gcc && make install-target-libgcc
+
 
 # Set up working directory and environment for running GUI applications
 VOLUME /root/env
