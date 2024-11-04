@@ -1,24 +1,11 @@
 #!/bin/sh
 
-# For 16-bit code:                          nasm
-
-# For compiling 32-bit code:                i386-elf-gcc
-# For linking 32-bit object files:          i386-elf-ld
-# For 32-bit binaries:                      i386-elf-objcopy
-
-# For compiling 64-bit code:                x86_64-elf-gcc
-# For linking 64-bit object files:          x86_64-elf-ld
-# For 64-bit binaries:                      x86_64-elf-objcopy
-
 # Delete the last log file
 rm -f misc/build/make.log
 
-# Redirect all output to both the console and make.log
-exec > >(tee -a misc/build/make.log) 2>&1
-
 # Variables
 KERNEL_SECTORS=-1
-BOOT_2_SECTORS=-1
+BOOT_S2_SECTORS=-1
 PWD=$(pwd)
 
 SRC="$PWD/src"
@@ -150,21 +137,21 @@ i386-elf-objcopy                    \
     -O binary                       \
     $BIN/stage2.bin
 
-get_sectors BOOT_2_SECTORS $BIN/stage2.bin
+get_sectors BOOT_S2_SECTORS $BIN/stage2.bin
 
 
 # Stage 1 Bootloader
 nasm                                    \
     $SRC/bootloader/stage1.S             \
-    -DBOOT_2_SECTORS=$KERNEL_SECTORS    \
-    -DKERNEL_SECTORS=$BOOT_2_SECTORS    \
+    -DBOOT_S2_SECTORS=$KERNEL_SECTORS    \
+    -DKERNEL_SECTORS=$BOOT_S2_SECTORS    \
     -i $SRC/filesystems/FAT/FAT_Boot     \
     -i $SRC/bootloader                   \
-    -f $BIN                              \
+    -f bin                               \
     -o $BIN/stage1.bin
 
 
-RESERVED_SECTORS=$((KERNEL_SECTORS + BOOT_2_SECTORS + 1))
+RESERVED_SECTORS=$((KERNEL_SECTORS + BOOT_S2_SECTORS + 1))
 echo "RESERVED SECTORS = $RESERVED_SECTORS"
 
 # "Join" together all the parts
@@ -185,10 +172,4 @@ dd if=$BIN/GeckOS.bin of=$BIN/GeckOS.img bs=512 seek=0 conv=notrunc
 mcopy -i $BIN/GeckOS.img $FILES/test.txt "::test.txt"
 
 # Emulate
-qemu-system-x86_64 -drive format=raw,file=$BIN/GeckOS.img,index=0,if=floppy
-
-# Cleanup
-# rm -f $BIN/*.bin
-# rm -f $BIN/*.tags
-# rm -f $BIN/*.elf
-# rm -f $BIN/*.o
+qemu-system-x86_64 -drive format=raw,file=$(BIN)/GeckOS.img,index=0,if=floppy

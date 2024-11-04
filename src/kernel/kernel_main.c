@@ -21,7 +21,7 @@ void print_string(char * arr) {
 }
 
 
-void _kernel_main(void) {
+void kernel_main(void) {
     for(uint16_t i = 0; i != 10000 ; i++){
         mem[i] = "A";
     }

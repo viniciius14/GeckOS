@@ -24,32 +24,49 @@ RUN apt-get update       && \
     make                    \
     bzip2                   \
     libcanberra-gtk-module  \
-    libcanberra-gtk3-module
+    libcanberra-gtk3-module \
+    bison                   \
+    flex                    \
+    texinfo
 
-# Set up environment variables for cross-compiler
-ENV PREFIX="/usr/local/i386elfgcc"
-ENV TARGET="i386-elf"
-ENV PATH="$PREFIX/bin:$PATH"
+#TBD
+#install home brew to be able to install  x86_64-elf-gcc
+#/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#brew install x86_64-elf-gcc
 
-# Download, build, and install binutils
+
+# Set up environment variables for cross-compilers
+ENV PREFIX_I386="/usr/local/i386elfgcc"
+ENV TARGET_I386="i386-elf"
+ENV PREFIX_X86_64="/usr/local/x86_64elfgcc"
+ENV TARGET_X86_64="x86_64-elf"
+ENV PATH="$PREFIX_I386/bin:$PREFIX_X86_64/bin:$PATH"
+
+# Download, build, and install binutils for i386-elf target
 RUN mkdir -p /tmp/src && \
     cd /tmp/src && \
     curl -O http://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz && \
     tar xvf binutils-2.24.tar.gz && \
-    mkdir binutils-build && \
-    cd binutils-build && \
-    ../binutils-2.24/configure --target=$TARGET --enable-interwork --enable-multilib --disable-nls --disable-werror --prefix=$PREFIX && \
+    mkdir binutils-build-i386 && \
+    cd binutils-build-i386 && \
+    ../binutils-2.24/configure --target=$TARGET_I386 --enable-interwork --enable-multilib --disable-nls --disable-werror --prefix=$PREFIX_I386 && \
     make && make install
 
-# Download, build, and install GCC for cross-compilation
+# Download, build, and install binutils for x86_64-elf target
+RUN cd /tmp/src && \
+    mkdir binutils-build-x86_64 && \
+    cd binutils-build-x86_64 && \
+    ../binutils-2.24/configure --target=$TARGET_X86_64 --disable-nls --disable-werror --prefix=$PREFIX_X86_64 && \
+    make && make install
+
+# Download, build, and install GCC for i386-elf cross-compilation
 RUN cd /tmp/src && \
     curl -O https://ftp.gnu.org/gnu/gcc/gcc-4.9.1/gcc-4.9.1.tar.bz2 && \
     tar xvf gcc-4.9.1.tar.bz2 && \
-    mkdir gcc-build && \
-    cd gcc-build && \
-    CFLAGS="-fPIC -w" CXXFLAGS="-fPIC -w -std=gnu++98" ../gcc-4.9.1/configure --target=$TARGET --prefix=$PREFIX --disable-nls --disable-libssp --enable-languages=c --without-headers && \
+    mkdir gcc-build-i386 && \
+    cd gcc-build-i386 && \
+    CFLAGS="-fPIC -w" CXXFLAGS="-fPIC -w -std=gnu++98" ../gcc-4.9.1/configure --target=$TARGET_I386 --prefix=$PREFIX_I386 --disable-nls --disable-libssp --enable-languages=c --without-headers && \
     make all-gcc && make all-target-libgcc && make install-gcc && make install-target-libgcc
-
 
 # Set up working directory and environment for running GUI applications
 VOLUME /root/env

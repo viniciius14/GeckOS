@@ -2,18 +2,13 @@
 
 %include "header.S"
 
+%define S2_LOAD_SEGMENT 0x0
+%define S2_LOAD_OFFSET  0x7E00
+%define ENDL            0x0D, 0x0A
+
 section .text
 
-S2_LOAD_SEGMENT     equ 0x0
-S2_LOAD_OFFSET      equ 0x7E00
-
 _stage1_start:
-    %ifdef DEBUG
-        ; TBD: check that the value in CS is 0x7C00
-        ; TBD: check that the value in DL is 0x80 for HDD or 0x00 for floppy
-        ; TBD: check that the value in SP is 0x7C00
-    %endif
-
     cli                 ; Clear interrupt flag
     cld                 ; Clear direction flag
 
@@ -23,20 +18,156 @@ _stage1_start:
 	mov ss, ax
 	mov sp, 0x7C00
 
-    call load_stage_2   ; Load stage2 of the bootloader into RAM address 0x7E00
+    ; Setup to call disk_read
+    mov ax, 1
+    mov cl, (RESERVED_SECTORS - 1)
+    mov dl, [ebr_drive_number]
+    mov bx, S2_LOAD_OFFSET
+
+    ; Load stage2 of the bootloader into RAM address 0x7E00
+    call disk_read
+
+    ; TBD: Add error checking here
+
+    mov si, disk_read_msg
+    call put_str
 
     ; Info to be "sent" to stage 2
     mov ax, [bdb_sectors_per_track]
     mov bx, [bdb_heads]
-    mov cx, BOOT_2_SECTORS
 
     jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET
 
+
+
+;
+; Converts an LBA address to a CHS address
+; Parameters:
+;   - ax: LBA address
+; Returns:
+;   - cx [bits 0-5]:  sector number
+;   - cx [bits 6-15]: cylinder
+;   - dh: head
+;
+
+lba_to_chs:
+    push ax
+    push dx
+
+    xor dx, dx                          ; dx = 0
+    div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
+                                        ; dx = LBA % SectorsPerTrack
+    inc dx                              ; dx = (LBA % SectorsPerTrack + 1) = sector
+    mov cx, dx                          ; cx = sector
+
+    xor dx, dx                          ; dx = 0
+    div word [bdb_heads]                ; ax = (LBA / SectorsPerTrack) / Heads = cylinder
+                                        ; dx = (LBA / SectorsPerTrack) % Heads = head
+    mov dh, dl                          ; dh = head
+    mov ch, al                          ; ch = cylinder (lower 8 bits)
+    shl ah, 6
+    or cl, ah                           ; put upper 2 bits of cylinder in CL
+
+    pop ax
+    mov dl, al                          ; restore DL
+    pop ax
+    ret
+
+
+
+;
+; Disk routines
+;
+
+
+
+;
+; Reads sectors from a disk
+; Parameters:
+;   - ax: LBA address
+;   - cl: number of sectors to read (up to 128)
+;   - dl: drive number
+;   - es:bx: memory address where to store read data
+;
+disk_read:
+
+    push ax                             ; save registers we will modify
+    push bx
+    push cx
+    push dx
+    push di
+
+    push cx                             ; temporarily save CL (number of sectors to read)
+    call lba_to_chs                     ; compute CHS
+    pop ax                              ; AL = number of sectors to read
+
+    mov ah, 02h
+    mov di, 3                           ; retry count
+
+.retry:
+    pusha                               ; save all registers, we don't know what bios modifies
+    stc                                 ; set carry flag, some BIOS'es don't set it
+    int 13h                             ; carry flag cleared = success
+    jnc .done                           ; jump if carry not set
+
+    ; read failed
+    popa
+    call disk_reset
+
+    dec di
+    test di, di
+    jnz .retry
+
+.fail:
+    jmp report_error
+
+.done:
+    popa
+
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+
+
+;
+; Resets disk controller
+; Parameters:
+;   dl: drive number
+;
+disk_reset:
+    pusha
+
+    mov ah, 0
+    stc
+    int 13h
+    jc report_error
+    popa
+    ret
+
+
+;
+; Error handler
+;
+report_error:
+    mov si, error_message
+    call put_str
+
+    jmp $
+
+
+
 %include "boot_utils.S"
-%include "load_stage2.S"
 
 section .text
-times (510 - ($ - $$))    db 0
-dw 0xAA55
 
-buffer:
+
+
+; Left in the .text section or else it'll be placed by the linker outside of our 512 bytes
+disk_read_msg: db "Disk read sucessfully.", ENDL, 0
+error_message: db  "ERROR DETECTED.", ENDL, 0
+
+times (510 - ($ - $$)) db 0
+dw 0xAA55

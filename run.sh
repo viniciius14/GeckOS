@@ -1,19 +1,18 @@
+#!/bin/sh
+
 # Delete the last log file
 rm -f misc/docker/docker.log
 
-# Redirect all output to both the console and docker.log
-exec > >(tee -a misc/docker/docker.log) 2>&1
-
 # Requirements
-sudo apt install docker.io
-sudo systemctl start docker
-sudo apt-get install x11-xserver-utils
-xhost +local:docker
+sudo apt install docker.io              && \
+sudo systemctl start docker             && \
+sudo apt-get install x11-xserver-utils  && \
+xhost +local:docker                 >> misc/docker/docker.log 2>&1 # Redirect output to a log file
 
 # Make the Image
 sudo docker build           \
     misc/docker/.           \
-    --tag geckos_container
+    --tag geckos_container          >> misc/docker/docker.log 2>&1
 
 # Run the container
 container_id=$(                                 \
@@ -27,4 +26,5 @@ container_id=$(                                 \
     geckos_container
 )
 
-docker exec -it "$container_id" bash -c ". misc/build/make.sh"
+docker exec -it "$container_id" bash -c "make > misc/build/make.log"
+# docker exec -it "$container_id" bash
