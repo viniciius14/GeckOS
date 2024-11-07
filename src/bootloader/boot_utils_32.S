@@ -44,7 +44,7 @@ checkCPUID:
     xor eax, ecx
     jz .noCPUID
 
-	mov si, msg_CPUID
+	mov si, ok_msg_CPUID
 	call put_str32
 
     ret
@@ -53,6 +53,25 @@ checkCPUID:
     mov si, error_msg_CPUID
 	call put_str32
     hlt
+checkLongMode:
+    mov eax, 0x80000000    ; Set the A-register to 0x80000000.
+    cpuid                  ; CPU identification.
+    cmp eax, 0x80000001    ; Compare the A-register with 0x80000001.
+    jb .noLongMode         ; It is less, there is no long mode.
+
+	mov eax, 0x80000001    ; Set the A-register to 0x80000001.
+    cpuid                  ; CPU identification.
+    test edx, 1 << 29      ; Test if the LM-bit, which is bit 29, is set in the D-register.
+    jz .noLongMode         ; They aren't, there is no long mode.
+
+	mov si, ok_msg_LongMode
+	call put_str32
+	ret
+.noLongMode:
+	mov si, error_msg_LongMode
+	call put_str32
+	hlt
+
 
 ; TBD implement carriage return
 put_str32:
@@ -60,31 +79,37 @@ put_str32:
 
 	mov ah, 0x0F			; White characters on black background
 	mov edx, VIDEO_MEMORY
-.loop:
+
 	lodsb               ; Load next character into AL
-    cmp al, ENDL_CR     ; Check if character is carriage return
-    jne .print_char     ; If not, print the character
-
-    ; Check for line feed after carriage return
-    lodsb               ; Load next character (expecting line feed)
-    cmp al, ENDL_LF
-    jne .print_char     ; If not line feed, print the character as-is
-
-	jmp .done
-
 .print_char:
 	mov [edx], ax
 	add edx, 2
 
-	jmp .loop
+.loop:
+	lodsb
+	cmp al, 0
+	jne .print_char
+	; cmp al, ENDL_CR     ; Check if character is carriage return
+    ; jne .print_char     ; If not, print the character
+
+	; jmp .done
+
+    ; ; Check for line feed after carriage return
+    ; lodsb               ; Load next character (expecting line feed)
+    ; cmp al, ENDL_LF
+    ; jne .print_char     ; If not line feed, print the character as-is
 
 .done:
+	popa
     ret
 
 
 section .data
 
-error_msg_CPUID: db "[ERROR] CPUID instruction is not supported.", ENDL
-msg_CPUID: db "[OK] CPUID supported.", ENDL
+ok_msg_CPUID: db "[OK] CPUID supported.", ENDL, 0
+error_msg_CPUID: db "[ERROR] CPUID instruction is not supported.", ENDL, 0
+
+ok_msg_LongMode: db "[OK] Long Mode supported.", ENDL, 0
+error_msg_LongMode: db "[ERROR] Long Mode not supported.", ENDL, 0
 
 %endif

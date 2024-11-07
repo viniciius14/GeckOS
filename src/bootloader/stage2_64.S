@@ -12,22 +12,19 @@ section .text
 %define KERNEL_STACK_SIZE   4096
 
 _stage2_64:
-; setup for kernel
+    cli                           ; Clear the interrupt flag.
+
+    mov al, 'z'
+    mov ah, 0x0F
+    mov [0xB8000], ax
+
+    ; setup for kernel
 	mov esp, _kernel_stack_e
 
-; load kernel into memory
-    ; call fdc_init      ; Call the function
-    ; ; movzx eax, al      ; Zero-extend the 8-bit result from AL to EAX if needed
+    ; call fdc_init
 
-    ; ; push KERNEL_LOCATION
-    ; ; ; TBD REMOVE THIS HARDCODED VALUE
-    ; ; ; THIS IS JUST STAGE1_SIZE + STAGE2_SIZE
-    ; push 12
-    ; push kernel
-    ; call fdc_read    ; Call the function
 
-; jmp to kernel start
-    ; jmp _kernel_main
+
 
 	hlt
 
