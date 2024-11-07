@@ -1,10 +1,8 @@
 [bits 16]
 [org 0x7C00]
 
-section .text
-
 %ifndef RESERVED_SECTORS
-%define RESERVED_SECTORS 0
+    %error "RESERVED_SECTORS is undefined."
 %endif
 
 %if RESERVED_SECTORS <= 1
@@ -15,7 +13,7 @@ section .text
 jmp short _stage1_start
 nop
 ; BPB (BIOS Parameter Block)
-bdb_oem:                    db 'MSWIN4.1'           ; 8 bytes
+bdb_oem:                    db "MSWIN4.1"           ; 8 bytes
 bdb_bytes_per_sector:       dw 512
 bdb_sectors_per_cluster:    db 1
 bdb_reserved_sectors:       dw RESERVED_SECTORS
@@ -33,9 +31,9 @@ bdb_large_sector_count:     dd 0
 ebr_drive_number:           db 0                    ; 0x00 floppy, 0x80 hdd, useless
                             db 0                    ; reserved
 ebr_signature:              db 29h
-ebr_volume_id:              db 0x12, 0x34, 0x56, 0x78   ; serial number, value doesn't matter
-ebr_volume_label:           db 'GECKOS     '        ; 11 bytes, padded with spaces
-ebr_system_id:              db 'FAT12   '           ; 8 bytes
+ebr_volume_id:              db 0x12, 0x34, 0x56, 0x78   ; serial number, value doesn"t matter
+ebr_volume_label:           db "GECKOS     "        ; 11 bytes, padded with spaces
+ebr_system_id:              db "FAT12   "           ; 8 bytes
 
 %ifdef FAT_16
     ; TBD: Implement FAT16 specific code

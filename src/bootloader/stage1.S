@@ -1,96 +1,45 @@
 [bits 16]
 
-%include "header.S"
-
 %define S2_LOAD_SEGMENT 0x0
 %define S2_LOAD_OFFSET  0x7E00
 %define ENDL            0x0D, 0x0A
 
-section .text
+%include "header.S"
 
 _stage1_start:
     cli                 ; Clear interrupt flag
     cld                 ; Clear direction flag
 
-	mov ax, 0           ; Clear main registers
+	xor ax, ax          ; Clear main registers
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
 	mov sp, 0x7C00
 
     ; Setup to call disk_read
-    mov ax, 1
-    mov cl, (RESERVED_SECTORS - 1)
+    mov ax, 1                       ; LBA Address
+    mov cl, (RESERVED_SECTORS - 1)  ; Sector Number
     mov dl, [ebr_drive_number]
     mov bx, S2_LOAD_OFFSET
 
     ; Load stage2 of the bootloader into RAM address 0x7E00
     call disk_read
-
     ; TBD: Add error checking here
 
     mov si, disk_read_msg
     call put_str
 
-    ; Info to be "sent" to stage 2
-    mov ax, [bdb_sectors_per_track]
-    mov bx, [bdb_heads]
-
     jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET
 
+    hlt
 
-
-;
-; Converts an LBA address to a CHS address
-; Parameters:
-;   - ax: LBA address
-; Returns:
-;   - cx [bits 0-5]:  sector number
-;   - cx [bits 6-15]: cylinder
-;   - dh: head
-;
-
-lba_to_chs:
-    push ax
-    push dx
-
-    xor dx, dx                          ; dx = 0
-    div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
-                                        ; dx = LBA % SectorsPerTrack
-    inc dx                              ; dx = (LBA % SectorsPerTrack + 1) = sector
-    mov cx, dx                          ; cx = sector
-
-    xor dx, dx                          ; dx = 0
-    div word [bdb_heads]                ; ax = (LBA / SectorsPerTrack) / Heads = cylinder
-                                        ; dx = (LBA / SectorsPerTrack) % Heads = head
-    mov dh, dl                          ; dh = head
-    mov ch, al                          ; ch = cylinder (lower 8 bits)
-    shl ah, 6
-    or cl, ah                           ; put upper 2 bits of cylinder in CL
-
-    pop ax
-    mov dl, al                          ; restore DL
-    pop ax
-    ret
-
-
-
-;
-; Disk routines
-;
-
-
-
-;
 ; Reads sectors from a disk
 ; Parameters:
 ;   - ax: LBA address
 ;   - cl: number of sectors to read (up to 128)
 ;   - dl: drive number
 ;   - es:bx: memory address where to store read data
-;
 disk_read:
-
     push ax                             ; save registers we will modify
     push bx
     push cx
@@ -131,12 +80,6 @@ disk_read:
     pop ax
     ret
 
-
-;
-; Resets disk controller
-; Parameters:
-;   dl: drive number
-;
 disk_reset:
     pusha
 
@@ -147,27 +90,49 @@ disk_reset:
     popa
     ret
 
-
-;
-; Error handler
-;
 report_error:
     mov si, error_message
     call put_str
 
     jmp $
 
+;
+; Converts an LBA address to a CHS address
+; Parameters:
+;   - ax: LBA address
+; Returns:
+;   - cx [bits 0-5]:  sector number
+;   - cx [bits 6-15]: cylinder
+;   - dh: head
+;
 
+lba_to_chs:
+    push ax
+    push dx
 
-%include "boot_utils.S"
+    xor dx, dx                          ; dx = 0
+    div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
+                                        ; dx = LBA % SectorsPerTrack
+    inc dx                              ; dx = (LBA % SectorsPerTrack + 1) = sector
+    mov cx, dx                          ; cx = sector
 
-section .text
+    xor dx, dx                          ; dx = 0
+    div word [bdb_heads]                ; ax = (LBA / SectorsPerTrack) / Heads = cylinder
+                                        ; dx = (LBA / SectorsPerTrack) % Heads = head
+    mov dh, dl                          ; dh = head
+    mov ch, al                          ; ch = cylinder (lower 8 bits)
+    shl ah, 6
+    or cl, ah                           ; put upper 2 bits of cylinder in CL
 
+    pop ax
+    mov dl, al                          ; restore DL
+    pop ax
+    ret
 
+%include "boot_utils_16.S"
 
-; Left in the .text section or else it'll be placed by the linker outside of our 512 bytes
-disk_read_msg: db "Disk read sucessfully.", ENDL, 0
-error_message: db  "ERROR DETECTED.", ENDL, 0
+disk_read_msg: db "Disk read sucessfully.", ENDL
+error_message: db "Error reading disk.", ENDL
 
 times (510 - ($ - $$)) db 0
 dw 0xAA55

@@ -1,10 +1,12 @@
 [bits 16]
+
 [global _stage2_start]
+
 [extern _stage2_32]
 
-section .text
-
 %define ENDL 0x0D, 0x0A
+
+section .text
 
 ; TODO:
 ;   - BIOS ints
@@ -16,17 +18,8 @@ section .text
 ;   - Clear stack, registers etc
 
 _stage2_start:
-    mov [bdb_sectors_per_track], ax
-    mov [bdb_heads], bx
+    lgdt [GDT_Descriptor]       ; Load GDT
 
-
-    mov si, msg_hello
-    call put_str
-
-    ;
-    ; Load GDT
-    lgdt [GDT_Descriptor]
-    ;
     CODE_SEG equ code_descriptor - GDT_Start
     DATA_SEG equ data_descriptor - GDT_Start
 
@@ -35,40 +28,24 @@ _stage2_start:
     ; mov al, 0x13
     ; int 0x10
 
-
     ; Switches to text mode and as a result clears the screen
     mov ah, 0x0
     mov al, 0x3
     int 0x10
-    mov si, msg_hello
-    call put_str
 
     in al, 0x92             ; Enable A20 gate
     or al, 0x02
     out 0x92, al
 
-    mov eax, cr0
+    mov eax, cr0            ; Set the first bit in cr0 to 1
     or eax, 1
     mov cr0, eax            ; 32 bit protected mode
 
-    mov ax, CODE_SEG    ; "send" CODE_SEG to stage2_32.S
-
     jmp CODE_SEG:_stage2_32
 
-    jmp $
-
-%include "boot_utils.S"
-
+    hlt
 
 section .data
-
-bdb_sectors_per_track:      dw 0
-bdb_heads:                  dw 0
-
-
-
-msg_hello: db 'Hello world from STAGE TWO BOOTLOADER!', ENDL,  0
-
 
 GDT_Start:
     null_descriptor:
@@ -93,4 +70,3 @@ GDT_End:
 GDT_Descriptor:
     dw GDT_End - GDT_Start - 1  ; size
     dd GDT_Start                ; start
-

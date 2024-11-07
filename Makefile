@@ -11,7 +11,7 @@ ASM=nasm
 ASM_FLAGS=-f elf64
 
 CC=x86_64-elf-gcc
-CC_FLAGS=-Wall -Wextra -nostdlib -fno-builtin -m64 -ffreestanding -mcmodel=kernel -mno-red-zone -mgeneral-regs-only -std=c11
+CC_FLAGS=-m64 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mcmodel=kernel -mno-red-zone -mgeneral-regs-only -std=c11
 
 LD=x86_64-elf-ld
 LD_FLAGS=-m elf_x86_64
@@ -66,7 +66,8 @@ bootloader: boot_stage_2 boot_stage_1
 
 
 boot_stage_2: boot_64 boot_32 boot_16
-	$(shell $(LD) $(BIN)/_stage2_16.elf $(BIN)/_stage2_32.elf $(BIN)/_stage2_64.elf \
+# Join all .S files that were assembled into .elf files
+	$(shell $(LD) $(BIN)/stage2_16.elf $(BIN)/stage2_32.elf $(BIN)/stage2_64.elf \
 	$(LD_FLAGS) -T $(MISC)/linker/bootloader.ld -o $(BIN)/stage2.o)
 	$(shell $(OBJ) $(BIN)/stage2.o $(OBJ_FLAGS) $(BIN)/stage2.bin)
 	@$(eval BOOT_S2_SECTORS=$(strip $(call get_sectors, $(BIN)/stage2.bin)))
@@ -76,21 +77,19 @@ boot_64:
 # Stage 2 Bootloader (64 bit)
 	$(ASM) ${shell find src -name stage2_64.S} \
 	-i src/bootloader/ \
-	$(ASM_FLAGS) -o $(BIN)/_stage2_64.elf
-
+	$(ASM_FLAGS) -o $(BIN)/stage2_64.elf
 
 boot_32:
 # Stage 2 Bootloader (32 bit)
 	$(ASM) ${shell find src -name stage2_32.S} \
 	-i src/bootloader/ \
-	$(ASM_FLAGS) -o $(BIN)/_stage2_32.elf
-
+	$(ASM_FLAGS) -o $(BIN)/stage2_32.elf
 
 boot_16:
 # Stage 2 Bootloader (16 bit)
 	$(ASM) ${shell find src -name stage2_16.S} \
 	-i src/bootloader/ \
-	$(ASM_FLAGS) -o $(BIN)/_stage2_16.elf
+	$(ASM_FLAGS) -o $(BIN)/stage2_16.elf
 
 
 boot_stage_1:
@@ -115,7 +114,7 @@ kernel:
 
 
 run:
-	qemu-system-x86_64 -drive format=raw,file=bin/GeckOS.img,index=0,if=floppy -m 128M
+	qemu-system-x86_64 -drive file=$(BIN)/GeckOS.img,format=raw,index=0,if=$(BOOT_DEV) -m 128M -serial stdio
 
 
 clean:

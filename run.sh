@@ -26,8 +26,8 @@ container_id=$(                                 \
     geckos_container
 )
 
-docker exec -it "$container_id" bash -c "make 2>&1 | tee -a misc/build/make.log"
-# docker exec -it "$container_id" bash
+# docker exec -it "$container_id" bash -c "make 2>&1 | tee -a misc/build/make.log"
+docker exec -it "$container_id" bash
 
 # Clear out bin directory
-rm -rf bin/*
+# rm -rf bin/*

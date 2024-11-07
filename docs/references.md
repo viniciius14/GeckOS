@@ -1,5 +1,6 @@
 # Design
 # Bootloader
+https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-3a-part-1-manual.pdf
 # GDT
 # IDT
 

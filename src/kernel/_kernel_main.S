@@ -1,4 +1,4 @@
-[extern kernel_main]
+[global _kernel_main]
 
 section .text
 
