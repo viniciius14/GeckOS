@@ -1,6 +1,6 @@
 # Directories
 BIN=$(PWD)/bin
-SRC=$(PWD)/src
+BOOT_SRC=$(PWD)/src/bootloader
 MISC=$(PWD)/misc
 
 # Vars
@@ -11,56 +11,60 @@ CC=x86_64-elf-gcc
 CC_FLAGS=-m64 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mcmodel=kernel -mno-red-zone -mgeneral-regs-only -std=c11
 
 LD=x86_64-elf-ld
-LD_FLAGS=-m elf_x86_64 -T # -T has to always be the last flag
-
+LD_FLAGS=-m elf_x86_64
 
 OBJ=x86_64-elf-objcopy
 OBJ_FLAGS=-O binary
 
-all: boot_stage_2 boot_stage_1
-	${shell cat $(BIN)/stage1.bin $(BIN)/stage2.bin > $(BIN)/_bootloader.bin}
-	@$(eval padding=$(call calculate_padding,$(BIN)/_bootloader.bin))
-	$(info padding = $(padding))
-	${shell dd if=/dev/zero of=$(BIN)/_padding.bin bs=1 count=$(padding)}
-	${shell cat $(BIN)/_bootloader.bin $(BIN)/_padding.bin > $(BIN)/bootloader.bin}
+BOOT_FILES=$(BIN)/stage2_16.elf $(BIN)/stage2_32.elf $(BIN)/stage2_64.elf
 
+
+all: bootloader
+
+bootloader: _bootloader
+	dd if=/dev/zero of=$(BIN)/_padding.bin bs=1 count=$(strip $(PADDING))
+	cat $(BIN)/_bootloader.bin $(BIN)/_padding.bin > $(BIN)/bootloader.bin
+
+_bootloader: boot_stage_2 boot_stage_1
+	cat $(BIN)/stage1.bin $(BIN)/stage2.bin > $(BIN)/_bootloader.bin
 
 boot_stage_2: boot_64 boot_32 boot_16
-# Join all .S files that were assembled into .elf files
-	${shell $(LD) $(LD_FLAGS) $(MISC)/linker/bootloader.ld $(BIN)/stage2_16.elf $(BIN)/stage2_32.elf $(BIN)/stage2_64.elf -o $(BIN)/stage2.o}
-	${shell $(OBJ) $(OBJ_FLAGS) $(BIN)/stage2.o $(BIN)/stage2.bin}
-	@$(eval BOOT_S2_SECTORS=$(strip $(call get_sectors, $(BIN)/stage2.bin)))
-
+	# Link all .elf files into one output .o file
+	$(LD) $(LD_FLAGS) $(BOOT_FILES) -T $(MISC)/linker/bootloader.ld -o $(BIN)/stage2.o
+	$(OBJ) $(OBJ_FLAGS) $(BIN)/stage2.o $(BIN)/stage2.bin
 
 boot_64:
-# Stage 2 Bootloader (64 bit)
-	$(ASM) $(ASM_FLAGS) stage2_64.S -o $(BIN)/stage2_64.elf
-# Stage 2 Bootloader load_kernel
+	# Stage 2 Bootloader (64 bit)
+	$(ASM) $(ASM_FLAGS) $(BOOT_SRC)/stage2_64.S -o $(BIN)/stage2_64.elf
 
+	# Compile extra files
+	
 
 boot_32:
-# Stage 2 Bootloader (32 bit)
-	$(ASM) $(ASM_FLAGS) stage2_32.S -o $(BIN)/stage2_32.elf
+	# Stage 2 Bootloader (32 bit)
+	$(ASM) $(ASM_FLAGS) $(BOOT_SRC)/stage2_32.S -o $(BIN)/stage2_32.elf
 
 boot_16:
-# Stage 2 Bootloader (16 bit)
-	$(ASM) $(ASM_FLAGS) stage2_16.S -o $(BIN)/stage2_16.elf
-
+	# Stage 2 Bootloader (16 bit)
+	$(ASM) $(ASM_FLAGS) $(BOOT_SRC)/stage2_16.S -o $(BIN)/stage2_16.elf
 
 boot_stage_1:
-	@$(eval KERNEL_SECTORS=$(strip $(call get_sectors, $(BIN)/kernel.bin)))
-	$(info KERNEL_SECTORS = $(KERNEL_SECTORS))
+	# Stage 1 Bootloader
+	$(ASM) -f bin $(BOOT_SRC)/stage1.S -DRESERVED_SECTORS=$(strip $(RESERVED_SECTORS)) -i $(HEADER_LOCATION) -o $(BIN)/stage1.bin
 
-	@$(eval RESERVED_SECTORS=$(shell expr $(KERNEL_SECTORS) + $(BOOT_S2_SECTORS) + 1))
-	$(info RESERVED_SECTORS = $(RESERVED_SECTORS))
 
-# Stage 1 Bootloader
-	$(ASM) -f bin stage1.S -DRESERVED_SECTORS=$(RESERVED_SECTORS) -i $(HEADER_LOCATION) -o $(BIN)/stage1.bin
-
-define get_sectors
-    $(shell expr \( $$(wc -c < $(1)) + 511 \) / 512)
+define BOOT_S2_SECTORS
+	$(shell echo $$((($$(stat -c%s $(BIN)/stage2.bin) + 511) / 512)))
 endef
 
-define calculate_padding
-    $(shell expr \( 512 - $$(expr $$(wc -c < $(1)) % 512) \) % 512)
+define KERNEL_SECTORS
+	$(shell echo $$((($$(stat -c%s $(BIN)/kernel.bin) + 511) / 512)))
+endef
+
+define RESERVED_SECTORS
+	$(shell expr $(KERNEL_SECTORS) + $(BOOT_S2_SECTORS) + 1)
+endef
+
+define PADDING
+	$(shell wc -c < $(BIN)/_bootloader.bin | awk '{print $$1 % 512 == 0 ? 0 : 512 - ($$1 % 512)}')
 endef
