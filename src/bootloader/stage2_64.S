@@ -2,6 +2,7 @@
 
 [global _stage2_64]
 
+[extern _load_kernel]
 [extern fdc_init]
 [extern fdc_read]
 ; [extern _kernel_main]
@@ -9,27 +10,23 @@
 section .text
 
 %define KERNEL_LOCATION     0x100000
-%define KERNEL_STACK_SIZE   4096
 
 _stage2_64:
-    cli                           ; Clear the interrupt flag.
+    cli         ; Clear the interrupt flag.
+
+    mov ax, 0
+    mov ss, ax
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
 
     mov al, 'z'
     mov ah, 0x0F
     mov [0xB8000], ax
 
-    ; setup for kernel
-	mov esp, _kernel_stack_e
+    ; call _load_kernel
 
-    ; call fdc_init
-
-
-
+    ; jmp KERNEL_LOCATION
 
 	hlt
-
-section .bss
-
-_kernel_stack_b:
-    resb KERNEL_STACK_SIZE  ; Reserve 4 KiB stack space
-_kernel_stack_e:
