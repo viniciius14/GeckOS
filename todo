@@ -1,0 +1,17 @@
+Expand QEMU command - https://github.com/malwarepad/cavOS/blob/master/src/kernel/Makefile
+Document DOCKER, QEMU, Makefile(COMPILE FLAGS, choose a C standard)
+Edit the makefile and try to remove the $(shell) everywhere
+# Docker
+	Reduce the image size
+		Check if all the installed packages are needed
+# Kernel
+	Design how the generic filesystem handler is gonna work
+		Array of types of supported media
+		When media is "mounted" pass in a generic struct/type that takes in func pointers
+			this tpe has init, close/end/exit, read, write, change directory
+
+# Makefile
+	Make all the shell comands in {}
+
+# run.sh
+	Add a print out to show the usage of the makefile

@@ -32,24 +32,39 @@ void *memmove(void *dst, const void *src, uint32_t n) {
     return dst;
 }
 
-void outb(uint32_t port, uint8_t value) {
-	ASM("outb %%al,%%dx"::"d" (port), "a" (value));
+
+void outb(uint16_t port, uint8_t data){
+	ASM("outb %0, %1" : : "a"(data), "Nd"(port));
+	return;
 }
 
-void outw(uint32_t port, uint32_t value) {
-	ASM("outw %%ax,%%dx"::"d" (port), "a" (value));
+uint8_t inb(uint16_t port){
+	uint8_t res;
+	ASM("inb %1, %0" : "=a"(res) : "Nd"(port));
+	return res;
 }
 
-uint8_t inb(uint32_t port) {
-	uint8_t value;
-	ASM("inb %w1,%b0" : "=a"(value) : "d"(port));
-	return value;
+
+void outw(uint16_t port, uint16_t value)
+{
+	ASM("outw %w0, %1" : : "a" (value), "id" (port) );
 }
 
-uint16_t inw(uint32_t port) {
-    uint16_t value;
-    ASM("inw %1, %0" : "=a" (value) : "dN" (port));
-    return value;
+uint16_t inw(uint16_t port){
+   uint16_t ret;
+   ASM("inw %1, %0" : "=a" (ret) : "dN" (port));
+   return ret;
+}
+
+
+void outl(uint16_t port, uint32_t value){
+	ASM("outl %%eax, %%dx" :: "d" (port), "a" (value));
+}
+
+uint32_t inl(uint16_t port){
+   uint32_t ret;
+   ASM("inl %1, %0" : "=a" (ret) : "dN" (port));
+   return ret;
 }
 
 void io_wait(void) {

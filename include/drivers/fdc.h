@@ -75,6 +75,3 @@ void print_char(char letter);
 
 
 #endif /* __FDC_H */
-
-
-

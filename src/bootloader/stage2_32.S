@@ -1,6 +1,7 @@
 [bits 32]
 
 [global _stage2_32]
+[global gdt64.code_segment]
 
 [extern _stage2_64]
 

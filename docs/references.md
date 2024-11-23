@@ -3,6 +3,7 @@
 # General
 https://www.youtube.com/watch?v=YxCILdaQtxs&list=PLUFkSN0XLZ-myVyCmMvfz_W5Z5SauI3cN
 https://github.com/davidcallanan/os-series
+https://github.com/mell-o-tron/MellOs
 # Bootloader
 https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-3a-part-1-manual.pdf
 # GDT
@@ -23,3 +24,8 @@ http://www.brokenthorn.com/Resources/OSDev6.html
 
 # Floppy Driver
 https://wiki.osdev.org/Floppy_Disk_Controller#Accessing_USB_Floppy_Drives
+
+
+# QEMU
+https://wiki.gentoo.org/wiki/QEMU
+

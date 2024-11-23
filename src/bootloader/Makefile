@@ -1,14 +1,15 @@
 # Directories
 BIN=$(PWD)/bin
-BOOT_SRC=$(PWD)/src/bootloader
 MISC=$(PWD)/misc
+BOOT_SRC=$(PWD)/src/bootloader
+INC_DIRS=${shell find $(PWD)/include -type d}
 
 # Vars
 ASM=nasm
 ASM_FLAGS=-f elf64
 
 CC=x86_64-elf-gcc
-CC_FLAGS=-m64 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mcmodel=kernel -mno-red-zone -mgeneral-regs-only -std=c11
+CC_FLAGS=-m64 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mcmodel=large -mno-red-zone -mgeneral-regs-only -std=c11
 
 LD=x86_64-elf-ld
 LD_FLAGS=-m elf_x86_64
@@ -16,7 +17,7 @@ LD_FLAGS=-m elf_x86_64
 OBJ=x86_64-elf-objcopy
 OBJ_FLAGS=-O binary
 
-BOOT_FILES=$(BIN)/stage2_16.elf $(BIN)/stage2_32.elf $(BIN)/stage2_64.elf
+BOOT_FILES=$(BIN)/stage2_16.elf $(BIN)/stage2_32.elf $(BIN)/stage2_64.elf $(BIN)/load_kernel.elf $(BIN)/drivers.a
 
 
 all: bootloader
@@ -38,7 +39,12 @@ boot_64:
 	$(ASM) $(ASM_FLAGS) $(BOOT_SRC)/stage2_64.S -o $(BIN)/stage2_64.elf
 
 	# Compile extra files
-	
+	$(CC) $(CC_FLAGS) -c $(BOOT_SRC)/load_kernel.c -DKERNEL_SECTORS=$(strip $(KERNEL_SECTORS)) \
+	$(foreach DIR, $(INC_DIRS), -I $(DIR)) -o $(BIN)/load_kernel.elf
+
+# $(CC) $(CC_FLAGS) $(PWD)/src/kernel/utils.c -DKERNEL_SECTORS=$(strip $(KERNEL_SECTORS)) \
+# $(foreach DIR, $(INC_DIRS), -I $(DIR)) -o $(BIN)/utils.elf
+
 
 boot_32:
 	# Stage 2 Bootloader (32 bit)
@@ -50,7 +56,8 @@ boot_16:
 
 boot_stage_1:
 	# Stage 1 Bootloader
-	$(ASM) -f bin $(BOOT_SRC)/stage1.S -DRESERVED_SECTORS=$(strip $(RESERVED_SECTORS)) -i $(HEADER_LOCATION) -o $(BIN)/stage1.bin
+	$(ASM) -f bin $(BOOT_SRC)/stage1.S -DRESERVED_SECTORS=$(strip $(RESERVED_SECTORS)) \
+	-i $(HEADER_LOCATION) -o $(BIN)/stage1.bin
 
 
 define BOOT_S2_SECTORS
