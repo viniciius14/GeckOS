@@ -1,0 +1,15 @@
+# Ignore all .log files
+*.log
+*.md
+
+# Ignore the build directory
+build/
+
+# Exclude a specific file
+run.sh
+LICENSE
+dockerfile
+
+# Exclude all .tmp files but include important.tmp
+# *.tmp
+# !important.tmp
