@@ -1,10 +1,8 @@
 # Common configuration file (config.mk)
 
 # Directories
-BUILD=$(PWD)/../build
+BUILD=$(PWD)/build
 MISC=$(PWD)
-# BOOT_SRC=$(PWD)/src/bootloader
-# INC_DIRS=${shell find $(PWD)/include -type d}
 
 # Variables
 ASM=nasm
