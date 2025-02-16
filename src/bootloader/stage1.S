@@ -7,6 +7,10 @@
 %include "header.S"
 
 _stage1_start:
+    mov ah, 0xE
+    mov al, 'B'
+    int 0x10
+
 ;     cli                 ; Clear interrupt flag
 ;     cld                 ; Clear direction flag
 

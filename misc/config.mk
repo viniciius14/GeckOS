@@ -1,8 +1,10 @@
 # Common configuration file (config.mk)
 
 # Directories
-BUILD=$(PWD)/build
 MISC=$(PWD)
+BUILD=$(MISC)/build
+BIN=$(BUILD)/bin
+OBJ=$(BUILD)/obj
 
 # Variables
 ASM=nasm
