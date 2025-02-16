@@ -21,7 +21,7 @@ boot_img:
 	dd if=$(BUILD)/bin/boot_FAT16.bin of=$(BUILD)/GeckOS_FAT16.img bs=512 seek=0 conv=notrunc
 
 	@echo "\t\t FAT_32"
-	dd if=/dev/zero of=$(BUILD)/GeckOS_FAT32.img bs=512 count=1048576
+	dd if=/dev/zero of=$(BUILD)/GeckOS_FAT32.img bs=512 count=262144
 	mkfs.fat $(BUILD)/GeckOS_FAT32.img -F 16 -n "GECKOS"
 	dd if=$(BUILD)/bin/boot_FAT32.bin of=$(BUILD)/GeckOS_FAT32.img bs=512 seek=0 conv=notrunc
 # Add file system information structure

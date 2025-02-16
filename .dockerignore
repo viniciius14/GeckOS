@@ -9,7 +9,3 @@ build/
 run.sh
 LICENSE
 dockerfile
-
-# Exclude all .tmp files but include important.tmp
-# *.tmp
-# !important.tmp
