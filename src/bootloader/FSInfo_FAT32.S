@@ -6,5 +6,5 @@
     FSI_Free_Count:     dd 0xFFFFFFFF       ; Contains the last known free cluster count on the volume.
     FSI_Nxt_Free:       dd 0xFFFFFFFF       ; Contains the cluster number of the first available (free) cluster on the volume.
     FSI_Reserved2:      dd 0x0, 0x0, 0x0    ; Reserved. Must be set to 0.
-    FSI_TrailSig:       dd 0xAA55           ; This trail signature is used to validate the integrity of the data in the sector containing the FSInfo structure.
+    FSI_TrailSig:       dd 0xAA550000       ; This trail signature is used to validate the integrity of the data in the sector containing the FSInfo structure.
 %endif

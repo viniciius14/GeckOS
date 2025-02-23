@@ -1,8 +1,10 @@
 # Common configuration file (config.mk)
 
+PROJECT=/root/os
+
 # Directories
-MISC=$(PWD)
-BUILD=$(MISC)/build
+MISC=$(PROJECT)/misc
+BUILD=$(PROJECT)/build
 BIN=$(BUILD)/bin
 OBJ=$(BUILD)/obj
 

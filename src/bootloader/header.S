@@ -34,17 +34,12 @@
 ;     %error "Invalid value for RESERVED_SECTORS."
 ; %endif
 
-; TODO: Check the following values:
-;   - BPB_SecPerTrk
-;   - BPB_NumHeads
-;   - BPB_HiddSec
-
 
 ; BIOS Parameter Block
 
 jmp strict short _stage1_start
 nop
-BS_OEMName:                 db "MSWIN4.1"               ; OEM Name Identifier. 8 bytes.
+BS_OEMName:                 db "GECKOS  "               ; OEM Name Identifier. 8 bytes.
 
 %ifdef FAT_12
     BPB_BytsPerSec:         dw 0x200                    ; Count of bytes per sector. Acceptable values: 512, 1024, 2048 or 4096.
@@ -55,8 +50,8 @@ BS_OEMName:                 db "MSWIN4.1"               ; OEM Name Identifier. 8
     BPB_TotSec16:           dw 2880                     ; For FAT12 volumes, this field contains the sector count.
     BPB_Media:              db 0xF0                     ; For removable media, 0xF0 is frequently used.
     BPB_FATSz16:            dw 0x9                      ; This field is the FAT12 16-bit count of sectors occupied by one FAT.
-    BPB_SecPerTrk:          dw 18                       ; Sectors per track for interrupt 0x13.
-    BPB_NumHeads:           dw 2                        ; Number of heads for interrupt 0x13.
+    BPB_SecPerTrk:          dw 0x12                     ; Sectors per track for interrupt 0x13.
+    BPB_NumHeads:           dw 0x2                      ; Number of heads for interrupt 0x13.
     BPB_HiddSec:            dd 0x0                      ; Count of hidden sectors preceding the partition that contains this FAT volume.
     BPB_TotSec32:           dd 0x0                      ; For FAT12 volumes, this field contains the sector count if BPB_TotSec16 is 0.
 %endif
@@ -67,28 +62,28 @@ BS_OEMName:                 db "MSWIN4.1"               ; OEM Name Identifier. 8
     BPB_RsvdSecCnt:         dw 0x4                      ; Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume.
     BPB_NumFATs:            db 0x2                      ; The count of file allocation tables (FATs) on the volume.
     BPB_RootEntCnt:         dw 0x200                    ; For maximum compatibility, FAT16 volumes should use the value 512.
-    BPB_TotSec16:           dw 0                        ; ! For FAT16 volumes, this field contains the sector count.
+    BPB_TotSec16:           dw 0                        ; For FAT16 volumes, this field contains the sector count.
     BPB_Media:              db 0xF8                     ; 0xF8 is the standard value for “fixed” (non-removable) media.
-    BPB_FATSz16:            dw 0x86                     ; ! This field is the FAT16 16-bit count of sectors occupied by one FAT.
-    BPB_SecPerTrk:          dw 0x3F                     ; ! Sectors per track for interrupt 0x13.
-    BPB_NumHeads:           dw 0xFF                     ; ! Number of heads for interrupt 0x13.
-    BPB_HiddSec:            dd 0x3F                     ; ! Count of hidden sectors preceding the partition that contains this FAT volume.
-    BPB_TotSec32:           dd 0x42a92                  ; ! For FAT16 volumes, this field contains the sector count if BPB_TotSec16 is 0.
+    BPB_FATSz16:            dw 0x86                     ; This field is the FAT16 16-bit count of sectors occupied by one FAT.
+    BPB_SecPerTrk:          dw 0x3F                     ; Sectors per track for interrupt 0x13.
+    BPB_NumHeads:           dw 0xFF                     ; Number of heads for interrupt 0x13.
+    BPB_HiddSec:            dd 0x3F                     ; Count of hidden sectors preceding the partition that contains this FAT volume.
+    BPB_TotSec32:           dd 0x42A92                  ; For FAT16 volumes, this field contains the sector count if BPB_TotSec16 is 0.
 %endif
 
 %ifdef FAT_32
     BPB_BytsPerSec:         dw 0x200                    ; Count of bytes per sector. Acceptable values: 512, 1024, 2048 or 4096.
-    BPB_SecPerClus:         db 0x4                      ; ! Number of sectors per allocation unit.
-    BPB_RsvdSecCnt:         dw 0x20                     ; ! Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume.
+    BPB_SecPerClus:         db 0x4                      ; Number of sectors per allocation unit.
+    BPB_RsvdSecCnt:         dw 0x20                     ; Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume.
     BPB_NumFATs:            db 0x2                      ; The count of file allocation tables (FATs) on the volume.
     BPB_RootEntCnt:         dw 0x0                      ; For FAT32 volumes, this field must be set to 0.
     BPB_TotSec16:           dw 0x0                      ; For FAT32 volumes, this field must be 0.
     BPB_Media:              db 0xF8                     ; 0xF8 is the standard value for “fixed” (non-removable) media.
     BPB_FATSz16:            dw 0x0                      ; On FAT32 volumes this field must be 0, and BPB_FATSz32 contains the FAT size count.
-    BPB_SecPerTrk:          dw 0x3F                     ; ! Sectors per track for interrupt 0x13.
+    BPB_SecPerTrk:          dw 0x3F                     ; Sectors per track for interrupt 0x13.
     BPB_NumHeads:           dw 0xFF                     ; Number of heads for interrupt 0x13.
-    BPB_HiddSec:            dd 0x3F                     ; ! Count of hidden sectors preceding the partition that contains this FAT volume.
-    BPB_TotSec32:           dd 0x42A92                  ; ! For FAT32 volumes, this field must be non-zero.
+    BPB_HiddSec:            dd 0x3F                     ; Count of hidden sectors preceding the partition that contains this FAT volume.
+    BPB_TotSec32:           dd 0x42A92                  ; For FAT32 volumes, this field must be non-zero.
 
 %endif
 

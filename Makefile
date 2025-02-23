@@ -16,8 +16,8 @@ all: $(SUBDIRS)
 
 # Rule to iterate through each subdirectory and call its Makefile
 $(SUBDIRS):
-	mkdir -p $(BUILD)/bin
-	mkdir -p $(BUILD)/obj
+	mkdir -p $(BIN)
+	mkdir -p $(OBJ)
 	$(MAKE) -C $@
 
 # Clean target to clean all subdirectories

@@ -8,17 +8,34 @@
 
 _stage1_start:
     mov ah, 0xE
-    mov al, 'B'
+    mov al, 'H'
+    int 0x10
+    mov ah, 0xE
+    mov al, 'e'
+    int 0x10
+    mov ah, 0xE
+    mov al, 'l'
+    int 0x10
+    mov ah, 0xE
+    mov al, 'l'
+    int 0x10
+    mov ah, 0xE
+    mov al, 'o'
+    int 0x10
+    mov ah, 0xE
+    mov al, '!'
     int 0x10
 
-;     cli                 ; Clear interrupt flag
-;     cld                 ; Clear direction flag
+    cli                 ; Clear interrupt flag
+    cld                 ; Clear direction flag
+	xor ax, ax          ; Clear main registers
+	mov ds, ax
+	mov es, ax
+	mov ss, ax
+	mov sp, 0x7C00
+; Find stage 2 of the bootloader and load it into memory
 
-; 	xor ax, ax          ; Clear main registers
-; 	mov ds, ax
-; 	mov es, ax
-; 	mov ss, ax
-; 	mov sp, 0x7C00
+
 
 ;     ; Setup to call disk_read
 ;     mov ax, 1                       ; LBA Address
