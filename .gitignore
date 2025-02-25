@@ -1,5 +1,7 @@
 build/
 
+*.log
+*.drawio
 *.bin
 *.md
 *.img

@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     gcc-multilib \
     qemu-system-x86 \
     dosfstools \
+    mtools \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
@@ -20,8 +21,7 @@ WORKDIR /GeckOS
 COPY . .
 
 # Compile the 32-bit operating system
-RUN make -s
+RUN make
 
 # Run the OS using QEMU
-# CMD ["qemu-system-i386", "-kernel", "build/GeckOS_FAT32.bin"]
 CMD ["bash"]

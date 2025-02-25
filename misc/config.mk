@@ -1,6 +1,6 @@
 # Common configuration file (config.mk)
 
-PROJECT=/root/os
+PROJECT=$(PWD)
 
 # Directories
 MISC=$(PROJECT)/misc
