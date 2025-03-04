@@ -18,5 +18,5 @@ CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -std=c
 LD=ld
 LD_FLAGS=-m elf_i386
 
-OBJ=objcopy
+OBJ_CPY=objcopy
 OBJ_FLAGS=elf32-i386

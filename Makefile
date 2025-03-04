@@ -23,5 +23,6 @@ $(SUBDIRS):
 # Clean target to clean all subdirectories
 clean:
 	rm -rf  build/
+	find . -type f -name "*.log" -delete
 
 .PHONY: all $(SUBDIRS)

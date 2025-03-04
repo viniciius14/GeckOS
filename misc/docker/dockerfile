@@ -21,7 +21,7 @@ WORKDIR /GeckOS
 COPY . .
 
 # Compile the 32-bit operating system
-RUN make
+# RUN make
 
 # Run the OS using QEMU
 CMD ["bash"]
