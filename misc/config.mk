@@ -7,6 +7,10 @@ MISC=$(PROJECT)/misc
 BUILD=$(PROJECT)/build
 BIN=$(BUILD)/bin
 OBJ=$(BUILD)/obj
+SRC_DIR=$(PROJECT)/src
+BOOT_DIR=$(SRC_DIR)/bootloader
+KERNEL_DIR=$(PROJECT)/kernel
+OS_FILES=$(MISC)/osfiles
 
 # Variables
 ASM=nasm

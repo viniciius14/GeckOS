@@ -5,6 +5,10 @@ build/
 *.bin
 *.md
 *.img
+*.sh
+
+# Exceptions
+!run_docker.sh
 
 # Prerequisites
 *.d

@@ -34,6 +34,7 @@
 ;     %error "Invalid value for RESERVED_SECTORS."
 ; %endif
 
+section .text
 
 ; BIOS Parameter Block
 
