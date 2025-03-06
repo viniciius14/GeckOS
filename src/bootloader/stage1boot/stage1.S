@@ -1,18 +1,17 @@
 [bits 16]
+[org 0x7C00]
 
 %define S2_LOAD_SEGMENT 0x0
 %define S2_LOAD_OFFSET  0x7E00
 
 %ifdef FAT_12
     %include "FAT_header.S"
-    %include "FAT12_utils.S"
 %elifdef FAT_16
     %include "FAT_header.S"
-    %include "FAT16_utils.S"
 %elifdef FAT_32
     %include "FAT_header.S"
-    %include "FAT32_utils.S"
 %endif
+
 
 _stage1_start:
     mov ah, 0xE
@@ -42,17 +41,22 @@ _stage1_start:
 	mov ss, ax
 	mov sp, 0x7C00
 
-    push es             ; Some BIOSes might start us at 07C0:0000 instead of 0000:7C00
-    push word .gotoStage2
-    retf
-
+    jmp gotoStage2
 
 ; Find stage 2 of the bootloader and load it into memory
-.gotoStage2:
+gotoStage2:
     jmp loadStage2
 
-    jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET
+
+%ifdef FAT_12
+    %include "FAT12_utils.S"
+%elifdef FAT_16
+    %include "FAT16_utils.S"
+%elifdef FAT_32
+    %include "FAT32_utils.S"
+%endif
 
 times (510 - ($ - $$)) db 0
 dw 0xAA55
 
+buffer:

@@ -3,7 +3,7 @@
 
 section .text
 
-    loadStage2:
+loadStage2:
     ; load next sector into 0x7e00
     ; jump to it
     jmp $

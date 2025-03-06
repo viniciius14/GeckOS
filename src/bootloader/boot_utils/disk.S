@@ -1,71 +1,72 @@
 %ifndef __DISK_S
 %define __DISK_S
-    ;
-    ; Reads sectors from a disk
-    ; Parameters:
-    ;   - ax: LBA address
-    ;   - cl: number of sectors to read (up to 128)
-    ;   - dl: drive number
-    ;   - es:bx: memory address where to store read data
-    ;
-    disk_read:
 
-        push ax                             ; save registers we will modify
-        push bx
-        push cx
-        push dx
-        push di
+%include "print_string.S"
+section .text
+;
+; Reads sectors from a disk
+; Parameters:
+;   - ax: LBA address
+;   - cl: number of sectors to read (up to 128)
+;   - dl: drive number
+;   - es:bx: memory address where to store read data
+;
+disk_read:
 
-        push cx                             ; temporarily save CL (number of sectors to read)
-        call lba_to_chs                     ; compute CHS
-        pop ax                              ; AL = number of sectors to read
+    push ax                             ; save registers we will modify
+    push bx
+    push cx
+    push dx
+    push di
 
-        mov ah, 02h
-        mov di, 3                           ; retry count
+    push cx                             ; temporarily save CL (number of sectors to read)
+    call lba_to_chs                     ; compute CHS
+    pop ax                              ; AL = number of sectors to read
 
-    .retry:
-        pusha                               ; save all registers, we don't know what bios modifies
-        stc                                 ; set carry flag, some BIOS'es don't set it
-        int 13h                             ; carry flag cleared = success
-        jnc .done                           ; jump if carry not set
+    mov ah, 02h
+    mov di, 3                           ; retry count
 
-        ; read failed
-        popa
-        call disk_reset
+.retry:
+    pusha                               ; save all registers, we don't know what bios modifies
+    stc                                 ; set carry flag, some BIOS'es don't set it
+    int 13h                             ; carry flag cleared = success
+    jnc .done                           ; jump if carry not set
 
-        dec di
-        test di, di
-        jnz .retry
+    ; read failed
+    popa
+    call disk_reset
 
-    .fail:
-        ; all attempts are exhausted
-        jmp floppy_error
+    dec di
+    test di, di
+    jnz .retry
 
-    .done:
-        popa
+.fail:
+    ; all attempts are exhausted
+    jmp $
 
-        pop di
-        pop dx
-        pop cx
-        pop bx
-        pop ax                             ; restore registers modified
-        ret
+.done:
+    popa
+
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax                             ; restore registers modified
+    ret
 
 
-    ;
-    ; Resets disk controller
-    ; Parameters:
-    ;   dl: drive number
-    ;
-    disk_reset:
-        pusha
-        mov ah, 0
-        stc
-        int 13h
-        jc floppy_error
-        popa
-        ret
-
-    msg_read_failed:        db 'Read from disk failed!', ENDL, 0
+;
+; Resets disk controller
+; Parameters:
+;   dl: drive number
+;
+disk_reset:
+    pusha
+    mov ah, 0
+    stc
+    int 13h
+    jc $
+    popa
+    ret
 
 %endif
