@@ -1,8 +1,8 @@
 %ifndef __FAT12_UTILS_S
 %define __FAT12_UTILS_S
 
-%include "lba_chs.S"
 %include "disk.S"
+
 section .text
 
 loadStage2:
@@ -57,7 +57,7 @@ loadStage2:
 
 .found_stage2:
     ; di should have the address to the entry
-    mov ax, [di + 26]                   ; ! first logical cluster field (offset 26) (shouldn't it be 27?????)
+    mov ax, [di + 26]
 
     mov [stage2_cluster], ax
 
@@ -113,9 +113,6 @@ loadStage2:
     jmp .load_stage2_loop
 
 .read_finish:
-    mov ah, 0xE
-    mov al, 'R'
-    int 0x10
     ; jump to our kernel
     mov dl, [BS_DrvNum]          ; boot device in dl
 
