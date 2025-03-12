@@ -42,11 +42,7 @@ disk_read:
     jnz .retry
 
 .fail:
-    ; all attempts are exhausted
-    mov ah, 0xE
-    mov al, 'E'
-    int 0x10
-    jmp $
+    jmp floppy_error
 
 .done:
     popa
@@ -55,9 +51,8 @@ disk_read:
     pop dx
     pop cx
     pop bx
-    pop ax                             ; restore registers modified
+    pop ax                  ; restore registers modified
     ret
-
 
 ;
 ; Resets disk controller
@@ -69,12 +64,9 @@ disk_reset:
     mov ah, 0
     stc
     int 13h
-    jc $
+    jc floppy_error
     popa
     ret
-
-
-
 
 ;
 ; Converts an LBA address to a CHS address
@@ -85,7 +77,6 @@ disk_reset:
 ;   - cx [bits 6-15]: cylinder
 ;   - dh: head
 ;
-
 lba_to_chs:
     push ax
     push dx
@@ -109,6 +100,13 @@ lba_to_chs:
     pop ax
     ret
 
+floppy_error:
+    mov si, msg_read_failed
+    call puts
+    jmp $                       ; should never happen
+    cli                         ; disable interrupts
+    hlt                         ; this way CPU can't get out of "halt" state
 
+msg_read_failed:    db "ERROR - FAILED TO READ FROM FLOPPY", ENDL
 
 %endif
