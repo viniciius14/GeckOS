@@ -27,13 +27,13 @@ _stage1_start:
 
     cli                 ; Clear interrupt flag
     cld                 ; Clear direction flag
-	xor ax, ax          ; Clear main registers
-	mov bx, ax
-	mov cx, ax
-	mov dx, ax
-	mov es, ax
-	mov ss, ax
-	mov sp, 0x7C00
+    xor ax, ax          ; Clear main registers
+    mov bx, ax
+    mov cx, ax
+    mov dx, ax
+    mov es, ax
+    mov ss, ax
+    mov sp, 0x7C00
 
     jmp gotoStage2
 
