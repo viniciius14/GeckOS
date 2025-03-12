@@ -51,7 +51,7 @@ disk_read:
     pop dx
     pop cx
     pop bx
-    pop ax                  ; restore registers modified
+    pop ax                              ; restore registers modified
     ret
 
 ;

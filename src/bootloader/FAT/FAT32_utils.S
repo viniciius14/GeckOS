@@ -18,4 +18,5 @@ loadStage2:
     jmp $                       ; should never happen
     cli                         ; disable interrupts
     hlt                         ; this way CPU can't get out of "halt" state
+
 %endif

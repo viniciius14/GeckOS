@@ -16,7 +16,7 @@ loadStage2:
     jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET
 
     jmp $                       ; should never happen
-
     cli                         ; disable interrupts
     hlt                         ; this way CPU can't get out of "halt" state
+
 %endif
