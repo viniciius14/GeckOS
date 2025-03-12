@@ -14,29 +14,23 @@
 
 
 _stage1_start:
-    mov ah, 0xE
-    mov al, 'H'
+    ; Clear the screen
+    ; Switches to text mode
+    mov ah, 0x0
+    mov al, 0x3
     int 0x10
-    mov ah, 0xE
-    mov al, 'e'
-    int 0x10
-    mov ah, 0xE
-    mov al, 'l'
-    int 0x10
-    mov ah, 0xE
-    mov al, 'l'
-    int 0x10
-    mov ah, 0xE
-    mov al, 'o'
-    int 0x10
-    mov ah, 0xE
-    mov al, '!'
-    int 0x10
+
+    ; Switches to graphics mode 0x13 -> Resolution: 320 x 200 | Adapter: EGA | Colors: 16 bit
+    ; mov ah, 0x0
+    ; mov al, 0x13
+    ; int 0x10
 
     cli                 ; Clear interrupt flag
     cld                 ; Clear direction flag
 	xor ax, ax          ; Clear main registers
-	mov ds, ax
+	mov bx, ax
+	mov cx, ax
+	mov dx, ax
 	mov es, ax
 	mov ss, ax
 	mov sp, 0x7C00
@@ -46,7 +40,6 @@ _stage1_start:
 ; Find stage 2 of the bootloader and load it into memory
 gotoStage2:
     jmp loadStage2
-
 
 %ifdef FAT_12
     %include "FAT12_utils.S"

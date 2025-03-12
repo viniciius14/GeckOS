@@ -1,2 +1,2 @@
 all:
-	@echo In kernel Makefile
+	@echo "\nIn kernel Makefile\n"

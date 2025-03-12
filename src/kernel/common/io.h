@@ -21,11 +21,7 @@ uint8_t inbyte(uint16_t);
 /* Gets a word from to the specified hardware port */
 uint16_t inword(uint16_t);
 
-void outlong(uint16_t port, uint32_t value);
-
-uint32_t inlong(uint16_t port);
-
-/* Wait 1 I/O cycle for I/O operation to complete */
+/* Wait 1 I/O cycle */
 void io_wait(void);
 
 #endif /* __IO_H */
