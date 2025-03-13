@@ -41,6 +41,10 @@ _stage1_start:
 gotoStage2:
     jmp loadStage2
 
+    jmp $                       ; should never happen
+    cli                         ; disable interrupts
+    hlt                         ; this way CPU can't get out of "halt" state
+
 %ifdef FAT_12
     %include "FAT12_utils.S"
 %elifdef FAT_16
