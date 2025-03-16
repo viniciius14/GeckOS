@@ -10,7 +10,7 @@ loadStage2:
     mov ax, 2                   ; LBA Address
     mov cl, 1                   ; Number of sectors
     mov dl, [BS_DrvNum]
-    mov bx, buffer
+    mov bx, S2_LOAD_OFFSET
     call disk_read              ; Load stage2 to RAM address 0x7E00
 
     jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET

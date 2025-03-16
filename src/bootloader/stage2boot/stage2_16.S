@@ -1,5 +1,6 @@
 [bits 16]
-[org 0x7E00]
+[global _stage2_start]
+[extern _stage2_32]
 
 section .text
 
@@ -27,7 +28,6 @@ _stage2_start:
     hlt                         ; this way CPU can't get out of "halt" state
 
 %include "print_string.S"
-%include "stage2_32.S"
 
 section .data
 

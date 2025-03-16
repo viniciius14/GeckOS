@@ -1,4 +1,5 @@
 [bits 32]
+[global _stage2_32]
 
 section .text
 
@@ -34,5 +35,7 @@ print_string_32:
 
 .done:
     ret
+
+section .data
 
 stage2msg2: db "Got to stage 2 of the bootloader. (32 bits)", 0

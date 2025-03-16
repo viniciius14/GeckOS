@@ -1,9 +1,5 @@
 include $(CONFIG_PATH)
 
-# Include all directories except stage2boot
-BOOT_SUBDIRS=$(shell find $(BOOT_DIR) -mindepth 1 -type d ! -name "stage2boot")
-BOOT_INCLUDES=$(foreach dir, $(BOOT_SUBDIRS), -i $(dir))
-
 ASM_FLAGS=-f bin
 
 all: stage1_boot
