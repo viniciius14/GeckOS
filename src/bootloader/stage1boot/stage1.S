@@ -10,6 +10,8 @@
     %include "FAT_header.S"
 %elifdef FAT_32
     %include "FAT_header.S"
+%else
+    %error "No filesystem type defined."
 %endif
 
 
@@ -35,10 +37,7 @@ _stage1_start:
     mov ss, ax
     mov sp, 0x7C00
 
-    jmp gotoStage2
-
-; Find stage 2 of the bootloader and load it into memory
-gotoStage2:
+    ; Find stage 2 of the bootloader and load it into memory
     jmp loadStage2
 
     jmp $                       ; should never happen
@@ -55,5 +54,9 @@ gotoStage2:
 
 times (510 - ($ - $$)) db 0
 dw 0xAA55
+
+%ifdef FAT_32
+    %include "FSInfo_FAT32.S"
+%endif
 
 buffer:

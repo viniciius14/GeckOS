@@ -1,39 +1,6 @@
 [bits 16]
 [org 0x7C00]
 
-; Compilation safety checks
-
-; Check if no FAT type is defined
-%ifndef FAT_12
-    %ifndef FAT_16
-        %ifndef FAT_32
-            %error "No FAT type defined."
-        %endif
-    %endif
-%endif
-
-; Check if multiple FAT types are defined
-%ifdef FAT_12
-    %ifdef FAT_16
-        %error "Too many FAT types defined."
-    %endif
-    %ifdef FAT_32
-        %error "Too many FAT types defined."
-    %endif
-%elifdef FAT_16
-    %ifdef FAT_32
-        %error "Too many FAT types defined."
-    %endif
-%endif
-
-; %ifndef RESERVED_SECTORS
-;     %error "RESERVED_SECTORS is undefined."
-; %endif
-
-; %if RESERVED_SECTORS <= 1
-;     %error "Invalid value for RESERVED_SECTORS."
-; %endif
-
 section .text
 
 ; BIOS Parameter Block
