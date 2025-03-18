@@ -20,7 +20,7 @@ KERNEL_OBJ=$(BUILD)/kernel/obj
 ASM=nasm
 ASM_FLAGS=-f elf32
 
-CC=i386-elf-gc
+CC=i386-elf-gcc
 CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -std=c11
 
 LD=i386-elf-ld

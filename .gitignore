@@ -6,6 +6,7 @@ build/
 *.md
 *.img
 *.sh
+*.json
 
 # Exceptions
 !run_docker.sh

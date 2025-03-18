@@ -20,12 +20,6 @@ SECTIONS
         *(COMMON)
         *(.bss)
     } :bss
-
-    /DISCARD/ :
-    {
-        *(.note.*)
-        *(.comment)
-    }
 }
 
 PHDRS

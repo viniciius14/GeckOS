@@ -11,16 +11,16 @@
 #define NO_INLINE               __attribute__((noinline))
 #define NO_DISCARD              __attribute__((warn_unused_result))
 #define ALIGNED(_alignment)     __attribute__((aligned(_alignment)))
-#define SECTION(_section)        __attribute__((section(_section)))
+#define SECTION(_section)       __attribute__((section(_section)))
 
 #define STATIC_ASSERT(_cond)    _Static_assert(_cond, #_cond "failed at" __LINE__ "of file" __FILE__)
 #define UNREACHABLE()           __builtin_unreachable()
 
-#define STI                     __asm__ __volatile__("sti")
-#define CLI                     __asm__ __volatile__("cli")
+#define STI()                   __asm__ __volatile__("sti")
+#define CLI()                   __asm__ __volatile__("cli")
 #define ASM                     __asm__ __volatile__
 
-#define BIT(_n)                 (1ULL << (_n))
+#define BIT(_n)                 (1ULL <<  (_n))
 #define BIT_SET(_x, _mask)      ((_x) |=  (_mask))
 #define BIT_CLEAR(_x, _mask)    ((_x) &= ~(_mask))
 #define BIT_FLIP(_x, _mask)     ((_x) ^=  (_mask))

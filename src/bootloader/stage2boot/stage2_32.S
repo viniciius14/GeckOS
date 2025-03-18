@@ -1,5 +1,9 @@
 [bits 32]
 [global _stage2_32]
+[extern fdc_init]
+[extern fdc_read]
+[extern hdc_init]
+[extern hdc_read]
 
 section .text
 
@@ -39,3 +43,10 @@ print_string_32:
 section .data
 
 stage2msg2: db "Got to stage 2 of the bootloader. (32 bits)", 0
+
+section .bss
+
+align 4096
+stack_end:
+	resb 4096
+stack_start:
