@@ -1,13 +1,22 @@
 include $(CONFIG_PATH)
 
+SRC_FILES := $(wildcard *.S)
+OBJ_FILES := $(patsubst %.S, $(BIN)/%_$(FS).bin, $(SRC_FILES))
+
 ASM_FLAGS=-f bin
 
-all: stage1_boot
+stage1_boot: echo assemble
 
-stage1_boot:
+
+echo:
 	@echo "\nStage 1 Bootloader\n"
-	$(ASM) $(ASM_FLAGS) stage1.S -DFAT_12 $(BOOT_INCLUDES) -o $(BIN)/boot_FAT12.bin
-	$(ASM) $(ASM_FLAGS) stage1.S -DFAT_16 $(BOOT_INCLUDES) -o $(BIN)/boot_FAT16.bin
-	$(ASM) $(ASM_FLAGS) stage1.S -DFAT_32 $(BOOT_INCLUDES) -o $(BIN)/boot_FAT32.bin
+
+
+assemble: $(OBJ_FILES)
+
+
+$(BIN)/%_$(FS).bin: %.S
+	$(ASM) $(ASM_FLAGS) -D$(FS) -D$(BITS) $(BOOT_INCLUDES) $< -o $@
+
 
 .PHONY: all

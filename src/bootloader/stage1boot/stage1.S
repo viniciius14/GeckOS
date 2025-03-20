@@ -4,11 +4,11 @@
 %define S2_LOAD_SEGMENT 0x0
 %define S2_LOAD_OFFSET  0x7E00
 
-%ifdef FAT_12
+%ifdef  FAT12
     %include "FAT_header.S"
-%elifdef FAT_16
+%elifdef  FAT16
     %include "FAT_header.S"
-%elifdef FAT_32
+%elifdef  FAT32
     %include "FAT_header.S"
 %else
     %error "No filesystem type defined."
@@ -44,18 +44,18 @@ _stage1_start:
     cli                         ; disable interrupts
     hlt                         ; this way CPU can't get out of "halt" state
 
-%ifdef FAT_12
+%ifdef  FAT12
     %include "FAT12_utils.S"
-%elifdef FAT_16
+%elifdef  FAT16
     %include "FAT16_utils.S"
-%elifdef FAT_32
+%elifdef  FAT32
     %include "FAT32_utils.S"
 %endif
 
 times (510 - ($ - $$)) db 0
 dw 0xAA55
 
-%ifdef FAT_32
+%ifdef  FAT32
     %include "FSInfo_FAT32.S"
 %endif
 

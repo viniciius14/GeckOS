@@ -13,9 +13,9 @@ _stage2_32:
     mov ebx, 160            ; Start at the top-left corner of the screen
     call print_string_32
 
-    jmp $                       ; should never happen
-    cli                         ; disable interrupts
-    hlt                         ; this way CPU can't get out of "halt" state
+    jmp $                   ; should never happen
+    cli                     ; disable interrupts
+    hlt                     ; this way CPU can't get out of "halt" state
 
 ; Print example, to delete later
 VIDEO_MEMORY equ 0xB8000

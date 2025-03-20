@@ -20,6 +20,9 @@ _stage2_start:
     CODE_SEG equ code_descriptor - GDT_Start
     DATA_SEG equ data_descriptor - GDT_Start
 
+%ifdef BITS64
+
+%endif
 
     jmp CODE_SEG:_stage2_32
 

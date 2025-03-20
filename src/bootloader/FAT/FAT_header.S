@@ -9,7 +9,7 @@ jmp strict short _stage1_start
 nop
 BS_OEMName:                 db "GECKOS  "               ; OEM Name Identifier. 8 bytes.
 
-%ifdef FAT_12
+%ifdef  FAT12
     BPB_BytsPerSec:         dw 0x200                    ; Count of bytes per sector. Acceptable values: 512, 1024, 2048 or 4096.
     BPB_SecPerClus:         db 0x1                      ; Number of sectors per allocation unit.
     BPB_RsvdSecCnt:         dw 0x1                      ; Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume.
@@ -22,7 +22,7 @@ BS_OEMName:                 db "GECKOS  "               ; OEM Name Identifier. 8
     BPB_NumHeads:           dw 0x2                      ; Number of heads for interrupt 0x13.
     BPB_HiddSec:            dd 0x0                      ; Count of hidden sectors preceding the partition that contains this FAT volume.
     BPB_TotSec32:           dd 0x0                      ; For FAT12 volumes, this field contains the sector count if BPB_TotSec16 is 0.
-%elifdef FAT_16
+%elifdef  FAT16
     BPB_BytsPerSec:         dw 0x200                    ; Count of bytes per sector. Acceptable values: 512, 1024, 2048 or 4096.
     BPB_SecPerClus:         db 0x8                      ; Number of sectors per allocation unit.
     BPB_RsvdSecCnt:         dw 0x4                      ; Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume.
@@ -35,7 +35,7 @@ BS_OEMName:                 db "GECKOS  "               ; OEM Name Identifier. 8
     BPB_NumHeads:           dw 0xFF                     ; Number of heads for interrupt 0x13.
     BPB_HiddSec:            dd 0x3F                     ; Count of hidden sectors preceding the partition that contains this FAT volume.
     BPB_TotSec32:           dd 0x42A92                  ; For FAT16 volumes, this field contains the sector count if BPB_TotSec16 is 0.
-%elifdef FAT_32
+%elifdef  FAT32
     BPB_BytsPerSec:         dw 0x200                    ; Count of bytes per sector. Acceptable values: 512, 1024, 2048 or 4096.
     BPB_SecPerClus:         db 0x4                      ; Number of sectors per allocation unit.
     BPB_RsvdSecCnt:         dw 0x20                     ; Number of reserved sectors in the reserved region of the volume starting at the first sector of the volume.
@@ -52,21 +52,21 @@ BS_OEMName:                 db "GECKOS  "               ; OEM Name Identifier. 8
 
 ; Extended BPB structure
 
-%ifdef FAT_12
+%ifdef  FAT12
     BS_DrvNum:              db 0x0                      ; Interrupt 0x13 drive number. 0x00 -> floppy.
     BS_Reserved1:           db 0x0                      ; Reserved.
     BS_BootSig:             db 0x29                     ; Extended boot signature, indicates that the following three fields in the boot sector are present.
     BS_VolID:               db 0x12, 0x34, 0x56, 0x78   ; Volume serial number.
     BS_VolLab:              db "GECKOS     "            ; Volume label. This field matches the 11-byte volume label recorded in the root directory.
     BS_FilSysType:          db "FAT12   "               ; FAT type. 8 bytes, padded with spaces.
-%elifdef FAT_16
+%elifdef  FAT16
     BS_DrvNum:              db 0x80                     ; Interrupt 0x13 drive number. 0x80 -> hdd.
     BS_Reserved1:           db 0x0                      ; Reserved.
     BS_BootSig:             db 0x29                     ; Extended boot signature, indicates that the following three fields in the boot sector are present.
     BS_VolID:               db 0x12, 0x34, 0x56, 0x78   ; Volume serial number.
     BS_VolLab:              db "GECKOS     "            ; Volume label. This field matches the 11-byte volume label recorded in the root directory.
     BS_FilSysType:          db "FAT16   "               ; FAT type. 8 bytes, padded with spaces.
-%elifdef FAT_32
+%elifdef  FAT32
     BPB_FATSz32:            dd 0x214                    ; This field is the FAT32 32-bit count of sectors occupied by one FAT.
     BPB_ExtFlags:           dw 0x0                      ; Zero-based number of active FAT. Only valid if mirroring is disabled.
     BPB_FSVer:              dw 0x0                      ; This is the version number of the FAT32 volume. Must be set to 0x0.
