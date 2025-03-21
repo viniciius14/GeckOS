@@ -1,20 +1,19 @@
-# Common configuration file (config.mk)
-PROJECT=$(PWD)
-
 # Directories
-MISC=$(PROJECT)/misc
-BUILD=$(PROJECT)/build
-
+PROJECT=$(PWD)
+BUILD_DIR=$(PROJECT)/build
+DOCS_DIR=$(PROJECT)/docs
+MISC_DIR=$(PROJECT)/misc
 SRC_DIR=$(PROJECT)/src
+
 BOOT_DIR=$(SRC_DIR)/bootloader
 KERNEL_DIR=$(SRC_DIR)/kernel
-OS_FILES=$(MISC)/osfiles
+OS_FILES=$(MISC_DIR)/osfiles
 
-BOOT_BIN=$(BUILD)/bootloader/bin
-BOOT_OBJ=$(BUILD)/bootloader/obj
+BOOT_BIN=$(BUILD_DIR)/bootloader/bin
+BOOT_OBJ=$(BUILD_DIR)/bootloader/obj
 
-KERNEL_BIN=$(BUILD)/kernel/bin
-KERNEL_OBJ=$(BUILD)/kernel/obj
+KERNEL_BIN=$(BUILD_DIR)/kernel/bin
+KERNEL_OBJ=$(BUILD_DIR)/kernel/obj
 
 # Variables
 ASM=nasm

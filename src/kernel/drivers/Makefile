@@ -6,8 +6,7 @@ DRIVER_SRCS := $(wildcard $(foreach dir, $(DRIVER_DIRS), $(dir)/*.c))
 
 OBJS = $(DRIVER_SRCS:.c=.o)
 
-# Default target
-all: echo drivers
+default: echo drivers
 
 
 echo:
@@ -21,4 +20,4 @@ drivers: $(OBJS)
 	$(CC) $(CC_FLAGS) $(KERNEL_INCLUDES) -c $< -o $(OBJ)/$(notdir $@)
 
 
-.PHONY: all
+.PHONY: default

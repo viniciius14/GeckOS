@@ -3,7 +3,7 @@ include $(CONFIG_PATH)
 SRC_FILES := $(wildcard *.S)
 OBJ_FILES := $(patsubst %.S, $(OBJ)/%.o, $(SRC_FILES))
 
-stage2_boot: echo link extract
+default: echo link extract
 
 
 echo:
@@ -11,15 +11,15 @@ echo:
 
 
 link: $(OBJ_FILES)
-	$(LD) $(LD_FLAGS) -T stage2.ld $(OBJ_FILES) -o $(OBJ)/boot2.elf
+	$(LD) $(LD_FLAGS) -T stage2.ld $(OBJ_FILES) -o $(OBJ)/stage2.elf
 
 
 extract: link
-	$(OBJ_CPY) $(OBJ_FLAGS) $(OBJ)/boot2.elf $(BIN)/boot2.bin
+	$(OBJ_CPY) $(OBJ_FLAGS) $(OBJ)/stage2.elf $(BIN)/stage2.bin
 
 
 $(OBJ)/%.o: %.S
 	$(ASM) $(ASM_FLAGS) -D$(FS) -D$(BITS) $(BOOT_INCLUDES) $< -o $@
 
 
-.PHONY: all
+.PHONY: default

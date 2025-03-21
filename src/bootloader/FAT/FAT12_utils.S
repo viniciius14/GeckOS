@@ -126,8 +126,8 @@ stage2_not_found_error:
     mov si, msg_stage2_not_found
     call puts
 
-file_stage2_bin:        db "BOOT2   BIN"
-msg_stage2_not_found:   db "ERROR - BOOT2.BIN NOT FOUND.", ENDL
+file_stage2_bin:        db "STAGE2  BIN"
+msg_stage2_not_found:   db "ERROR - STAGE2.BIN NOT FOUND.", ENDL
 stage2_cluster:         dw 0
 
 %endif

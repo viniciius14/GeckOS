@@ -5,7 +5,7 @@ OBJ_FILES := $(patsubst %.S, $(BIN)/%_$(FS).bin, $(SRC_FILES))
 
 ASM_FLAGS=-f bin
 
-stage1_boot: echo assemble
+default: echo assemble
 
 
 echo:
@@ -19,4 +19,4 @@ $(BIN)/%_$(FS).bin: %.S
 	$(ASM) $(ASM_FLAGS) -D$(FS) -D$(BITS) $(BOOT_INCLUDES) $< -o $@
 
 
-.PHONY: all
+.PHONY: default
