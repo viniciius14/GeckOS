@@ -9,7 +9,7 @@ build/
 *.json
 
 # Exceptions
-!run_docker.sh
+!docker_run.sh
 
 # Prerequisites
 *.d
