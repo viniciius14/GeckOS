@@ -17,13 +17,15 @@ KERNEL_OBJ=$(BUILD_DIR)/kernel/obj
 
 # Variables
 ASM=nasm
-ASM_FLAGS=-f elf32
+ASM_FLAGS=-W+all -W+error -W+orphan-labels -W+macro-params -W+error
+ASM_FORMAT=-f elf32
 
 CC=i386-elf-gcc
 CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -std=c11
 
 LD=i386-elf-ld
-LD_FLAGS=-m elf_i386 --gc-sections
+LD_FLAGS=--gc-sections
+LD_FORMAT=-oformat elf_i386
 
 OBJ_CPY=i386-elf-objcopy
 OBJ_FLAGS=-O binary

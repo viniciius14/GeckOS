@@ -1,10 +1,10 @@
 [bits 16]
-[global _stage2_start]
+[global _stage2_16]
 [extern _stage2_32]
 
 section .text
 
-_stage2_start:
+_stage2_16:
     mov si, stage2msg1
     call puts
 
@@ -19,10 +19,6 @@ _stage2_start:
 
     CODE_SEG equ code_descriptor - GDT_Start
     DATA_SEG equ data_descriptor - GDT_Start
-
-%ifdef BITS64
-
-%endif
 
     jmp CODE_SEG:_stage2_32
 

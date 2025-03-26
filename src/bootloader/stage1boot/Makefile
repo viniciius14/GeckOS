@@ -3,7 +3,7 @@ include $(CONFIG_PATH)
 SRC_FILES := $(wildcard *.S)
 OBJ_FILES := $(patsubst %.S, $(BIN)/%_$(FS).bin, $(SRC_FILES))
 
-ASM_FLAGS=-f bin
+ASM_FORMAT=-f bin
 
 default: echo assemble
 
@@ -16,7 +16,7 @@ assemble: $(OBJ_FILES)
 
 
 $(BIN)/%_$(FS).bin: %.S
-	$(ASM) $(ASM_FLAGS) -D$(FS) -D$(BITS) $(BOOT_INCLUDES) $< -o $@
+	$(ASM) $(ASM_FORMAT) $(ASM_FLAGS) -D$(FS) -D$(BITS) $(BOOT_INCLUDES) $< -o $@
 
 
 .PHONY: default

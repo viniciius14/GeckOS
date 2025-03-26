@@ -1,5 +1,4 @@
-OUTPUT_FORMAT(elf32-i386)
-ENTRY(_stage2_start)
+ENTRY(_stage2_16)
 
 SECTIONS
 {

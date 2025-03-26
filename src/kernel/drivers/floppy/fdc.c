@@ -7,7 +7,7 @@ uint16_t *mem = (uint16_t *)0xB8000;
 static uint8_t cursor_x = 0;
 static uint8_t cursor_y = 0;
 
-void screen_clear(void){
+void screen_clear(void) {
     memset(mem, 0, 10000);
 }
 void print_string(char * arr) {
@@ -18,15 +18,15 @@ void print_string(char * arr) {
 }
 
 void print_char(char letter) {
-    if(letter == '\n'){
+    if (letter == '\n') {
         cursor_y++;
         cursor_x = 0;
-        if (cursor_y > 25){
+        if (cursor_y > 25) {
             screen_clear();
             cursor_y = 0;
         }
     }
-    else{
+    else {
         uint8_t  attributeByte = (0 << 4) | (0x0F & 0x0F);
 
         uint16_t *location = mem + (cursor_y * 80 + cursor_x);
@@ -37,7 +37,7 @@ void print_char(char letter) {
 /* TEMP DELETE LATER */
 
 uint8_t fdc_init(void) {
-    uint8_t res = 0;
+    uint8_t result = 0;
 
     fdc_reset();
 
@@ -52,15 +52,15 @@ uint8_t fdc_init(void) {
 
         fdc_send_byte(FDC_CMD_SENSE_INTERRUPT);
 
-        res = fdc_get_byte(&st0);
+        result = fdc_get_byte(&st0);
 
         /* The top 2 bits are set after a reset procedure.
         Either bit being set at any other time is an error indication. */
         (void)check_st0(st0);
 
-        res |= fdc_get_byte(&pcn);
+        result |= fdc_get_byte(&pcn);
 
-        if (res) {
+        if (result) {
             return 1;
         }
     }
@@ -73,11 +73,11 @@ uint8_t fdc_init(void) {
         return 1;
     }
 
-    return res;
+    return result;
 }
 
 uint8_t fdc_seek (uint16_t lba) {
-    uint8_t st0 = 0, pcn = 0, res = 0;
+    uint8_t st0 = 0, pcn = 0, result = 0;
 
     /* Enable Motor and Drive */
     outbyte(FDC_DIGITAL_OUT, 0x1C);
@@ -101,13 +101,13 @@ uint8_t fdc_seek (uint16_t lba) {
 
     fdc_send_byte(FDC_CMD_SENSE_INTERRUPT);
 
-    res = fdc_get_byte(&st0);
+    result = fdc_get_byte(&st0);
 
-    res |= check_st0(st0);
+    result |= check_st0(st0);
 
-    res |= fdc_get_byte(&pcn);
+    result |= fdc_get_byte(&pcn);
 
-    if(res) {
+    if (result) {
         print_string("Seek failure.\n");
         return 1;
     }
@@ -116,7 +116,7 @@ uint8_t fdc_seek (uint16_t lba) {
 }
 
 uint8_t fdc_recalibrate (void) {
-    uint8_t st0 = 0, pcn = 0, res = 0;
+    uint8_t st0 = 0, pcn = 0, result = 0;
 
     /* Enable Motor and Drive */
     outbyte(FDC_DIGITAL_OUT, 0x1C);
@@ -133,11 +133,11 @@ uint8_t fdc_recalibrate (void) {
 
     fdc_send_byte(FDC_CMD_SENSE_INTERRUPT);
 
-    res = fdc_get_byte(&st0);
-    res |= check_st0(st0);
-    res |= fdc_get_byte(&pcn);
+    result = fdc_get_byte(&st0);
+    result |= check_st0(st0);
+    result |= fdc_get_byte(&pcn);
 
-    if(res) {
+    if (result) {
         print_string("Seek failure.\n");
         return 1;
     }
@@ -149,9 +149,9 @@ uint8_t fdc_recalibrate (void) {
 uint8_t fdc_read(uint16_t lba, uint8_t *buffer) {
     print_string("fdc_read called.\n");
     for (uint8_t retries = 0 ; retries != 3 ; retries++) {
-        uint8_t st0 = 0, st1 = 0, st2 = 0, bps = 2, res = 0, cyl = 0, head = 0, sector = 0;
+        uint8_t st0 = 0, st1 = 0, st2 = 0, bps = 2, result = 0, cyl = 0, head = 0, sector = 0;
 
-        res = fdc_recalibrate();
+        result = fdc_recalibrate();
 
         lba_2_chs(lba, &cyl, &head, &sector);
 
@@ -165,42 +165,42 @@ uint8_t fdc_read(uint16_t lba, uint8_t *buffer) {
             io_wait();
         }
 
-        res |= fdc_send_byte(FDC_CMD_READ_DATA);
+        result |= fdc_send_byte(FDC_CMD_READ_DATA);
 
         /* (head number << 2) | (drive number) */
-        res |= fdc_send_byte(((head << 2) | (0)));
-        res |= fdc_send_byte(cyl);
-        res |= fdc_send_byte(head);
-        res |= fdc_send_byte(sector);
-        res |= fdc_send_byte(bps);     /* Sector size of 512 bytes (128 * X^2) */
-        res |= fdc_send_byte(18);      /* The last sector of the current track */
-        res |= fdc_send_byte(0x1B);    /* GAP1 default size*/
-        res |= fdc_send_byte(0xFF);    /* Special sector size */
+        result |= fdc_send_byte(((head << 2) | (0)));
+        result |= fdc_send_byte(cyl);
+        result |= fdc_send_byte(head);
+        result |= fdc_send_byte(sector);
+        result |= fdc_send_byte(bps);     /* Sector size of 512 bytes (128 * X^2) */
+        result |= fdc_send_byte(18);      /* The last sector of the current track */
+        result |= fdc_send_byte(0x1B);    /* GAP1 default size*/
+        result |= fdc_send_byte(0xFF);    /* Special sector size */
 
-        if (res) {
+        if (result) {
             print_string("Error while attempting read command.\n");
             continue;
         }
 
         fdc_wait_for_interrupt(); // <--- Issue here, it seems to never leave from this call
 
-        res |= fdc_get_byte(&st0);
-        res |= fdc_get_byte(&st1);
-        res |= fdc_get_byte(&st2);
-        res |= fdc_get_byte(&cyl);
-        res |= fdc_get_byte(&head);
-        res |= fdc_get_byte(&sector);
-        res |= fdc_get_byte(&bps);
-        if (res) {
+        result |= fdc_get_byte(&st0);
+        result |= fdc_get_byte(&st1);
+        result |= fdc_get_byte(&st2);
+        result |= fdc_get_byte(&cyl);
+        result |= fdc_get_byte(&head);
+        result |= fdc_get_byte(&sector);
+        result |= fdc_get_byte(&bps);
+        if (result) {
             print_string("Error while getting response from read command.\n");
             continue;
         }
 
-        res |= check_st0(st0);
-        res |= check_st1(st1);
-        res |= check_st2(st2);
+        result |= check_st0(st0);
+        result |= check_st1(st1);
+        result |= check_st2(st2);
 
-        if (res) {
+        if (result) {
             print_string("Status did not pass.\n");
             continue;
         }
@@ -224,28 +224,28 @@ uint8_t fdc_write(uint16_t lba, uint8_t *buffer) {
 }
 
 uint8_t fdc_specify (void) {
-    uint8_t res = 0;
+    uint8_t result = 0;
 
-    res = fdc_send_byte(FDC_CMD_SPECIFY);
+    result = fdc_send_byte(FDC_CMD_SPECIFY);
     /* (SRT_value << 4) | (HUT_value)  */
-    res |= fdc_send_byte((8 << 4) | (0));   /* SRT = 8ms, HUT = Maximum */
+    result |= fdc_send_byte((8 << 4) | (0));   /* SRT = 8ms, HUT = Maximum */
     /* (HLT_value << 1) | (NDMA) */
-    res |= fdc_send_byte((5 << 1) | (1));   /* HLT = 5ms, NDMA = No */
+    result |= fdc_send_byte((5 << 1) | (1));   /* HLT = 5ms, NDMA = No */
 
-    return res;
+    return result;
 }
 
 uint8_t fdc_configure (void) {
-    uint8_t res = 0;
+    uint8_t result = 0;
 
-    res = fdc_send_byte(FDC_CMD_CONFIGURE);
-    res |= fdc_send_byte(0x0);
+    result = fdc_send_byte(FDC_CMD_CONFIGURE);
+    result |= fdc_send_byte(0x0);
     /* (implied seek enable << 6) | (fifo disable << 5) | (polling disable << 4) | (threshold value) */
-    res |= fdc_send_byte((1 << 6) | (0 << 5) | (0 << 4) | (8));
+    result |= fdc_send_byte((1 << 6) | (0 << 5) | (0 << 4) | (8));
     /* Set precompensation value to default */
-    res |= fdc_send_byte(0x0);
+    result |= fdc_send_byte(0x0);
 
-    return res;
+    return result;
 }
 
 void fdc_reset(void) {
@@ -299,7 +299,7 @@ uint8_t fdc_get_byte(uint8_t *byte) {
 }
 
 uint8_t check_st0(uint8_t st0) {
-    switch((st0 & 0x3)){
+    switch((st0 & 0x3)) {
         case 0:
             print_string("Drive 0 selected.\n");
             goto switch_2;
@@ -324,7 +324,7 @@ switch_2:
         print_string("SE (Seek End) is 1.\n");
     }
 
-    switch(((st0) >> 6)){
+    switch(((st0) >> 6)) {
         case 0:
             print_string("Normal termination of command.\n");
             return 0;

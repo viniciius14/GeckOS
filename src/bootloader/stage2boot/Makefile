@@ -19,7 +19,7 @@ extract: link
 
 
 $(OBJ)/%.o: %.S
-	$(ASM) $(ASM_FLAGS) -D$(FS) -D$(BITS) $(BOOT_INCLUDES) $< -o $@
+	$(ASM) $(ASM_FORMAT) $(ASM_FLAGS) -D$(FS) -D$(BITS) $(BOOT_INCLUDES) $< -o $@
 
 
 .PHONY: default

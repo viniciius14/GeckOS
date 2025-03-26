@@ -28,17 +28,17 @@
 
 #define NULL                    ((void*) 0)
 
-#define MAX_UINT8               (0xFF)
+#define MAX_UINT08              (0xFF)
 #define MAX_UINT16              (0xFFFF)
 #define MAX_UINT32              (0xFFFFFFFF)
 #define MAX_UINT64              (0xFFFFFFFFFFFFFFFF)
 
-#define MAX_INT8                (0x7F)
+#define MAX_INT08               (0x7F)
 #define MAX_INT16               (0x7FFF)
 #define MAX_INT32               (0x7FFFFFFF)
 #define MAX_INT64               (0x7FFFFFFFFFFFFFFF)
 
-#define MIN_INT8                (0x80)
+#define MIN_INT08               (0x80)
 #define MIN_INT16               (0x8000)
 #define MIN_INT32               (0x80000000)
 #define MIN_INT64               (0x8000000000000000)
@@ -63,6 +63,12 @@ typedef long long               int64_t;
 
 typedef float                   float32_t;
 typedef double                  float64_t;
+
+typedef enum execResult
+{
+    failure = 0,
+    success = MAX_UINT08
+}                               execResult_e;
 
 /* ---------- Function prototypes ---------- */
 

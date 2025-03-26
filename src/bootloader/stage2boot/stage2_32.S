@@ -1,9 +1,13 @@
 [bits 32]
 [global _stage2_32]
-[extern fdc_init]
-[extern fdc_read]
-[extern hdc_init]
-[extern hdc_read]
+
+%ifdef BITS64
+[extern _stage2_64]
+%endif
+
+[extern _load_kernel]
+
+%include "utils.S"
 
 section .text
 
@@ -13,9 +17,14 @@ _stage2_32:
     mov ebx, 160            ; Start at the top-left corner of the screen
     call print_string_32
 
-    jmp $                   ; should never happen
-    cli                     ; disable interrupts
-    hlt                     ; this way CPU can't get out of "halt" state
+; %ifdef BITS64
+;     ; jump to _stage2_64
+;     jmp _stage2_64
+; %else
+;     jmp _load_kernel
+; %endif
+
+    unreachable
 
 ; Print example, to delete later
 VIDEO_MEMORY equ 0xB8000
