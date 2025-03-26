@@ -84,6 +84,22 @@ FAT_32:
 	mcopy -i $(TARGET) $(OS_FILES)/* ::
 
 
+run: default
+ifeq ($(FS), FAT12)
+	$(MAKE)  run_floppy
+else
+	$(MAKE)  run_hard_disk
+endif
+
+
+run_floppy:
+	$(EMULATOR) -drive file=$(TARGET),format=raw,index=0,if=floppy $(EMUL_FLAGS)
+
+
+run_hard_disk:
+	$(EMULATOR) -drive file=$(TARGET),format=raw,index=0,if=ide $(EMUL_FLAGS)
+
+
 clean:
 	clear
 	rm -rf build/

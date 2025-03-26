@@ -23,7 +23,10 @@ CC=i386-elf-gcc
 CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -std=c11
 
 LD=i386-elf-ld
-LD_FLAGS=-m elf_i386
+LD_FLAGS=-m elf_i386 --gc-sections
 
 OBJ_CPY=i386-elf-objcopy
 OBJ_FLAGS=-O binary
+
+EMULATOR=qemu-system-i386
+EMUL_FLAGS=-m 128M -serial stdio
