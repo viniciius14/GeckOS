@@ -3,8 +3,8 @@ include misc/config.mk
 # Define the path to config.mk
 export CONFIG_PATH := $(PWD)/misc/config.mk
 
-export FS ?= FAT32
-export BITS ?= BITS64
+export FS ?= FAT12
+export BITS ?= BITS32
 
 FS_TYPES := FAT12 FAT16 FAT32
 ARCHS_BITS := BITS32 BITS64

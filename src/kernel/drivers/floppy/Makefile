@@ -3,11 +3,15 @@ include $(CONFIG_PATH)
 SRCS := $(wildcard *.c)
 OBJS := $(patsubst %.c, $(OBJ)/%.o, $(SRCS))
 
-default: echo $(OBJS)
+default: echo floppy
+
 
 echo:
-	@echo "\nDrivers\n"
+	@echo "\nFloppy Driver\n"
 	@echo $(DRIVER_SRCS)
+
+
+floppy: $(OBJS)
 
 
 $(OBJ)/%.o: %.c

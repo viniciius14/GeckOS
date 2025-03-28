@@ -19,6 +19,6 @@ void *memcpy(const void *dst, const void *src, uint32_t n);
 void *memmove(const void *dst, const void *src, const uint32_t n);
 
 /* Convert memory location from lba to chs addressing */
-void lba_2_chs(const uint32_t lba, uint8_t *cyl, uint8_t *head, uint8_t *sector);
+void ConvertLbaChs(const uint32_t lba, uint8_t *cyl, uint8_t *head, uint8_t *sector);
 
 #endif /* __MEMORY_H */

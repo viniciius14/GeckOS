@@ -1,7 +1,7 @@
 include $(CONFIG_PATH)
 
-SRC_FILES := $(wildcard *.S)
-OBJ_FILES := $(patsubst %.S, $(BIN)/%_$(FS).bin, $(SRC_FILES))
+SRCS := $(wildcard *.S)
+OBJS := $(patsubst %.S, $(BIN)/%_$(FS).bin, $(SRCS))
 
 ASM_FORMAT=-f bin
 
@@ -12,7 +12,7 @@ echo:
 	@echo "\nStage 1 Bootloader\n"
 
 
-assemble: $(OBJ_FILES)
+assemble: $(OBJS)
 
 
 $(BIN)/%_$(FS).bin: %.S

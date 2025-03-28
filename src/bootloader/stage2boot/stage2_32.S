@@ -7,7 +7,7 @@
 
 [extern _load_kernel]
 
-%include "utils.S"
+%include "macros.S"
 
 section .text
 

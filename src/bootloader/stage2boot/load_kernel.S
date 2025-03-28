@@ -14,6 +14,8 @@
 [extern hdc_read]
 %endif
 
+%include "macros.S"
+
 section .text
 
 _load_kernel:
@@ -23,5 +25,5 @@ _load_kernel:
     ; load kernel into 0x1000000
     ; jmp to 0x1000000
 
-
+    unreachable
 

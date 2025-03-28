@@ -1,12 +1,20 @@
 #include "fdc.h"
 
+// static fdcRegStatusA_s     *fdcStatA      = (fdcRegStatusA_s     *) FDC_ADDR_STATUS_A;
+// static fdcRegStatusB_s     *fdcStatB      = (fdcRegStatusB_s     *) FDC_ADDR_STATUS_B;
+// static fdcRegDigOut_s      *fdcDigOut     = (fdcRegDigOut_s      *) FDC_ADDR_DIGITAL_OUT;
+// static fdcRegTapeDrv_s     *fdcTapeDrv    = (fdcRegTapeDrv_s     *) FDC_ADDR_TAPE_DRIVE;
+// static fdcRegMainStatus_s  *fdcMainStat   = (fdcRegMainStatus_s  *) FDC_ADDR_MAIN_STATUS;
+// static fdcRegDataRateSel_s *fdcDataRate   = (fdcRegDataRateSel_s *) FDC_ADDR_DATA_RATE_SEL;
+// static uint8_t *fifo                      = (uint8_t *)             FDC_ADDR_DATA_FIFO;
+// static fdcRegDigInp_s      *fdcDigIn      = (fdcRegDigInp_s      *) FDC_ADDR_DIGITAL_IN;
+// static fdcRegConfigCtrl_s  *fdcConfigCtrl = ( fdcRegConfigCtrl_s *) FDC_ADDR_CONFIG_CTRL;
+
+
 /* TEMP DELETE LATER */
-
 uint16_t *mem = (uint16_t *)0xB8000;
-
 static uint8_t cursor_x = 0;
 static uint8_t cursor_y = 0;
-
 void screen_clear(void) {
     memset(mem, 0, 10000);
 }
@@ -16,408 +24,370 @@ void print_string(char * arr) {
         print_char(arr[i++]);
     }
 }
-
 void print_char(char letter) {
-    if (letter == '\n') {
-        cursor_y++;
-        cursor_x = 0;
-        if (cursor_y > 25) {
-            screen_clear();
-            cursor_y = 0;
+        if (letter == '\n') {
+            cursor_y++;
+            cursor_x = 0;
+            if (cursor_y > 25) {
+                screen_clear();
+                cursor_y = 0;
+            }
+        }
+        else {
+            uint8_t  attributeByte = (0 << 4) | (0x0F & 0x0F);
+
+            uint16_t *location = mem + (cursor_y * 80 + cursor_x);
+            *location = letter | (attributeByte << 8);
+            cursor_x++;
         }
     }
-    else {
-        uint8_t  attributeByte = (0 << 4) | (0x0F & 0x0F);
-
-        uint16_t *location = mem + (cursor_y * 80 + cursor_x);
-        *location = letter | (attributeByte << 8);
-        cursor_x++;
-    }
-}
 /* TEMP DELETE LATER */
 
-uint8_t fdc_init(void) {
+status_e FdcInit(void) {
+    STATIC_ASSERT(sizeof(fdcRegStatusA_s)       == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegStatusB_s)       == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegDigOut_s)        == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegTapeDrv_s)       == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegMainStatus_s)    == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegDataRateSel_s)   == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegDigInp_s)        == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegConfigCtrl_s)    == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegStatus0_s)       == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegStatus1_s)       == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegStatus2_s)       == sizeof(uint8_t));
+    STATIC_ASSERT(sizeof(fdcRegStatus3_s)       == sizeof(uint8_t));
+
+    /* temp */
+    fdcRegStatus3_s temp;
+    FdcCheckSt3(temp);
+    /* end of temp*/
+
     uint8_t result = 0;
 
-    fdc_reset();
+    FdcReset();
 
     /* Set datarate to 500Kbps */
-    outbyte(FDC_DATA_RATE_SEL, 0x0);
+    OutByte(FDC_ADDR_DATA_RATE_SEL, 0x0);
 
-    fdc_wait_for_interrupt();
+    FdcWaitInterrupt();
 
     /* 4 SENSE INTERRUPT STATUS commands need to be issued to clear the status flags for each drive.*/
-    for (uint8_t i = 0 ; i != 4 ; i++) {
-        uint8_t st0 = 0, pcn = 0;
+    for (uint8_t i = 0 ; i < 4 ; i++) {
+        fdcRegStatus0_s st0;
+        uint8_t pcn = 0;
 
-        fdc_send_byte(FDC_CMD_SENSE_INTERRUPT);
+        FdcSendByte(FDC_CMD_SENSE_INTERRUPT);
 
-        result = fdc_get_byte(&st0);
+        result = FdcGetByte((uint8_t *)&st0);
 
         /* The top 2 bits are set after a reset procedure.
         Either bit being set at any other time is an error indication. */
-        (void)check_st0(st0);
+        (void) FdcCheckSt0(st0);
 
-        result |= fdc_get_byte(&pcn);
+        result |= FdcGetByte(&pcn);
 
         if (result) {
-            return 1;
+            return STATUS_FAILURE;
         }
     }
 
-    if (fdc_configure()) {
-        return 1;
+    if (FdcConfigure() || FdcSpecify()) {
+        return STATUS_FAILURE;
     }
 
-    if (fdc_specify()) {
-        return 1;
-    }
-
-    return result;
+    return STATUS_SUCCESS;
 }
 
-uint8_t fdc_seek (uint16_t lba) {
-    uint8_t st0 = 0, pcn = 0, result = 0;
+status_e FdcSeek (uint16_t lba) {
+    fdcRegStatus0_s st0;
+    uint8_t pcn = 0, result = 0;
 
     /* Enable Motor and Drive */
-    outbyte(FDC_DIGITAL_OUT, 0x1C);
+    OutByte(FDC_ADDR_DIGITAL_OUT, 0x1C);
 
     /* Wait for the motor to get up to speed */
-    for (volatile uint32_t i = 0 ; i != 25000000 ; i++) {
-        io_wait();
+    for (volatile uint32_t i = 0 ; i < 25000000 ; i++) {
+        IoWait();
     }
 
     /* Translate the lba address to a chs address */
     uint8_t cyl = 0, head = 0, sector = 0;
-    lba_2_chs(lba, &cyl, &head, &sector);
+    ConvertLbaChs(lba, &cyl, &head, &sector);
 
-    fdc_send_byte(FDC_CMD_SEEK);
+    FdcSendByte(FDC_CMD_SEEK);
 
     /* (head number << 2) | (drive number) */
-    fdc_send_byte((head << 2) | (0));
-    fdc_send_byte(cyl);
+    FdcSendByte((head << 2) | (0));
+    FdcSendByte(cyl);
 
-    fdc_wait_for_interrupt();
+    FdcWaitInterrupt();
 
-    fdc_send_byte(FDC_CMD_SENSE_INTERRUPT);
+    FdcSendByte(FDC_CMD_SENSE_INTERRUPT);
 
-    result = fdc_get_byte(&st0);
+    result = FdcGetByte((uint8_t *)&st0);
 
-    result |= check_st0(st0);
+    result |= FdcCheckSt0(st0);
 
-    result |= fdc_get_byte(&pcn);
+    result |= FdcGetByte(&pcn);
 
     if (result) {
         print_string("Seek failure.\n");
-        return 1;
+        return STATUS_FAILURE;
     }
 
-    return 0;
+    return STATUS_SUCCESS;
 }
 
-uint8_t fdc_recalibrate (void) {
-    uint8_t st0 = 0, pcn = 0, result = 0;
+status_e FdcRecalibrate (void) {
+    fdcRegStatus0_s st0;
+    uint8_t pcn = 0, result = 0;
 
     /* Enable Motor and Drive */
-    outbyte(FDC_DIGITAL_OUT, 0x1C);
+    OutByte(FDC_ADDR_DIGITAL_OUT, 0x1C);
 
     /* Wait for the motor to get up to speed */
-    for (volatile uint32_t i = 0 ; i != 25000000 ; i++) {
-        io_wait();
+    for (uint32_t i = 0 ; i < 25000000 ; i++) {
+        IoWait();
     }
 
-    fdc_send_byte(FDC_CMD_RECALIBRATE);
-    fdc_send_byte(0);                   /* Drive number */
+    FdcSendByte(FDC_CMD_RECALIBRATE);
+    FdcSendByte(0);                   /* Drive number */
 
-    fdc_wait_for_interrupt();
+    FdcWaitInterrupt();
 
-    fdc_send_byte(FDC_CMD_SENSE_INTERRUPT);
+    FdcSendByte(FDC_CMD_SENSE_INTERRUPT);
 
-    result = fdc_get_byte(&st0);
-    result |= check_st0(st0);
-    result |= fdc_get_byte(&pcn);
+    result = FdcGetByte((uint8_t *)&st0);
+    result |= FdcCheckSt0(st0);
+    result |= FdcGetByte(&pcn);
 
     if (result) {
         print_string("Seek failure.\n");
-        return 1;
+        return STATUS_FAILURE;
     }
 
-    return 0;
+    return STATUS_SUCCESS;
 }
 
 /* TBD: Add further status checks */
-uint8_t fdc_read(uint16_t lba, uint8_t *buffer) {
-    print_string("fdc_read called.\n");
-    for (uint8_t retries = 0 ; retries != 3 ; retries++) {
-        uint8_t st0 = 0, st1 = 0, st2 = 0, bps = 2, result = 0, cyl = 0, head = 0, sector = 0;
+status_e FdcRead(const uint16_t lba, uint8_t *buffer) {
 
-        result = fdc_recalibrate();
+    print_string("FdcRead called.\n");
 
-        lba_2_chs(lba, &cyl, &head, &sector);
+    for (uint8_t retries = 0 ; retries < 3 ; retries++) {
+        fdcRegStatus0_s st0;
+        fdcRegStatus1_s st1;
+        fdcRegStatus2_s st2;
+        uint8_t bps = 2, result = 0, cyl = 0, head = 0, sector = 0;
 
-        if (fdc_seek(lba)) {
+        result = FdcRecalibrate();
+
+        ConvertLbaChs(lba, &cyl, &head, &sector);
+
+        if (FdcSeek(lba)) {
             print_string("Could not seek the sector.\n");
             continue;
         }
 
         /* Head settling time */
-        for (uint16_t i = 0 ; i != 1500 ; i++) {
-            io_wait();
+        for (uint16_t i = 0 ; i < 1500 ; i++) {
+            IoWait();
         }
 
-        result |= fdc_send_byte(FDC_CMD_READ_DATA);
+        result |= FdcSendByte(FDC_CMD_READ_DATA);
 
         /* (head number << 2) | (drive number) */
-        result |= fdc_send_byte(((head << 2) | (0)));
-        result |= fdc_send_byte(cyl);
-        result |= fdc_send_byte(head);
-        result |= fdc_send_byte(sector);
-        result |= fdc_send_byte(bps);     /* Sector size of 512 bytes (128 * X^2) */
-        result |= fdc_send_byte(18);      /* The last sector of the current track */
-        result |= fdc_send_byte(0x1B);    /* GAP1 default size*/
-        result |= fdc_send_byte(0xFF);    /* Special sector size */
+        result |= FdcSendByte(((head << 2) | (0)));
+        result |= FdcSendByte(cyl);
+        result |= FdcSendByte(head);
+        result |= FdcSendByte(sector);
+        result |= FdcSendByte(bps);     /* Sector size of 512 bytes (128 * X^2) */
+        result |= FdcSendByte(18);      /* The last sector of the current track */
+        result |= FdcSendByte(0x1B);    /* GAP1 default size*/
+        result |= FdcSendByte(0xFF);    /* Special sector size */
 
         if (result) {
             print_string("Error while attempting read command.\n");
             continue;
         }
 
-        fdc_wait_for_interrupt(); // <--- Issue here, it seems to never leave from this call
+        FdcWaitInterrupt(); // <--- Issue here, it seems to never leave from this call
 
-        result |= fdc_get_byte(&st0);
-        result |= fdc_get_byte(&st1);
-        result |= fdc_get_byte(&st2);
-        result |= fdc_get_byte(&cyl);
-        result |= fdc_get_byte(&head);
-        result |= fdc_get_byte(&sector);
-        result |= fdc_get_byte(&bps);
+        result |= FdcGetByte((uint8_t *)&st0);
+        result |= FdcGetByte((uint8_t *)&st1);
+        result |= FdcGetByte((uint8_t *)&st2);
+        result |= FdcGetByte(&cyl);
+        result |= FdcGetByte(&head);
+        result |= FdcGetByte(&sector);
+        result |= FdcGetByte(&bps);
+
         if (result) {
             print_string("Error while getting response from read command.\n");
             continue;
         }
 
-        result |= check_st0(st0);
-        result |= check_st1(st1);
-        result |= check_st2(st2);
+        result |= FdcCheckSt0(st0);
+        result |= FdcCheckSt1(st1);
+        result |= FdcCheckSt2(st2);
 
         if (result) {
-            print_string("Status did not pass.\n");
+            print_string("status_e did not pass.\n");
             continue;
         }
 
-        for (uint16_t i = 0 ; i != 512 ; i++) {
-            fdc_get_byte(&buffer[i]);
+        for (uint16_t i = 0 ; i < 512 ; i++) {
+            FdcGetByte(&buffer[i]);
         }
 
-        print_string("sucessfull end of fdc_read.\n");
+        print_string("Sucessfull end of FdcRead.\n");
 
-        return 0;
+        return STATUS_SUCCESS;
     }
 
-    return 1;
+    return STATUS_FAILURE;
 }
 
-uint8_t fdc_write(uint16_t lba, uint8_t *buffer) {
+status_e FdcWrite(const uint16_t lba, uint8_t *buffer) {
     (void)lba;
     (void)buffer;
-    return 0;
+    return STATUS_SUCCESS;
 }
 
-uint8_t fdc_specify (void) {
+status_e FdcSpecify(void) {
     uint8_t result = 0;
 
-    result = fdc_send_byte(FDC_CMD_SPECIFY);
+    result = FdcSendByte(FDC_CMD_SPECIFY);
     /* (SRT_value << 4) | (HUT_value)  */
-    result |= fdc_send_byte((8 << 4) | (0));   /* SRT = 8ms, HUT = Maximum */
+    result |= FdcSendByte((8 << 4) | (0));   /* SRT = 8ms, HUT = Maximum */
     /* (HLT_value << 1) | (NDMA) */
-    result |= fdc_send_byte((5 << 1) | (1));   /* HLT = 5ms, NDMA = No */
+    result |= FdcSendByte((5 << 1) | (1));   /* HLT = 5ms, NDMA = No */
 
-    return result;
+    if (result) {
+        return STATUS_FAILURE;
+    }
+    return STATUS_SUCCESS;
 }
 
-uint8_t fdc_configure (void) {
+status_e FdcConfigure(void) {
     uint8_t result = 0;
 
-    result = fdc_send_byte(FDC_CMD_CONFIGURE);
-    result |= fdc_send_byte(0x0);
+    result = FdcSendByte(FDC_CMD_CONFIGURE);
+    result |= FdcSendByte(0x0);
     /* (implied seek enable << 6) | (fifo disable << 5) | (polling disable << 4) | (threshold value) */
-    result |= fdc_send_byte((1 << 6) | (0 << 5) | (0 << 4) | (8));
+    result |= FdcSendByte((1 << 6) | (0 << 5) | (0 << 4) | (8));
     /* Set precompensation value to default */
-    result |= fdc_send_byte(0x0);
+    result |= FdcSendByte(0x0);
+
+    if (result){
+        return STATUS_FAILURE;
+    }
+
+    return STATUS_SUCCESS;
+}
+
+void FdcReset(void) {
+    /* Disable the FDC */
+    OutByte(FDC_ADDR_DIGITAL_OUT, 0x00);
+
+    /* Wait */
+    for(uint16_t i = 0 ; i < 500 ; i++) {
+        IoWait();
+    }
+
+    /* Enable the FDC */
+    OutByte(FDC_ADDR_DIGITAL_OUT, 0x0C);
+
+    /* Wait */
+    for(uint16_t i = 0 ; i < 500; i++) {
+        IoWait();
+    }
+}
+
+void FdcWaitInterrupt(void) {
+    /* Check for DIO bit */
+    while (InByte(FDC_ADDR_MAIN_STATUS) != BIT(6)) {
+        ; /* Polling loop, wait until the FDC is ready */
+    }
+}
+
+status_e FdcSendByte(uint8_t byte) {
+    uint32_t timeout = 0;
+
+    /* Check for DIO bit */
+    while (InByte(FDC_ADDR_MAIN_STATUS) >> 6 != BIT(1) ) { /* 10 XXX XXX */
+        timeout++;
+        if (timeout == 1000000) { /* TBD: Figure out a more resonable number */
+            print_string("Timeout error in FdcSendByte.\n");
+            return STATUS_FAILURE;
+        }
+    }
+    OutByte(FDC_ADDR_DATA_FIFO, byte);
+
+    return STATUS_SUCCESS;
+}
+
+status_e FdcGetByte(uint8_t *const byte) {
+    uint32_t timeout = 0;
+    /* Check for DIO and RQM bits */
+    while ((InByte(FDC_ADDR_MAIN_STATUS)) != (BIT(7) | BIT(6))) { /* 11 XXX XXX */
+        timeout++;
+        if (timeout == 1000000) { /* TBD: Figure out a more resonable number */
+            print_string("Timeout error in FdcGetByte.\n");
+            return STATUS_FAILURE;
+        }
+    }
+    *byte = InByte(FDC_ADDR_DATA_FIFO);
+
+    return STATUS_SUCCESS;
+}
+
+
+
+status_e FdcCheckSt0(const fdcRegStatus0_s st0) {
+    status_e result = STATUS_SUCCESS;
+    (void)st0;
+    // k_print("Drive Select =    %d.\n", st0->ds);
+    // k_print("Head Address =    %d.\n", st0->h);
+    // k_print("Equipment Check = %d.\n", st0->ec);
+    // k_print("Seek End =        %d.\n", st0->se);
+    // k_print("Interrupt Code =  %d.\n", st0->ic);
 
     return result;
 }
 
-void fdc_reset(void) {
-    outbyte(FDC_DIGITAL_OUT, 0x00);    /* Disable the FDC */
+status_e FdcCheckSt1(const fdcRegStatus1_s st1) {
+    status_e result = STATUS_SUCCESS;
+    (void)st1;
+    // k_print("Missing Address Mark = %d.\n", st1->ma);
+    // k_print("Not Writable =         %d.\n", st1->nw);
+    // k_print("No Data =              %d.\n", st1->nd);
+    // k_print("Overrun/Underrun =     %d.\n", st1->or);
+    // k_print("Data Error =           %d.\n", st1->de);
+    // k_print("End of Cylinder =      %d.\n", st1->en);
 
-    for(uint8_t i = 0 ; i != 50 ; i++) {
-        io_wait();                      /* Wait */
-    }
-
-    outbyte(FDC_DIGITAL_OUT, 0x0C);    /* Enable the FDC */
-
-    for(uint8_t i = 0 ; i != 50 ; i++) {
-        io_wait();                      /* Wait */
-    }
+    return result;
 }
 
-void fdc_wait_for_interrupt(void) {
-    while ((inbyte(FDC_MAIN_STATUS) >> 6) != 2) {
-        /* Polling loop, wait until the FDC is ready */
-    }
+status_e FdcCheckSt2(const fdcRegStatus2_s st2) {
+    status_e result = STATUS_SUCCESS;
+    (void)st2;
+    // k_print("Missing Data Address Mark = %d.\n", st2->md);
+    // k_print("Bad Cylinder =              %d.\n", st2->bc);
+    // k_print("Wrong Cylinder =            %d.\n", st2->wc);
+    // k_print("Data Error in Data Field =  %d.\n", st2->dd);
+    // k_print("Control Mark =              %d.\n", st2->cm);
+
+    return result;
 }
 
-uint8_t fdc_send_byte(uint8_t byte) {
-    uint32_t timeout = 0;
+status_e FdcCheckSt3(const fdcRegStatus3_s st3) {
+    status_e result = STATUS_SUCCESS;
+    (void)st3;
+    // k_print("Drive Select =    %d.\n", st3->ds);
+    // k_print("Head Address =    %d.\n", st3->hd);
+    // k_print("Track 0 =         %d.\n", st3->t0);
+    // k_print("Write Protected = %d.\n", st3->wp);
 
-    while ((inbyte(FDC_MAIN_STATUS)) >> 6 != 2) {
-        timeout++;
-        if (timeout == 1000000) { /* TBD: Figure out a more resonable number */
-            print_string("Timeout error in fdc_send_byte.\n");
-            return 1;
-        }
-    }
-    outbyte(FDC_DATA_FIFO, byte);
-
-    return 0;
+    return result;
 }
 
-uint8_t fdc_get_byte(uint8_t *byte) {
-    uint32_t timeout = 0;
-
-    while ((inbyte(FDC_MAIN_STATUS)) >> 6 != 3) {
-        timeout++;
-        if (timeout == 1000000) { /* TBD: Figure out a more resonable number */
-            print_string("Timeout error in fdc_get_byte.\n");
-            return 1;
-        }
-    }
-    *byte = inbyte(FDC_DATA_FIFO);
-
-    return 0;
-}
-
-uint8_t check_st0(uint8_t st0) {
-    switch((st0 & 0x3)) {
-        case 0:
-            print_string("Drive 0 selected.\n");
-            goto switch_2;
-        case 1:
-            print_string("Drive 1 selected.\n");
-            goto switch_2;
-        case 2:
-            print_string("Drive 2 selected.\n");
-            goto switch_2;
-        case 3:
-            print_string("Drive 3 selected.\n");
-    }
-
-switch_2:
-    if (!(st0 & 0x4)) {
-        print_string("H (Head Address) is 0.\n");
-    }
-    if (st0 & 0x10) {
-        print_string("EC (Equipment Check) is 1.\n");
-    }
-    if (st0 & 0x20) {
-        print_string("SE (Seek End) is 1.\n");
-    }
-
-    switch(((st0) >> 6)) {
-        case 0:
-            print_string("Normal termination of command.\n");
-            return 0;
-        case 1:
-            print_string("Abnormal termination of command.\n");
-            return 1;
-        case 2:
-            print_string("Invalid command.\n");
-            return 1;
-        case 3:
-            print_string("Abnormal termination caused by Polling.\n");
-            return 1;
-    }
-    return 1;
-}
-
-uint8_t check_st1(uint8_t st1) {
-    if (st1 & 0x1) {
-        print_string("Missing Addres Mark.\n");
-        return 1;
-    }
-    if (st1 & 0x2) {
-        print_string("Not Writable.\n");
-        return 1;
-    }
-    if (st1 & 0x4) {
-        print_string("No Data.\n");
-        return 1;
-    }
-    if (st1 & 0x10) {
-        print_string("Overrun/Underrun.\n");
-        return 1;
-    }
-    if (st1 & 0x20) {
-        print_string("Data Error.\n");
-        return 1;
-    }
-    if (st1 & 0x80) {
-        print_string("End of Cylinder.\n");
-        return 1;
-    }
-
-    return 0;
-}
-
-uint8_t check_st2(uint8_t st2) {
-    if (st2 & 0x1) {
-        print_string("Missing Data Address Mark.\n");
-        return 1;
-    }
-    if (st2 & 0x2) {
-        print_string("Bad Cylinder.\n");
-        return 1;
-    }
-    if (st2 & 0x10) {
-        print_string("Wrong Cylinder.\n");
-        return 1;
-    }
-    if (st2 & 0x20) {
-        print_string("Data Error in Data Field.\n");
-        return 1;
-    }
-    if (st2 & 0x40) {
-        print_string("Control Mark.\n");
-        return 1;
-    }
-
-    return 0;
-}
-
-/* TBD DELETE THIS */
-uint8_t check_st3(uint8_t st3) {
-    if ((st3 & 0x3) == 0) {
-        print_string("Drive 0 selected.\n");
-    } else {
-        print_string("Wrong drive selected.\n");
-        return 1;
-    }
-    if (st3 & 0x4) {
-        print_string("Head Address is 1.\n");
-    } else {
-        print_string("Head Address is 0.\n");
-    }
-
-    if (st3 & 0x8) {
-        print_string("Track bit is 1.\n");
-    } else {
-        print_string("Track bit is 0.\n");
-    }
-    if (st3 & 0x20) {
-        print_string("Write protected.\n");
-        return 1;
-    }
-
-    return 0;
-}

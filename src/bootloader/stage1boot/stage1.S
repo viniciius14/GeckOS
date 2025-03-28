@@ -14,6 +14,7 @@
     %error "No filesystem type defined."
 %endif
 
+%include "macros.S"
 
 _stage1_start:
     ; Clear the screen
@@ -40,9 +41,7 @@ _stage1_start:
     ; Find stage 2 of the bootloader and load it into memory
     jmp loadStage2
 
-    jmp $                       ; should never happen
-    cli                         ; disable interrupts
-    hlt                         ; this way CPU can't get out of "halt" state
+    unreachable
 
 %ifdef  FAT12
     %include "FAT12_utils.S"

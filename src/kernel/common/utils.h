@@ -13,7 +13,11 @@
 #define ALIGNED(_alignment)     __attribute__((aligned(_alignment)))
 #define SECTION(_section)       __attribute__((section(_section)))
 
-#define STATIC_ASSERT(_cond)    _Static_assert(_cond, #_cond "failed at" __LINE__ "of file" __FILE__)
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#define STATIC_ASSERT(_cond) _Static_assert(_cond, #_cond " failed at line " TOSTRING(__LINE__) " of file " __FILE__)
+
 #define UNREACHABLE()           __builtin_unreachable()
 
 #define STI()                   __asm__ __volatile__("sti")
@@ -64,11 +68,10 @@ typedef long long               int64_t;
 typedef float                   float32_t;
 typedef double                  float64_t;
 
-typedef enum execResult
-{
-    failure = 0,
-    success = MAX_UINT08
-}                               execResult_e;
+typedef enum status {
+    STATUS_SUCCESS  = 0,
+    STATUS_FAILURE  = 1
+}                               status_e;
 
 /* ---------- Function prototypes ---------- */
 

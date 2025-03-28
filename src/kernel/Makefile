@@ -11,7 +11,7 @@ kernel: echo dirs kernel_directories
 
 echo:
 	@echo "\nKernel\n"
-
+	@echo $(KERNEL_INCLUDES)
 
 dirs:
 	mkdir -p $(BUILD_DIR)/kernel/bin

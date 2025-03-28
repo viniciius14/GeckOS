@@ -23,6 +23,10 @@
     https://academy.cba.mit.edu/classes/networking_communications/SD/FAT.pdf
 
 
+# Hardware
+### Floppy Disk Controler
+    http://www.buchty.net/casio/files/82077.pdf
+
 # Other
 ### BIOS:
     https://stanislavs.org/helppc/int_table.html
