@@ -10,13 +10,26 @@
 // static fdcRegDigInp_s      *fdcDigIn      = (fdcRegDigInp_s      *) FDC_ADDR_DIGITAL_IN;
 // static fdcRegConfigCtrl_s  *fdcConfigCtrl = ( fdcRegConfigCtrl_s *) FDC_ADDR_CONFIG_CTRL;
 
+STATIC_ASSERT(sizeof(fdcRegStatusA_s)     == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegStatusB_s)     == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegDigOut_s)      == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegTapeDrv_s)     == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegMainStatus_s)  == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegDataRateSel_s) == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegDigInp_s)      == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegConfigCtrl_s)  == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegStatus0_s)     == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegStatus1_s)     == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegStatus2_s)     == sizeof(uint8_t));
+STATIC_ASSERT(sizeof(fdcRegStatus3_s)     == sizeof(uint8_t));
+
 
 /* TEMP DELETE LATER */
 uint16_t *mem = (uint16_t *)0xB8000;
 static uint8_t cursor_x = 0;
 static uint8_t cursor_y = 0;
 void screen_clear(void) {
-    memset(mem, 0, 10000);
+    MemSet(mem, 0, 10000);
 }
 void print_string(char * arr) {
     uint32_t i = 0;
@@ -44,19 +57,10 @@ void print_char(char letter) {
 /* TEMP DELETE LATER */
 
 status_e FdcInit(void) {
-    STATIC_ASSERT(sizeof(fdcRegStatusA_s)       == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegStatusB_s)       == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegDigOut_s)        == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegTapeDrv_s)       == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegMainStatus_s)    == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegDataRateSel_s)   == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegDigInp_s)        == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegConfigCtrl_s)    == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegStatus0_s)       == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegStatus1_s)       == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegStatus2_s)       == sizeof(uint8_t));
-    STATIC_ASSERT(sizeof(fdcRegStatus3_s)       == sizeof(uint8_t));
+    while(1){;}
 
+    print_string("In floppy caralho!");
+    while(1){;}
     /* temp */
     fdcRegStatus3_s temp;
     FdcCheckSt3(temp);

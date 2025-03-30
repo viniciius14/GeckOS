@@ -7,7 +7,6 @@ default: echo $(OBJS)
 
 echo:
 	@echo "\nDrivers\n"
-	@echo $(DRIVER_SRCS)
 
 
 $(OBJ)/%.o: %.c

@@ -7,7 +7,7 @@
 #define INTERRUPT               __attribute__((interrupt))
 #define NORETURN                __attribute__((noreturn))
 #define WEAK                    __attribute__((weak))
-#define INLINE                  __attribute__((always_inline))
+#define INLINE                  __attribute__((always_inline)) inline
 #define NO_INLINE               __attribute__((noinline))
 #define NO_DISCARD              __attribute__((warn_unused_result))
 #define ALIGNED(_alignment)     __attribute__((aligned(_alignment)))

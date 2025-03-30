@@ -3,28 +3,33 @@
 
 %ifdef BITS64
 [extern _stage2_64]
-%endif
-
+%else
 [extern _load_kernel]
+%endif
 
 %include "macros.S"
 
-section .text
+section _stage2_32.text
 
 _stage2_32:
 	; mov esp, stack_start
+
     mov esi, stage2msg2     ; Point ESI to the string
     mov ebx, 160            ; Start at the top-left corner of the screen
-    call print_string_32
 
-; %ifdef BITS64
+    call print_string_32
+    jmp $
+    jmp $
+
+%ifdef BITS64
 ;     ; jump to _stage2_64
 ;     jmp _stage2_64
-; %else
-;     jmp _load_kernel
-; %endif
+%else
+    ; jmp _load_kernel
+%endif
 
     unreachable
+
 
 ; Print example, to delete later
 VIDEO_MEMORY equ 0xB8000

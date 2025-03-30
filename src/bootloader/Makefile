@@ -15,8 +15,8 @@ echo:
 
 
 build:
-	mkdir -p $(BUILD_DIR)/bootloader/bin
-	mkdir -p $(BUILD_DIR)/bootloader/obj
+	mkdir -p $(BOOT_BIN)
+	mkdir -p $(BOOT_OBJ)
 
 
 # Rule to iterate through each subdirectory and call its Makefile (with exception for the current one)

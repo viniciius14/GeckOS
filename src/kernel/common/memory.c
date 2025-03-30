@@ -1,6 +1,6 @@
 #include "memory.h"
 
-void memset(const void *dst, const uint8_t value, uint32_t n) {
+void MemSet(void *const dst, const uint8_t value, uint32_t n) {
     uint8_t *d = dst;
     while (n-- > 0) {
         *(d++) = value;
@@ -8,7 +8,7 @@ void memset(const void *dst, const uint8_t value, uint32_t n) {
 }
 
 
-void *memcpy(const void *dst, const void *src, uint32_t n) {
+void *MemCpy(void *const dst, const void *src, uint32_t n) {
     uint8_t *d = dst;
     const uint8_t *s = src;
 
@@ -19,9 +19,9 @@ void *memcpy(const void *dst, const void *src, uint32_t n) {
 }
 
 
-void *memmove(const void *dst, const void *src, const uint32_t n) {
+void *MemMove(void *const dst, void *const src, const uint32_t n) {
     if (src > dst) {
-        return memcpy(dst, src, n);
+        return MemCpy(dst, src, n);
     }
 
     uint8_t *d = dst;
