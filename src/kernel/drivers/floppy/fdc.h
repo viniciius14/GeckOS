@@ -49,6 +49,7 @@ typedef const enum fdcCommands {
     FDC_CMD_SCAN_HIGH_OR_EQUAL  = 29
 }                               fdcCommands_e;
 
+
 typedef const volatile struct fdcStatusRegisterA {
     uint8_t dir                 : 1;
     uint8_t wp                  : 1;
@@ -59,6 +60,7 @@ typedef const volatile struct fdcStatusRegisterA {
     uint8_t drv2                : 1;
     uint8_t int_pending         : 1; /* State of the 82077AA INTERRUPT pin */
 } PACKED                        fdcRegStatusA_s;
+STATIC_ASSERT(sizeof(fdcRegStatusA_s) == sizeof(uint8_t));
 
 typedef const volatile struct fdcStatusRegisterB {
     uint8_t mot_en0             : 1; /* Motor bit */
@@ -69,6 +71,7 @@ typedef const volatile struct fdcStatusRegisterB {
     uint8_t driver_sel          : 1; /* Driver select */
     uint8_t reserved            : 2;
 } PACKED                        fdcRegStatusB_s;
+STATIC_ASSERT(sizeof(fdcRegStatusB_s) == sizeof(uint8_t));
 
 /* Standard programming practice is to set both MOT ENx and DRIVE SELx bits at the same time. */
 typedef volatile struct fdcDigitalOutputRegister {
@@ -81,12 +84,14 @@ typedef volatile struct fdcDigitalOutputRegister {
     uint8_t mot_en2             : 1;
     uint8_t mot_en3             : 1;
 } PACKED                        fdcRegDigOut_s;
+STATIC_ASSERT(sizeof(fdcRegDigOut_s) == sizeof(uint8_t));
 
 typedef volatile struct fdcTapeDriveRegister {
     uint8_t tape_sel0           : 1;
     uint8_t tape_sel1           : 1;
     uint8_t reserved            : 6;
 } PACKED                        fdcRegTapeDrv_s;
+STATIC_ASSERT(sizeof(fdcRegTapeDrv_s) == sizeof(uint8_t));
 
 typedef const volatile struct fdcMainStatusRegister {
     uint8_t drv0_busy           : 1;
@@ -98,6 +103,7 @@ typedef const volatile struct fdcMainStatusRegister {
     uint8_t dio                 : 1;
     uint8_t rqm                 : 1;
 } PACKED                        fdcRegMainStatus_s;
+STATIC_ASSERT(sizeof(fdcRegMainStatus_s) == sizeof(uint8_t));
 
 typedef volatile struct fdcDataRateSelectRegister {
     uint8_t drate_sel0          : 1;
@@ -109,17 +115,20 @@ typedef volatile struct fdcDataRateSelectRegister {
     uint8_t power_down          : 1;
     uint8_t sw_reset            : 1;
 } PACKED                        fdcRegDataRateSel_s;
+STATIC_ASSERT(sizeof(fdcRegDataRateSel_s) == sizeof(uint8_t));
 
 typedef const volatile struct fdcDigitalInputRegister {
     uint8_t reserved            : 7;
     uint8_t dsk_chg             : 1;
 } PACKED                        fdcRegDigInp_s;
+STATIC_ASSERT(sizeof(fdcRegDigInp_s) == sizeof(uint8_t));
 
 typedef volatile struct fdcConfigurationControlRegister {
     uint8_t drate_sel0          : 1;
     uint8_t drate_sel1          : 1;
     uint8_t reserved            : 6;
 } PACKED                        fdcRegConfigCtrl_s;
+STATIC_ASSERT(sizeof(fdcRegConfigCtrl_s) == sizeof(uint8_t));
 
 typedef const volatile struct fdcStatusRegister0 {
     uint8_t ds                  : 2; /* The current selected drive */
@@ -129,6 +138,7 @@ typedef const volatile struct fdcStatusRegister0 {
     uint8_t se                  : 1; /* Seek end */
     uint8_t ic                  : 2; /* Interrupt code */
 } PACKED                        fdcRegStatus0_s;
+STATIC_ASSERT(sizeof(fdcRegStatus0_s) == sizeof(uint8_t));
 
 typedef const volatile struct fdcStatusRegister1 {
     uint8_t ma                  : 1; /* Missing Address mark */
@@ -140,6 +150,7 @@ typedef const volatile struct fdcStatusRegister1 {
     uint8_t reserved1           : 1;
     uint8_t en                  : 1; /* End of Cylinder */
 } PACKED                        fdcRegStatus1_s;
+STATIC_ASSERT(sizeof(fdcRegStatus1_s) == sizeof(uint8_t));
 
 typedef const volatile struct fdcStatusRegister2 {
     uint8_t md                  : 1; /* Missing Data Address Mark */
@@ -150,6 +161,7 @@ typedef const volatile struct fdcStatusRegister2 {
     uint8_t cm                  : 1; /* Control Mark */
     uint8_t reserved1           : 1;
 } PACKED                        fdcRegStatus2_s;
+STATIC_ASSERT(sizeof(fdcRegStatus2_s) == sizeof(uint8_t));
 
 typedef const volatile struct fdcStatusRegister3 {
     uint8_t ds                  : 2; /* Drive Select */
@@ -160,6 +172,7 @@ typedef const volatile struct fdcStatusRegister3 {
     uint8_t wp                  : 1; /* Write Protected */
     uint8_t reserved2           : 1;
 } PACKED                        fdcRegStatus3_s;
+STATIC_ASSERT(sizeof(fdcRegStatus3_s) == sizeof(uint8_t));
 
 /* ---------- Function prototypes ---------- */
 

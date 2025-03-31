@@ -118,13 +118,13 @@ loadStage2:
 
     jmp S2_LOAD_SEGMENT:S2_LOAD_OFFSET
 
-    jmp $                       ; should never happen
-    cli                         ; disable interrupts
-    hlt                         ; this way CPU can't get out of "halt" state
+    unreachable
 
 stage2_not_found_error:
     mov si, msg_stage2_not_found
     call puts
+
+    unreachable
 
 file_stage2_bin:        db "STAGE2  BIN"
 msg_stage2_not_found:   db "ERROR - STAGE2.BIN NOT FOUND.", ENDL

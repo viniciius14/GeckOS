@@ -17,6 +17,8 @@ KERNEL_BIN=$(BUILD_DIR)/kernel/bin
 KERNEL_OBJ=$(BUILD_DIR)/kernel/obj
 KERNEL_LIB=$(BUILD_DIR)/kernel/lib
 
+DEBUG_DIR=$(BUILD_DIR)/debug
+
 ASM=nasm
 ASM_FLAGS=-W+all -W+error -W+orphan-labels -W+macro-params -W+error
 ASM_FORMAT=-f elf32

@@ -100,6 +100,11 @@ run_hard_disk:
 	$(EMULATOR) -drive file=$(TARGET),format=raw,index=0,if=ide $(EMUL_FLAGS)
 
 
+debug: default
+	mkdir $(DEBUG_DIR)
+	objdump -D $(BOOT_OBJ)/stage2.elf > $(DEBUG_DIR)/stage2
+
+
 clean:
 	clear
 	rm -rf build/

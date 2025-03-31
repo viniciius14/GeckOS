@@ -7,24 +7,29 @@
 section _stage2_16.text
 
 _stage2_16:
+    cli				    ; clear interrupts
+	xor	ax, ax			; null segments
+	mov	ds, ax
+	mov	es, ax
+
     mov si, stage2msg1
     call puts
-    jmp $
 
-    cli
+	pusha				        ; save registers
+	lgdt 	[GDT_Descriptor]    ; load GDT
+	popa				        ; restore registers
 
-    lgdt [GDT_Descriptor]       ; Load GDT
+
+	mov	eax, cr0		; set bit 0 in cr0--enter pmode
+	or	eax, 1
+	mov	cr0, eax
+
+    in al, 0x92             ; Enable A20 gate
+    or al, 0x02
+    out 0x92, al
 
     CODE_SEG equ code_descriptor - GDT_Start
     DATA_SEG equ data_descriptor - GDT_Start
-
-    ; in al, 0x92             ; Enable A20 gate
-    ; or al, 0x02
-    ; out 0x92, al
-
-    mov eax, cr0            ; Set the first bit in cr0 to 1
-    or eax, 1
-    mov cr0, eax            ; 32 bit protected mode
 
     jmp CODE_SEG:_stage2_32
 

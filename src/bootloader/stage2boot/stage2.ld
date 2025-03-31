@@ -6,9 +6,6 @@ SECTIONS
     .text :
     {
         *(_stage2_16.text)
-        *(_stage2_32.text)
-        *(_stage2_64.text)
-        *(_load_kernel.text)
         *(.text)
     } :text  /* Assign to 'text' PHDR */
 
