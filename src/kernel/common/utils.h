@@ -13,10 +13,10 @@
 #define ALIGNED(_alignment)     __attribute__((aligned(_alignment)))
 #define SECTION(_section)       __attribute__((section(_section)))
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
+#define STRINGIFY(x)            #x
+#define TOSTRING(x)             STRINGIFY(x)
 
-#define STATIC_ASSERT(_cond) _Static_assert(_cond, #_cond " failed at line " TOSTRING(__LINE__) " of file " __FILE__)
+#define STATIC_ASSERT(_cond)    _Static_assert(_cond, #_cond " failed at line " TOSTRING(__LINE__) " of file " __FILE__)
 
 #define UNREACHABLE()           __builtin_unreachable()
 

@@ -7,24 +7,24 @@
 section _stage2_16.text
 
 _stage2_16:
-    cli				    ; clear interrupts
-	xor	ax, ax			; null segments
-	mov	ds, ax
-	mov	es, ax
+    cli
+
+    xor ax, ax                  ; null segments
+    mov ds, ax
+    mov es, ax
 
     mov si, stage2msg1
     call puts
 
-	pusha				        ; save registers
-	lgdt 	[GDT_Descriptor]    ; load GDT
-	popa				        ; restore registers
+    pusha                       ; save registers
+    lgdt [GDT_Descriptor]       ; load GDT
+    popa                        ; restore registers
 
+    mov eax, cr0                ; set bit 0 in cr0
+    or  eax, 1
+    mov cr0, eax
 
-	mov	eax, cr0		; set bit 0 in cr0--enter pmode
-	or	eax, 1
-	mov	cr0, eax
-
-    in al, 0x92             ; Enable A20 gate
+    in al, 0x92                 ; Enable A20 gate
     or al, 0x02
     out 0x92, al
 

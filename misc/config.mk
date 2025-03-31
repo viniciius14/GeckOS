@@ -24,11 +24,11 @@ ASM_FLAGS=-W+all -W+error -W+orphan-labels -W+macro-params -W+error
 ASM_FORMAT=-f elf32
 
 CC=i386-elf-gcc
-CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mno-red-zone -std=c11
+CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mno-red-zone -fdata-sections -ffunction-sections -std=c11
 
-LD=i386-elf-ld
-LD_FLAGS=
-LD_FORMAT=-oformat elf_i386
+LD=ld
+LD_FLAGS=--gc-sections -m elf_i386
+LD_FORMAT=-m elf_i386
 
 OBJ_CPY=i386-elf-objcopy
 OBJ_FLAGS=-O binary

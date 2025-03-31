@@ -25,9 +25,9 @@ _load_kernel:
     ; to delete later
     call print_string_32
 
-    ; call FdcInit
-[extern my_test_func]
-    call my_test_func
+    jmp $
+
+    call FdcInit
 
     jmp $
 

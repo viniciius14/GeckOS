@@ -1,21 +1,21 @@
 #include "io.h"
 
 void OutByte(uint16_t port, uint8_t data){
-	ASM("outb %0, %1" : : "a"(data), "Nd"(port));
-	return;
+    ASM("outb %0, %1" : : "a"(data), "Nd"(port));
+    return;
 }
 
 
 uint8_t InByte(uint16_t port){
-	uint8_t res;
-	ASM("inb %1, %0" : "=a"(res) : "Nd"(port));
-	return res;
+    uint8_t res;
+    ASM("inb %1, %0" : "=a"(res) : "Nd"(port));
+    return res;
 }
 
 
 void OutWord(uint16_t port, uint16_t value)
 {
-	ASM("outw %w0, %1" : : "a" (value), "id" (port) );
+    ASM("outw %w0, %1" : : "a" (value), "id" (port) );
 }
 
 

@@ -1,4 +1,5 @@
 ENTRY(_stage2_16)
+OUTPUT_FORMAT(elf32-i386)
 SECTIONS
 {
     . = 0x7E00;
