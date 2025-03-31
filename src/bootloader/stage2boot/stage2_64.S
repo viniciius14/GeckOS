@@ -2,7 +2,7 @@
 [global _stage2_64]
 [extern _load_kernel]
 
-section _stage2_64.text
+section .text
 
 %ifdef BITS64
 

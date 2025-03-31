@@ -11,7 +11,7 @@
 
 %include "macros.S"
 
-section _stage2_32.text
+section .text
 
 _stage2_32:
 	mov esp, stack_start

@@ -17,7 +17,7 @@
 [extern print_string_32]
 %include "macros.S"
 
-section _load_kernel.text
+section .text
 
 _load_kernel:
     mov esi, stage2msg3     ; Point ESI to the string
