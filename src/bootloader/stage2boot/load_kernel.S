@@ -26,6 +26,8 @@ _load_kernel:
     call print_string_32
 
     ; call FdcInit
+[extern my_test_func]
+    call my_test_func
 
     jmp $
 

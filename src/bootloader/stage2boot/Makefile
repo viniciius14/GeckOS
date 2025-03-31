@@ -24,7 +24,7 @@ $(OBJ)/%.o: %.S
 
 driver:
 ifeq ($(FS), FAT12)
-DRIVER_OBJS=
+DRIVER_OBJS=$(KERNEL_OBJ)/test.o
 #$(KERNEL_OBJ)/fdc.o $(KERNEL_OBJ)/io.o $(KERNEL_OBJ)/memory.o
 else
 	@echo "\nWARNING: Unsupported FS: $(FS).\n"
