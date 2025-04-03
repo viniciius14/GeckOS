@@ -3,6 +3,7 @@
 [extern _stage2_32]
 
 %include "macros.S"
+%include "print_string.S"
 
 section _stage2_16.text
 
@@ -31,11 +32,9 @@ _stage2_16:
     CODE_SEG equ code_descriptor - GDT_Start
     DATA_SEG equ data_descriptor - GDT_Start
 
-    jmp CODE_SEG:_stage2_32
+    jmp 0x08:_stage2_32
 
     unreachable
-
-%include "print_string.S"
 
 section .data
 

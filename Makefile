@@ -101,7 +101,7 @@ run_hard_disk:
 
 
 debug: default
-	mkdir $(DEBUG_DIR)
+	mkdir -p $(DEBUG_DIR)
 	objdump -D $(BOOT_OBJ)/stage2.elf > $(DEBUG_DIR)/stage2
 
 

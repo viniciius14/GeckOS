@@ -11,10 +11,10 @@
 
 %include "macros.S"
 
-section .text
+section _stage2_32.text
 
 _stage2_32:
-	mov esp, stack_start
+    mov esp, kernel_stack + KERNEL_STACK_SIZE
 
     mov	ax, 0x10            ; set data segments to data selector (0x10)
 	mov	ds, ax
@@ -40,7 +40,9 @@ stage2msg2: db "Got to stage 2 of the bootloader. (32 bits)", 0
 
 section .bss
 
-align 4096
-stack_end:
-	resb 4096
-stack_start:
+KERNEL_STACK_SIZE equ 4096                  ; size of stack in bytes
+
+section .bss
+align 4                                     ; align at 4 bytes
+kernel_stack:                               ; label points to beginning of memory
+    resb KERNEL_STACK_SIZE                  ; reserve stack for the kernel
