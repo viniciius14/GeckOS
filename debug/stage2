@@ -9,11 +9,10 @@ Disassembly of section .text:
     7e01:	31 c0                	xor    %eax,%eax
     7e03:	8e d8                	mov    %eax,%ds
     7e05:	8e c0                	mov    %eax,%es
-    7e07:	be 10 80 e8 93       	mov    $0x93e88010,%esi
+    7e07:	be e0 7e e8 93       	mov    $0x93e87ee0,%esi
     7e0c:	00 60 0f             	add    %ah,0xf(%eax)
     7e0f:	01 16                	add    %edx,(%esi)
-    7e11:	55                   	push   %ebp
-    7e12:	80 61 0f 20          	andb   $0x20,0xf(%ecx)
+    7e11:	25 7f 61 0f 20       	and    $0x200f617f,%eax
     7e16:	c0 66 83 c8          	shlb   $0xc8,-0x7d(%esi)
     7e1a:	01 0f                	add    %ecx,(%edi)
     7e1c:	22 c0                	and    %al,%al
@@ -24,12 +23,12 @@ Disassembly of section .text:
     7e2b:	eb fe                	jmp    7e2b <_stage2_16+0x2b>
 
 00007e2d <_stage2_32>:
-    7e2d:	bc b0 91 00 00       	mov    $0x91b0,%esp
+    7e2d:	bc 60 8f 00 00       	mov    $0x8f60,%esp
     7e32:	66 b8 10 00          	mov    $0x10,%ax
     7e36:	8e d8                	mov    %eax,%ds
     7e38:	8e d0                	mov    %eax,%ss
     7e3a:	8e c0                	mov    %eax,%es
-    7e3c:	be 5c 80 00 00       	mov    $0x805c,%esi
+    7e3c:	be 2c 7f 00 00       	mov    $0x7f2c,%esi
     7e41:	bb a0 00 00 00       	mov    $0xa0,%ebx
     7e46:	e8 35 00 00 00       	call   7e80 <print_string_32>
     7e4b:	e9 10 00 00 00       	jmp    7e60 <_load_kernel>
@@ -44,10 +43,10 @@ Disassembly of section .text:
     7e5e:	66 90                	xchg   %ax,%ax
 
 00007e60 <_load_kernel>:
-    7e60:	be f0 7f 00 00       	mov    $0x7ff0,%esi
+    7e60:	be c0 7e 00 00       	mov    $0x7ec0,%esi
     7e65:	bb 40 01 00 00       	mov    $0x140,%ebx
     7e6a:	e8 11 00 00 00       	call   7e80 <print_string_32>
-    7e6f:	e8 2d 01 00 00       	call   7fa1 <FdcInit>
+    7e6f:	e8 40 00 00 00       	call   7eb4 <FdcInit>
     7e74:	eb fe                	jmp    7e74 <_load_kernel+0x14>
     7e76:	fa                   	cli
     7e77:	f4                   	hlt
@@ -97,342 +96,97 @@ Disassembly of section .text:
     7eb2:	5e                   	pop    %esi
     7eb3:	c3                   	ret
 
-Disassembly of section .text.screen_clear:
-
-00007eb4 <screen_clear>:
-    7eb4:	55                   	push   %ebp
-    7eb5:	89 e5                	mov    %esp,%ebp
-    7eb7:	83 ec 08             	sub    $0x8,%esp
-    7eba:	a1 88 80 00 00       	mov    0x8088,%eax
-    7ebf:	83 ec 04             	sub    $0x4,%esp
-    7ec2:	68 10 27 00 00       	push   $0x2710
-    7ec7:	6a 00                	push   $0x0
-    7ec9:	50                   	push   %eax
-    7eca:	e8 eb 00 00 00       	call   7fba <MemSet>
-    7ecf:	83 c4 10             	add    $0x10,%esp
-    7ed2:	90                   	nop
-    7ed3:	c9                   	leave
-    7ed4:	c3                   	ret
-
-Disassembly of section .text.print_string:
-
-00007ed5 <print_string>:
-    7ed5:	55                   	push   %ebp
-    7ed6:	89 e5                	mov    %esp,%ebp
-    7ed8:	83 ec 18             	sub    $0x18,%esp
-    7edb:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%ebp)
-    7ee2:	eb 1f                	jmp    7f03 <print_string+0x2e>
-    7ee4:	8b 45 f4             	mov    -0xc(%ebp),%eax
-    7ee7:	8d 50 01             	lea    0x1(%eax),%edx
-    7eea:	89 55 f4             	mov    %edx,-0xc(%ebp)
-    7eed:	8b 55 08             	mov    0x8(%ebp),%edx
-    7ef0:	01 d0                	add    %edx,%eax
-    7ef2:	8a 00                	mov    (%eax),%al
-    7ef4:	0f be c0             	movsbl %al,%eax
-    7ef7:	83 ec 0c             	sub    $0xc,%esp
-    7efa:	50                   	push   %eax
-    7efb:	e8 15 00 00 00       	call   7f15 <print_char>
-    7f00:	83 c4 10             	add    $0x10,%esp
-    7f03:	8b 55 08             	mov    0x8(%ebp),%edx
-    7f06:	8b 45 f4             	mov    -0xc(%ebp),%eax
-    7f09:	01 d0                	add    %edx,%eax
-    7f0b:	8a 00                	mov    (%eax),%al
-    7f0d:	84 c0                	test   %al,%al
-    7f0f:	75 d3                	jne    7ee4 <print_string+0xf>
-    7f11:	90                   	nop
-    7f12:	90                   	nop
-    7f13:	c9                   	leave
-    7f14:	c3                   	ret
-
-Disassembly of section .text.print_char:
-
-00007f15 <print_char>:
-    7f15:	55                   	push   %ebp
-    7f16:	89 e5                	mov    %esp,%ebp
-    7f18:	83 ec 28             	sub    $0x28,%esp
-    7f1b:	8b 45 08             	mov    0x8(%ebp),%eax
-    7f1e:	88 45 e4             	mov    %al,-0x1c(%ebp)
-    7f21:	80 7d e4 0a          	cmpb   $0xa,-0x1c(%ebp)
-    7f25:	75 29                	jne    7f50 <print_char+0x3b>
-    7f27:	a0 b1 91 00 00       	mov    0x91b1,%al
-    7f2c:	40                   	inc    %eax
-    7f2d:	a2 b1 91 00 00       	mov    %al,0x91b1
-    7f32:	c6 05 b0 91 00 00 00 	movb   $0x0,0x91b0
-    7f39:	a0 b1 91 00 00       	mov    0x91b1,%al
-    7f3e:	3c 19                	cmp    $0x19,%al
-    7f40:	76 5c                	jbe    7f9e <print_char+0x89>
-    7f42:	e8 6d ff ff ff       	call   7eb4 <screen_clear>
-    7f47:	c6 05 b1 91 00 00 00 	movb   $0x0,0x91b1
-    7f4e:	eb 4e                	jmp    7f9e <print_char+0x89>
-    7f50:	c6 45 f7 0f          	movb   $0xf,-0x9(%ebp)
-    7f54:	8b 0d 88 80 00 00    	mov    0x8088,%ecx
-    7f5a:	a0 b1 91 00 00       	mov    0x91b1,%al
-    7f5f:	0f b6 d0             	movzbl %al,%edx
-    7f62:	89 d0                	mov    %edx,%eax
-    7f64:	c1 e0 02             	shl    $0x2,%eax
-    7f67:	01 d0                	add    %edx,%eax
-    7f69:	c1 e0 04             	shl    $0x4,%eax
-    7f6c:	89 c2                	mov    %eax,%edx
-    7f6e:	a0 b0 91 00 00       	mov    0x91b0,%al
-    7f73:	0f b6 c0             	movzbl %al,%eax
-    7f76:	01 d0                	add    %edx,%eax
-    7f78:	01 c0                	add    %eax,%eax
-    7f7a:	01 c8                	add    %ecx,%eax
-    7f7c:	89 45 f0             	mov    %eax,-0x10(%ebp)
-    7f7f:	66 0f be 45 e4       	movsbw -0x1c(%ebp),%ax
-    7f84:	0f b6 55 f7          	movzbl -0x9(%ebp),%edx
-    7f88:	c1 e2 08             	shl    $0x8,%edx
-    7f8b:	09 d0                	or     %edx,%eax
-    7f8d:	8b 55 f0             	mov    -0x10(%ebp),%edx
-    7f90:	66 89 02             	mov    %ax,(%edx)
-    7f93:	a0 b0 91 00 00       	mov    0x91b0,%al
-    7f98:	40                   	inc    %eax
-    7f99:	a2 b0 91 00 00       	mov    %al,0x91b0
-    7f9e:	90                   	nop
-    7f9f:	c9                   	leave
-    7fa0:	c3                   	ret
-
 Disassembly of section .text.FdcInit:
 
-00007fa1 <FdcInit>:
-    7fa1:	55                   	push   %ebp
-    7fa2:	89 e5                	mov    %esp,%ebp
-    7fa4:	83 ec 18             	sub    $0x18,%esp
-    7fa7:	83 ec 0c             	sub    $0xc,%esp
-    7faa:	68 8c 80 00 00       	push   $0x808c
-    7faf:	e8 21 ff ff ff       	call   7ed5 <print_string>
-    7fb4:	83 c4 10             	add    $0x10,%esp
-    7fb7:	90                   	nop
-    7fb8:	eb fd                	jmp    7fb7 <FdcInit+0x16>
-
-Disassembly of section .text.MemSet:
-
-00007fba <MemSet>:
-    7fba:	55                   	push   %ebp
-    7fbb:	89 e5                	mov    %esp,%ebp
-    7fbd:	83 ec 14             	sub    $0x14,%esp
-    7fc0:	8b 45 0c             	mov    0xc(%ebp),%eax
-    7fc3:	88 45 ec             	mov    %al,-0x14(%ebp)
-    7fc6:	8b 45 08             	mov    0x8(%ebp),%eax
-    7fc9:	89 45 fc             	mov    %eax,-0x4(%ebp)
-    7fcc:	eb 0e                	jmp    7fdc <MemSet+0x22>
-    7fce:	8b 45 fc             	mov    -0x4(%ebp),%eax
-    7fd1:	8d 50 01             	lea    0x1(%eax),%edx
-    7fd4:	89 55 fc             	mov    %edx,-0x4(%ebp)
-    7fd7:	8a 55 ec             	mov    -0x14(%ebp),%dl
-    7fda:	88 10                	mov    %dl,(%eax)
-    7fdc:	8b 45 10             	mov    0x10(%ebp),%eax
-    7fdf:	8d 50 ff             	lea    -0x1(%eax),%edx
-    7fe2:	89 55 10             	mov    %edx,0x10(%ebp)
-    7fe5:	85 c0                	test   %eax,%eax
-    7fe7:	75 e5                	jne    7fce <MemSet+0x14>
-    7fe9:	90                   	nop
-    7fea:	90                   	nop
-    7feb:	c9                   	leave
-    7fec:	c3                   	ret
+00007eb4 <FdcInit>:
+    7eb4:	55                   	push   %ebp
+    7eb5:	89 e5                	mov    %esp,%ebp
+    7eb7:	83 ec 10             	sub    $0x10,%esp
+    7eba:	90                   	nop
+    7ebb:	eb fd                	jmp    7eba <FdcInit+0x6>
 
 Disassembly of section .data:
 
-00007ff0 <stage2msg3>:
-    7ff0:	47                   	inc    %edi
-    7ff1:	6f                   	outsl  %ds:(%esi),(%dx)
-    7ff2:	74 20                	je     8014 <stage2msg1+0x4>
-    7ff4:	74 6f                	je     8065 <stage2msg2+0x9>
-    7ff6:	20 6c 6f 61          	and    %ch,0x61(%edi,%ebp,2)
-    7ffa:	64 20 6b 65          	and    %ch,%fs:0x65(%ebx)
-    7ffe:	72 6e                	jb     806e <stage2msg2+0x12>
-    8000:	65 6c                	gs insb (%dx),%es:(%edi)
-    8002:	2e 20 28             	and    %ch,%cs:(%eax)
-    8005:	33 32                	xor    (%edx),%esi
-    8007:	20 62 69             	and    %ah,0x69(%edx)
-    800a:	74 73                	je     807f <stage2msg2+0x23>
-    800c:	29 00                	sub    %eax,(%eax)
+00007ec0 <stage2msg3>:
+    7ec0:	47                   	inc    %edi
+    7ec1:	6f                   	outsl  %ds:(%esi),(%dx)
+    7ec2:	74 20                	je     7ee4 <stage2msg1+0x4>
+    7ec4:	74 6f                	je     7f35 <stage2msg2+0x9>
+    7ec6:	20 6c 6f 61          	and    %ch,0x61(%edi,%ebp,2)
+    7eca:	64 20 6b 65          	and    %ch,%fs:0x65(%ebx)
+    7ece:	72 6e                	jb     7f3e <stage2msg2+0x12>
+    7ed0:	65 6c                	gs insb (%dx),%es:(%edi)
+    7ed2:	2e 20 28             	and    %ch,%cs:(%eax)
+    7ed5:	33 32                	xor    (%edx),%esi
+    7ed7:	20 62 69             	and    %ah,0x69(%edx)
+    7eda:	74 73                	je     7f4f <stage2msg2+0x23>
+    7edc:	29 00                	sub    %eax,(%eax)
 	...
 
-00008010 <stage2msg1>:
-    8010:	47                   	inc    %edi
-    8011:	6f                   	outsl  %ds:(%esi),(%dx)
-    8012:	74 20                	je     8034 <stage2msg1+0x24>
-    8014:	74 6f                	je     8085 <stage2msg2+0x29>
-    8016:	20 73 74             	and    %dh,0x74(%ebx)
-    8019:	61                   	popa
-    801a:	67 65 20 32          	and    %dh,%gs:(%bp,%si)
-    801e:	20 6f 66             	and    %ch,0x66(%edi)
-    8021:	20 74 68 65          	and    %dh,0x65(%eax,%ebp,2)
-    8025:	20 62 6f             	and    %ah,0x6f(%edx)
-    8028:	6f                   	outsl  %ds:(%esi),(%dx)
-    8029:	74 6c                	je     8097 <mem+0xf>
-    802b:	6f                   	outsl  %ds:(%esi),(%dx)
-    802c:	61                   	popa
-    802d:	64 65 72 2e          	fs gs jb 805f <stage2msg2+0x3>
-    8031:	20 28                	and    %ch,(%eax)
-    8033:	31 36                	xor    %esi,(%esi)
-    8035:	20 62 69             	and    %ah,0x69(%edx)
-    8038:	74 73                	je     80ad <mem+0x25>
-    803a:	29 0d 0a       	sub    %ecx,0xa
+00007ee0 <stage2msg1>:
+    7ee0:	47                   	inc    %edi
+    7ee1:	6f                   	outsl  %ds:(%esi),(%dx)
+    7ee2:	74 20                	je     7f04 <stage2msg1+0x24>
+    7ee4:	74 6f                	je     7f55 <stage2msg2+0x29>
+    7ee6:	20 73 74             	and    %dh,0x74(%ebx)
+    7ee9:	61                   	popa
+    7eea:	67 65 20 32          	and    %dh,%gs:(%bp,%si)
+    7eee:	20 6f 66             	and    %ch,0x66(%edi)
+    7ef1:	20 74 68 65          	and    %dh,0x65(%eax,%ebp,2)
+    7ef5:	20 62 6f             	and    %ah,0x6f(%edx)
+    7ef8:	6f                   	outsl  %ds:(%esi),(%dx)
+    7ef9:	74 6c                	je     7f67 <kernel_stack+0x7>
+    7efb:	6f                   	outsl  %ds:(%esi),(%dx)
+    7efc:	61                   	popa
+    7efd:	64 65 72 2e          	fs gs jb 7f2f <stage2msg2+0x3>
+    7f01:	20 28                	and    %ch,(%eax)
+    7f03:	31 36                	xor    %esi,(%esi)
+    7f05:	20 62 69             	and    %ah,0x69(%edx)
+    7f08:	74 73                	je     7f7d <kernel_stack+0x1d>
+    7f0a:	29 0d 0a       	sub    %ecx,0xa
 
-0000803d <GDT_Start>:
+00007f0d <GDT_Start>:
 	...
 
-00008045 <code_descriptor>:
-    8045:	ff                   	(bad)
-    8046:	ff 00                	incl   (%eax)
-    8048:	00 00                	add    %al,(%eax)
-    804a:	9a cf 00     	lcall  $0x0,$0xffff00cf
+00007f15 <code_descriptor>:
+    7f15:	ff                   	(bad)
+    7f16:	ff 00                	incl   (%eax)
+    7f18:	00 00                	add    %al,(%eax)
+    7f1a:	9a cf 00     	lcall  $0x0,$0xffff00cf
 
-0000804d <data_descriptor>:
-    804d:	ff                   	(bad)
-    804e:	ff 00                	incl   (%eax)
-    8050:	00 00                	add    %al,(%eax)
-    8052:	92                   	xchg   %eax,%edx
-    8053:	cf                   	iret
+00007f1d <data_descriptor>:
+    7f1d:	ff                   	(bad)
+    7f1e:	ff 00                	incl   (%eax)
+    7f20:	00 00                	add    %al,(%eax)
+    7f22:	92                   	xchg   %eax,%edx
+    7f23:	cf                   	iret
 	...
 
-00008055 <GDT_Descriptor>:
-    8055:	17                   	pop    %ss
-    8056:	00 3d 80 00 00 00    	add    %bh,0x80
+00007f25 <GDT_Descriptor>:
+    7f25:	17                   	pop    %ss
+    7f26:	00 0d 7f 00 00 00    	add    %cl,0x7f
 
-0000805c <stage2msg2>:
-    805c:	47                   	inc    %edi
-    805d:	6f                   	outsl  %ds:(%esi),(%dx)
-    805e:	74 20                	je     8080 <stage2msg2+0x24>
-    8060:	74 6f                	je     80d1 <mem+0x49>
-    8062:	20 73 74             	and    %dh,0x74(%ebx)
-    8065:	61                   	popa
-    8066:	67 65 20 32          	and    %dh,%gs:(%bp,%si)
-    806a:	20 6f 66             	and    %ch,0x66(%edi)
-    806d:	20 74 68 65          	and    %dh,0x65(%eax,%ebp,2)
-    8071:	20 62 6f             	and    %ah,0x6f(%edx)
-    8074:	6f                   	outsl  %ds:(%esi),(%dx)
-    8075:	74 6c                	je     80e3 <mem+0x5b>
-    8077:	6f                   	outsl  %ds:(%esi),(%dx)
-    8078:	61                   	popa
-    8079:	64 65 72 2e          	fs gs jb 80ab <mem+0x23>
-    807d:	20 28                	and    %ch,(%eax)
-    807f:	33 32                	xor    (%edx),%esi
-    8081:	20 62 69             	and    %ah,0x69(%edx)
-    8084:	74 73                	je     80f9 <mem+0x71>
-    8086:	29 00                	sub    %eax,(%eax)
-
-Disassembly of section .data.mem:
-
-00008088 <mem>:
-    8088:	00                   	.byte 0
-    8089:	80 0b 00             	orb    $0x0,(%ebx)
-
-Disassembly of section .rodata:
-
-0000808c <.rodata>:
-    808c:	49                   	dec    %ecx
-    808d:	6e                   	outsb  %ds:(%esi),(%dx)
-    808e:	20 66 6c             	and    %ah,0x6c(%esi)
-    8091:	6f                   	outsl  %ds:(%esi),(%dx)
-    8092:	70 70                	jo     8104 <mem+0x7c>
-    8094:	79 00                	jns    8096 <mem+0xe>
-    8096:	53                   	push   %ebx
-    8097:	65 65 6b 20 66       	gs imul $0x66,%gs:(%eax),%esp
-    809c:	61                   	popa
-    809d:	69 6c 75 72 65 2e 0a 	imul   $0xa2e65,0x72(%ebp,%esi,2),%ebp
-    80a4:	00 
-    80a5:	46                   	inc    %esi
-    80a6:	64 63 52 65          	arpl   %edx,%fs:0x65(%edx)
-    80aa:	61                   	popa
-    80ab:	64 20 63 61          	and    %ah,%fs:0x61(%ebx)
-    80af:	6c                   	insb   (%dx),%es:(%edi)
-    80b0:	6c                   	insb   (%dx),%es:(%edi)
-    80b1:	65 64 2e 0a 00       	gs fs or %cs:(%eax),%al
-    80b6:	43                   	inc    %ebx
-    80b7:	6f                   	outsl  %ds:(%esi),(%dx)
-    80b8:	75 6c                	jne    8126 <mem+0x9e>
-    80ba:	64 20 6e 6f          	and    %ch,%fs:0x6f(%esi)
-    80be:	74 20                	je     80e0 <mem+0x58>
-    80c0:	73 65                	jae    8127 <mem+0x9f>
-    80c2:	65 6b 20 74          	imul   $0x74,%gs:(%eax),%esp
-    80c6:	68 65 20 73 65       	push   $0x65732065
-    80cb:	63 74 6f 72          	arpl   %esi,0x72(%edi,%ebp,2)
-    80cf:	2e 0a 00             	or     %cs:(%eax),%al
-    80d2:	00 00                	add    %al,(%eax)
-    80d4:	45                   	inc    %ebp
-    80d5:	72 72                	jb     8149 <mem+0xc1>
-    80d7:	6f                   	outsl  %ds:(%esi),(%dx)
-    80d8:	72 20                	jb     80fa <mem+0x72>
-    80da:	77 68                	ja     8144 <mem+0xbc>
-    80dc:	69 6c 65 20 61 74 74 	imul   $0x65747461,0x20(%ebp,%eiz,2),%ebp
-    80e3:	65 
-    80e4:	6d                   	insl   (%dx),%es:(%edi)
-    80e5:	70 74                	jo     815b <mem+0xd3>
-    80e7:	69 6e 67 20 72 65 61 	imul   $0x61657220,0x67(%esi),%ebp
-    80ee:	64 20 63 6f          	and    %ah,%fs:0x6f(%ebx)
-    80f2:	6d                   	insl   (%dx),%es:(%edi)
-    80f3:	6d                   	insl   (%dx),%es:(%edi)
-    80f4:	61                   	popa
-    80f5:	6e                   	outsb  %ds:(%esi),(%dx)
-    80f6:	64 2e 0a 00          	fs or  %cs:(%eax),%al
-    80fa:	00 00                	add    %al,(%eax)
-    80fc:	45                   	inc    %ebp
-    80fd:	72 72                	jb     8171 <mem+0xe9>
-    80ff:	6f                   	outsl  %ds:(%esi),(%dx)
-    8100:	72 20                	jb     8122 <mem+0x9a>
-    8102:	77 68                	ja     816c <mem+0xe4>
-    8104:	69 6c 65 20 67 65 74 	imul   $0x74746567,0x20(%ebp,%eiz,2),%ebp
-    810b:	74 
-    810c:	69 6e 67 20 72 65 73 	imul   $0x73657220,0x67(%esi),%ebp
-    8113:	70 6f                	jo     8184 <mem+0xfc>
-    8115:	6e                   	outsb  %ds:(%esi),(%dx)
-    8116:	73 65                	jae    817d <mem+0xf5>
-    8118:	20 66 72             	and    %ah,0x72(%esi)
-    811b:	6f                   	outsl  %ds:(%esi),(%dx)
-    811c:	6d                   	insl   (%dx),%es:(%edi)
-    811d:	20 72 65             	and    %dh,0x65(%edx)
-    8120:	61                   	popa
-    8121:	64 20 63 6f          	and    %ah,%fs:0x6f(%ebx)
-    8125:	6d                   	insl   (%dx),%es:(%edi)
-    8126:	6d                   	insl   (%dx),%es:(%edi)
-    8127:	61                   	popa
-    8128:	6e                   	outsb  %ds:(%esi),(%dx)
-    8129:	64 2e 0a 00          	fs or  %cs:(%eax),%al
-    812d:	73 74                	jae    81a3 <mem+0x11b>
-    812f:	61                   	popa
-    8130:	74 75                	je     81a7 <mem+0x11f>
-    8132:	73 5f                	jae    8193 <mem+0x10b>
-    8134:	65 20 64 69 64       	and    %ah,%gs:0x64(%ecx,%ebp,2)
-    8139:	20 6e 6f             	and    %ch,0x6f(%esi)
-    813c:	74 20                	je     815e <mem+0xd6>
-    813e:	70 61                	jo     81a1 <mem+0x119>
-    8140:	73 73                	jae    81b5 <kernel_stack+0x5>
-    8142:	2e 0a 00             	or     %cs:(%eax),%al
-    8145:	53                   	push   %ebx
-    8146:	75 63                	jne    81ab <mem+0x123>
-    8148:	65 73 73             	gs jae 81be <kernel_stack+0xe>
-    814b:	66 75 6c             	data16 jne 81ba <kernel_stack+0xa>
-    814e:	6c                   	insb   (%dx),%es:(%edi)
-    814f:	20 65 6e             	and    %ah,0x6e(%ebp)
-    8152:	64 20 6f 66          	and    %ch,%fs:0x66(%edi)
-    8156:	20 46 64             	and    %al,0x64(%esi)
-    8159:	63 52 65             	arpl   %edx,0x65(%edx)
-    815c:	61                   	popa
-    815d:	64 2e 0a 00          	fs or  %cs:(%eax),%al
-    8161:	00 00                	add    %al,(%eax)
-    8163:	00 54 69 6d          	add    %dl,0x6d(%ecx,%ebp,2)
-    8167:	65 6f                	outsl  %gs:(%esi),(%dx)
-    8169:	75 74                	jne    81df <kernel_stack+0x2f>
-    816b:	20 65 72             	and    %ah,0x72(%ebp)
-    816e:	72 6f                	jb     81df <kernel_stack+0x2f>
-    8170:	72 20                	jb     8192 <mem+0x10a>
-    8172:	69 6e 20 46 64 63 53 	imul   $0x53636446,0x20(%esi),%ebp
-    8179:	65 6e                	outsb  %gs:(%esi),(%dx)
-    817b:	64 42                	fs inc %edx
-    817d:	79 74                	jns    81f3 <kernel_stack+0x43>
-    817f:	65 2e 0a 00          	gs or  %cs:(%eax),%al
-    8183:	54                   	push   %esp
-    8184:	69 6d 65 6f 75 74 20 	imul   $0x2074756f,0x65(%ebp),%ebp
-    818b:	65 72 72             	gs jb  8200 <kernel_stack+0x50>
-    818e:	6f                   	outsl  %ds:(%esi),(%dx)
-    818f:	72 20                	jb     81b1 <kernel_stack+0x1>
-    8191:	69 6e 20 46 64 63 47 	imul   $0x47636446,0x20(%esi),%ebp
-    8198:	65 74 42             	gs je  81dd <kernel_stack+0x2d>
-    819b:	79 74                	jns    8211 <kernel_stack+0x61>
-    819d:	65 2e 0a 00          	gs or  %cs:(%eax),%al
+00007f2c <stage2msg2>:
+    7f2c:	47                   	inc    %edi
+    7f2d:	6f                   	outsl  %ds:(%esi),(%dx)
+    7f2e:	74 20                	je     7f50 <stage2msg2+0x24>
+    7f30:	74 6f                	je     7fa1 <kernel_stack+0x41>
+    7f32:	20 73 74             	and    %dh,0x74(%ebx)
+    7f35:	61                   	popa
+    7f36:	67 65 20 32          	and    %dh,%gs:(%bp,%si)
+    7f3a:	20 6f 66             	and    %ch,0x66(%edi)
+    7f3d:	20 74 68 65          	and    %dh,0x65(%eax,%ebp,2)
+    7f41:	20 62 6f             	and    %ah,0x6f(%edx)
+    7f44:	6f                   	outsl  %ds:(%esi),(%dx)
+    7f45:	74 6c                	je     7fb3 <kernel_stack+0x53>
+    7f47:	6f                   	outsl  %ds:(%esi),(%dx)
+    7f48:	61                   	popa
+    7f49:	64 65 72 2e          	fs gs jb 7f7b <kernel_stack+0x1b>
+    7f4d:	20 28                	and    %ch,(%eax)
+    7f4f:	33 32                	xor    (%edx),%esi
+    7f51:	20 62 69             	and    %ah,0x69(%edx)
+    7f54:	74 73                	je     7fc9 <kernel_stack+0x69>
+    7f56:	29 00                	sub    %eax,(%eax)
 
 Disassembly of section .comment:
 
