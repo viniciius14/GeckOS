@@ -15,6 +15,7 @@
 %endif
 
 [extern print_string_32]
+
 %include "macros.S"
 
 section .text
@@ -24,8 +25,6 @@ _load_kernel:
     mov ebx, 320            ; Start at the top-left corner of the screen
     ; to delete later
     call print_string_32
-
-    jmp $
 
     call FdcInit
 

@@ -1,0 +1,203 @@
+
+/root/os/build/bootloader/obj/stage2.elf:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00007e00 <_stage2_16>:
+    7e00:	fa                   	cli
+    7e01:	31 c0                	xor    %eax,%eax
+    7e03:	8e d8                	mov    %eax,%ds
+    7e05:	8e c0                	mov    %eax,%es
+    7e07:	be e0 7e e8 93       	mov    $0x93e87ee0,%esi
+    7e0c:	00 60 0f             	add    %ah,0xf(%eax)
+    7e0f:	01 16                	add    %edx,(%esi)
+    7e11:	25 7f 61 0f 20       	and    $0x200f617f,%eax
+    7e16:	c0 66 83 c8          	shlb   $0xc8,-0x7d(%esi)
+    7e1a:	01 0f                	add    %ecx,(%edi)
+    7e1c:	22 c0                	and    %al,%al
+    7e1e:	e4 92                	in     $0x92,%al
+    7e20:	0c 02                	or     $0x2,%al
+    7e22:	e6 92                	out    %al,$0x92
+    7e24:	ea 2d 7e 08 00 fa f4 	ljmp   $0xf4fa,$0x87e2d
+    7e2b:	eb fe                	jmp    7e2b <_stage2_16+0x2b>
+
+00007e2d <_stage2_32>:
+    7e2d:	bc 60 8f 00 00       	mov    $0x8f60,%esp
+    7e32:	66 b8 10 00          	mov    $0x10,%ax
+    7e36:	8e d8                	mov    %eax,%ds
+    7e38:	8e d0                	mov    %eax,%ss
+    7e3a:	8e c0                	mov    %eax,%es
+    7e3c:	be 2c 7f 00 00       	mov    $0x7f2c,%esi
+    7e41:	bb a0 00 00 00       	mov    $0xa0,%ebx
+    7e46:	e8 35 00 00 00       	call   7e80 <print_string_32>
+    7e4b:	e9 10 00 00 00       	jmp    7e60 <_load_kernel>
+    7e50:	fa                   	cli
+    7e51:	f4                   	hlt
+    7e52:	eb fe                	jmp    7e52 <_stage2_32+0x25>
+    7e54:	66 90                	xchg   %ax,%ax
+    7e56:	66 90                	xchg   %ax,%ax
+    7e58:	66 90                	xchg   %ax,%ax
+    7e5a:	66 90                	xchg   %ax,%ax
+    7e5c:	66 90                	xchg   %ax,%ax
+    7e5e:	66 90                	xchg   %ax,%ax
+
+00007e60 <_load_kernel>:
+    7e60:	be c0 7e 00 00       	mov    $0x7ec0,%esi
+    7e65:	bb 40 01 00 00       	mov    $0x140,%ebx
+    7e6a:	e8 11 00 00 00       	call   7e80 <print_string_32>
+    7e6f:	e8 40 00 00 00       	call   7eb4 <FdcInit>
+    7e74:	eb fe                	jmp    7e74 <_load_kernel+0x14>
+    7e76:	fa                   	cli
+    7e77:	f4                   	hlt
+    7e78:	eb fe                	jmp    7e78 <_load_kernel+0x18>
+    7e7a:	66 90                	xchg   %ax,%ax
+    7e7c:	66 90                	xchg   %ax,%ax
+    7e7e:	66 90                	xchg   %ax,%ax
+
+00007e80 <print_string_32>:
+    7e80:	bf 00 80 0b 00       	mov    $0xb8000,%edi
+    7e85:	01 df                	add    %ebx,%edi
+
+00007e87 <print_string_32.print_char>:
+    7e87:	ac                   	lods   %ds:(%esi),%al
+    7e88:	3c 00                	cmp    $0x0,%al
+    7e8a:	74 0a                	je     7e96 <print_string_32.done>
+    7e8c:	b4 0f                	mov    $0xf,%ah
+    7e8e:	66 89 07             	mov    %ax,(%edi)
+    7e91:	83 c7 02             	add    $0x2,%edi
+    7e94:	eb f1                	jmp    7e87 <print_string_32.print_char>
+
+00007e96 <print_string_32.done>:
+    7e96:	c3                   	ret
+    7e97:	66 90                	xchg   %ax,%ax
+    7e99:	66 90                	xchg   %ax,%ax
+    7e9b:	66 90                	xchg   %ax,%ax
+    7e9d:	66 90                	xchg   %ax,%ax
+    7e9f:	90                   	nop
+
+00007ea0 <puts>:
+    7ea0:	56                   	push   %esi
+    7ea1:	50                   	push   %eax
+    7ea2:	53                   	push   %ebx
+
+00007ea3 <puts.loop>:
+    7ea3:	ac                   	lods   %ds:(%esi),%al
+    7ea4:	08 c0                	or     %al,%al
+    7ea6:	74 08                	je     7eb0 <puts.done>
+    7ea8:	b4 0e                	mov    $0xe,%ah
+    7eaa:	b7 00                	mov    $0x0,%bh
+    7eac:	cd 10                	int    $0x10
+    7eae:	eb f3                	jmp    7ea3 <puts.loop>
+
+00007eb0 <puts.done>:
+    7eb0:	5b                   	pop    %ebx
+    7eb1:	58                   	pop    %eax
+    7eb2:	5e                   	pop    %esi
+    7eb3:	c3                   	ret
+
+Disassembly of section .text.FdcInit:
+
+00007eb4 <FdcInit>:
+    7eb4:	55                   	push   %ebp
+    7eb5:	89 e5                	mov    %esp,%ebp
+    7eb7:	83 ec 10             	sub    $0x10,%esp
+    7eba:	90                   	nop
+    7ebb:	eb fd                	jmp    7eba <FdcInit+0x6>
+
+Disassembly of section .data:
+
+00007ec0 <stage2msg3>:
+    7ec0:	47                   	inc    %edi
+    7ec1:	6f                   	outsl  %ds:(%esi),(%dx)
+    7ec2:	74 20                	je     7ee4 <stage2msg1+0x4>
+    7ec4:	74 6f                	je     7f35 <stage2msg2+0x9>
+    7ec6:	20 6c 6f 61          	and    %ch,0x61(%edi,%ebp,2)
+    7eca:	64 20 6b 65          	and    %ch,%fs:0x65(%ebx)
+    7ece:	72 6e                	jb     7f3e <stage2msg2+0x12>
+    7ed0:	65 6c                	gs insb (%dx),%es:(%edi)
+    7ed2:	2e 20 28             	and    %ch,%cs:(%eax)
+    7ed5:	33 32                	xor    (%edx),%esi
+    7ed7:	20 62 69             	and    %ah,0x69(%edx)
+    7eda:	74 73                	je     7f4f <stage2msg2+0x23>
+    7edc:	29 00                	sub    %eax,(%eax)
+	...
+
+00007ee0 <stage2msg1>:
+    7ee0:	47                   	inc    %edi
+    7ee1:	6f                   	outsl  %ds:(%esi),(%dx)
+    7ee2:	74 20                	je     7f04 <stage2msg1+0x24>
+    7ee4:	74 6f                	je     7f55 <stage2msg2+0x29>
+    7ee6:	20 73 74             	and    %dh,0x74(%ebx)
+    7ee9:	61                   	popa
+    7eea:	67 65 20 32          	and    %dh,%gs:(%bp,%si)
+    7eee:	20 6f 66             	and    %ch,0x66(%edi)
+    7ef1:	20 74 68 65          	and    %dh,0x65(%eax,%ebp,2)
+    7ef5:	20 62 6f             	and    %ah,0x6f(%edx)
+    7ef8:	6f                   	outsl  %ds:(%esi),(%dx)
+    7ef9:	74 6c                	je     7f67 <kernel_stack+0x7>
+    7efb:	6f                   	outsl  %ds:(%esi),(%dx)
+    7efc:	61                   	popa
+    7efd:	64 65 72 2e          	fs gs jb 7f2f <stage2msg2+0x3>
+    7f01:	20 28                	and    %ch,(%eax)
+    7f03:	31 36                	xor    %esi,(%esi)
+    7f05:	20 62 69             	and    %ah,0x69(%edx)
+    7f08:	74 73                	je     7f7d <kernel_stack+0x1d>
+    7f0a:	29 0d 0a       	sub    %ecx,0xa
+
+00007f0d <GDT_Start>:
+	...
+
+00007f15 <code_descriptor>:
+    7f15:	ff                   	(bad)
+    7f16:	ff 00                	incl   (%eax)
+    7f18:	00 00                	add    %al,(%eax)
+    7f1a:	9a cf 00     	lcall  $0x0,$0xffff00cf
+
+00007f1d <data_descriptor>:
+    7f1d:	ff                   	(bad)
+    7f1e:	ff 00                	incl   (%eax)
+    7f20:	00 00                	add    %al,(%eax)
+    7f22:	92                   	xchg   %eax,%edx
+    7f23:	cf                   	iret
+	...
+
+00007f25 <GDT_Descriptor>:
+    7f25:	17                   	pop    %ss
+    7f26:	00 0d 7f 00 00 00    	add    %cl,0x7f
+
+00007f2c <stage2msg2>:
+    7f2c:	47                   	inc    %edi
+    7f2d:	6f                   	outsl  %ds:(%esi),(%dx)
+    7f2e:	74 20                	je     7f50 <stage2msg2+0x24>
+    7f30:	74 6f                	je     7fa1 <kernel_stack+0x41>
+    7f32:	20 73 74             	and    %dh,0x74(%ebx)
+    7f35:	61                   	popa
+    7f36:	67 65 20 32          	and    %dh,%gs:(%bp,%si)
+    7f3a:	20 6f 66             	and    %ch,0x66(%edi)
+    7f3d:	20 74 68 65          	and    %dh,0x65(%eax,%ebp,2)
+    7f41:	20 62 6f             	and    %ah,0x6f(%edx)
+    7f44:	6f                   	outsl  %ds:(%esi),(%dx)
+    7f45:	74 6c                	je     7fb3 <kernel_stack+0x53>
+    7f47:	6f                   	outsl  %ds:(%esi),(%dx)
+    7f48:	61                   	popa
+    7f49:	64 65 72 2e          	fs gs jb 7f7b <kernel_stack+0x1b>
+    7f4d:	20 28                	and    %ch,(%eax)
+    7f4f:	33 32                	xor    (%edx),%esi
+    7f51:	20 62 69             	and    %ah,0x69(%edx)
+    7f54:	74 73                	je     7fc9 <kernel_stack+0x69>
+    7f56:	29 00                	sub    %eax,(%eax)
+
+Disassembly of section .comment:
+
+00000000 <.comment>:
+   0:	47                   	inc    %edi
+   1:	43                   	inc    %ebx
+   2:	43                   	inc    %ebx
+   3:	3a 20                	cmp    (%eax),%ah
+   5:	28 47 4e             	sub    %al,0x4e(%edi)
+   8:	55                   	push   %ebp
+   9:	29 20                	sub    %esp,(%eax)
+   b:	31 32                	xor    %esi,(%edx)
+   d:	2e 32 2e             	xor    %cs:(%esi),%ch
+  10:	30 00                	xor    %al,(%eax)

@@ -86,9 +86,9 @@ FAT_32:
 
 run: default
 ifeq ($(FS), FAT12)
-	$(MAKE)  run_floppy
+	$(MAKE) run_floppy
 else
-	$(MAKE)  run_hard_disk
+	$(MAKE) run_hard_disk
 endif
 
 

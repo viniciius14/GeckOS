@@ -6,7 +6,7 @@
 // static fdcRegTapeDrv_s     *fdcTapeDrv    = (fdcRegTapeDrv_s     *) FDC_ADDR_TAPE_DRIVE;
 // static fdcRegMainStatus_s  *fdcMainStat   = (fdcRegMainStatus_s  *) FDC_ADDR_MAIN_STATUS;
 // static fdcRegDataRateSel_s *fdcDataRate   = (fdcRegDataRateSel_s *) FDC_ADDR_DATA_RATE_SEL;
-// static uint8_t *fifo                      = (uint8_t *)             FDC_ADDR_DATA_FIFO;
+// static uint8_t             *fifo          = (uint8_t             *) FDC_ADDR_DATA_FIFO;
 // static fdcRegDigInp_s      *fdcDigIn      = (fdcRegDigInp_s      *) FDC_ADDR_DIGITAL_IN;
 // static fdcRegConfigCtrl_s  *fdcConfigCtrl = ( fdcRegConfigCtrl_s *) FDC_ADDR_CONFIG_CTRL;
 
@@ -43,6 +43,7 @@ void print_char(char letter) {
 /* TEMP DELETE LATER */
 
 status_e FdcInit(void) {
+    while(1){;}
 
     print_string("In floppy");
     while(1){;}
