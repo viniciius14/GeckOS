@@ -43,7 +43,6 @@ void print_char(char letter) {
 /* TEMP DELETE LATER */
 
 status_e FdcInit(void) {
-    while(1){;}
     print_string("In floppy");
     while(1){;}
     /* temp */
