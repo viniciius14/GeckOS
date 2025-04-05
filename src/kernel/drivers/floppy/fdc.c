@@ -1,14 +1,43 @@
 #include "fdc.h"
 
-// static fdcRegStatusA_s     *fdcStatA      = (fdcRegStatusA_s     *) FDC_ADDR_STATUS_A;
-// static fdcRegStatusB_s     *fdcStatB      = (fdcRegStatusB_s     *) FDC_ADDR_STATUS_B;
-// static fdcRegDigOut_s      *fdcDigOut     = (fdcRegDigOut_s      *) FDC_ADDR_DIGITAL_OUT;
-// static fdcRegTapeDrv_s     *fdcTapeDrv    = (fdcRegTapeDrv_s     *) FDC_ADDR_TAPE_DRIVE;
-// static fdcRegMainStatus_s  *fdcMainStat   = (fdcRegMainStatus_s  *) FDC_ADDR_MAIN_STATUS;
-// static fdcRegDataRateSel_s *fdcDataRate   = (fdcRegDataRateSel_s *) FDC_ADDR_DATA_RATE_SEL;
-// static uint8_t             *fifo          = (uint8_t             *) FDC_ADDR_DATA_FIFO;
-// static fdcRegDigInp_s      *fdcDigIn      = (fdcRegDigInp_s      *) FDC_ADDR_DIGITAL_IN;
-// static fdcRegConfigCtrl_s  *fdcConfigCtrl = ( fdcRegConfigCtrl_s *) FDC_ADDR_CONFIG_CTRL;
+
+// static fdcRegStatusA_s     *fdcStatA;
+// static fdcRegStatusB_s     *fdcStatB;
+// static fdcRegDigOut_s      *fdcDigOut;
+// static fdcRegTapeDrv_s     *fdcTapeDrv;
+// static fdcRegMainStatus_s  *fdcMainStat;
+// static fdcRegDataRateSel_s *fdcDataRate;
+// static uint8_t             *fifo;
+// static fdcRegDigInp_s      *fdcDigIn;
+// static fdcRegConfigCtrl_s  *fdcConfigCtrl;
+
+
+
+void print_hex(uint8_t num) {
+    const char *hex_digits = "0123456789ABCDEF";
+
+    // Print "0x" prefix if you want
+    print_char('0');
+    print_char('x');
+
+    // Print each nibble from highest to lowest
+    for (int i = 7; i >= 0; i--) {
+        uint8_t nibble = (num >> (i * 4)) & 0xF;
+        print_char(hex_digits[nibble]);
+    }
+}
+
+void FdcPrintRegs(void) {
+    print_string("fdcStatA      = "); print_hex(InByte(FDC_ADDR_STATUS_A));      print_char('\n');
+    print_string("fdcStatB      = "); print_hex(InByte(FDC_ADDR_STATUS_B));      print_char('\n');
+    print_string("fdcDigOut     = "); print_hex(InByte(FDC_ADDR_DIGITAL_OUT));   print_char('\n');
+    print_string("fdcTapeDrv    = "); print_hex(InByte(FDC_ADDR_TAPE_DRIVE));    print_char('\n');
+    print_string("fdcMainStat   = "); print_hex(InByte(FDC_ADDR_MAIN_STATUS));   print_char('\n');
+    print_string("fdcDataRate   = "); print_hex(InByte(FDC_ADDR_DATA_RATE_SEL)); print_char('\n');
+    print_string("fifo          = "); print_hex(InByte(FDC_ADDR_DATA_FIFO));     print_char('\n');
+    print_string("fdcDigIn      = "); print_hex(InByte(FDC_ADDR_DIGITAL_IN));    print_char('\n');
+    print_string("fdcConfigCtrl = "); print_hex(InByte(FDC_ADDR_CONFIG_CTRL));   print_char('\n');
+}
 
 /* TEMP DELETE LATER */
 uint16_t *mem = (uint16_t *)0xB8000;
@@ -43,11 +72,12 @@ void print_char(char letter) {
 /* TEMP DELETE LATER */
 
 status_e FdcInit(void) {
-    print_string("In floppy");
-    while(1){;}
+    screen_clear();
+
+
     /* temp */
     fdcRegStatus3_s temp;
-    FdcCheckSt3(temp);
+    (void)FdcCheckSt3(temp);
     /* end of temp*/
 
     uint8_t result = 0;
@@ -57,7 +87,7 @@ status_e FdcInit(void) {
     /* Set datarate to 500Kbps */
     OutByte(FDC_ADDR_DATA_RATE_SEL, 0x0);
 
-    FdcWaitInterrupt();
+    FdcWaitForRQM();
 
     /* 4 SENSE INTERRUPT STATUS commands need to be issued to clear the status flags for each drive.*/
     for (uint8_t i = 0 ; i < 4 ; i++) {
@@ -65,23 +95,33 @@ status_e FdcInit(void) {
         uint8_t pcn = 0;
 
         FdcSendByte(FDC_CMD_SENSE_INTERRUPT);
+        FdcPrintRegs();
 
         result = FdcGetByte((uint8_t *)&st0);
+        print_string("1\n");
 
         /* The top 2 bits are set after a reset procedure.
         Either bit being set at any other time is an error indication. */
         (void) FdcCheckSt0(st0);
 
         result |= FdcGetByte(&pcn);
+        print_string("2\n");
 
         if (result) {
+            print_string("3\n");
             return STATUS_FAILURE;
         }
     }
 
     if (FdcConfigure() || FdcSpecify()) {
+        print_string("SHIT-ERRO config");
+        print_string(" config / spec");
+
         return STATUS_FAILURE;
     }
+
+    print_string("VAMOSSSSSSSSSS");
+    while(1){;}
 
     return STATUS_SUCCESS;
 }
@@ -108,7 +148,7 @@ status_e FdcSeek (uint16_t lba) {
     FdcSendByte((head << 2) | (0));
     FdcSendByte(cyl);
 
-    FdcWaitInterrupt();
+    FdcWaitForRQM();
 
     FdcSendByte(FDC_CMD_SENSE_INTERRUPT);
 
@@ -141,7 +181,7 @@ status_e FdcRecalibrate (void) {
     FdcSendByte(FDC_CMD_RECALIBRATE);
     FdcSendByte(0);                   /* Drive number */
 
-    FdcWaitInterrupt();
+    FdcWaitForRQM();
 
     FdcSendByte(FDC_CMD_SENSE_INTERRUPT);
 
@@ -199,7 +239,7 @@ status_e FdcRead(const uint16_t lba, uint8_t *buffer) {
             continue;
         }
 
-        FdcWaitInterrupt(); // <--- Issue here, it seems to never leave from this call
+        FdcWaitForRQM(); // <--- Issue here, it seems to never leave from this call
 
         result |= FdcGetByte((uint8_t *)&st0);
         result |= FdcGetByte((uint8_t *)&st1);
@@ -278,7 +318,7 @@ void FdcReset(void) {
     OutByte(FDC_ADDR_DIGITAL_OUT, 0x00);
 
     /* Wait */
-    for(uint16_t i = 0 ; i < 500 ; i++) {
+    for(uint16_t i = 0 ; i < (MAX_UINT16 - 1) ; i++) {
         IoWait();
     }
 
@@ -286,14 +326,14 @@ void FdcReset(void) {
     OutByte(FDC_ADDR_DIGITAL_OUT, 0x0C);
 
     /* Wait */
-    for(uint16_t i = 0 ; i < 500; i++) {
+    for(uint16_t i = 0 ; i < (MAX_UINT16 - 1) ; i++) {
         IoWait();
     }
 }
 
-void FdcWaitInterrupt(void) {
-    /* Check for DIO bit */
-    while (InByte(FDC_ADDR_MAIN_STATUS) != BIT(6)) {
+void FdcWaitForRQM(void) {
+    /* Check for RQM bit */
+    while (InByte(FDC_ADDR_MAIN_STATUS) != (BIT(7))) {
         ; /* Polling loop, wait until the FDC is ready */
     }
 }
@@ -301,10 +341,10 @@ void FdcWaitInterrupt(void) {
 status_e FdcSendByte(uint8_t byte) {
     uint32_t timeout = 0;
 
-    /* Check for DIO bit */
-    while (InByte(FDC_ADDR_MAIN_STATUS) >> 6 != BIT(1) ) { /* 10 XXX XXX */
+    /* Check for DIO and RQM bits - 10 XXX XXX */
+    while (InByte(FDC_ADDR_MAIN_STATUS) >> 6 != BIT(1)) {
         timeout++;
-        if (timeout == 1000000) { /* TBD: Figure out a more resonable number */
+        if (timeout >= 1000000) { /* TBD: Figure out a more reasonable number */
             print_string("Timeout error in FdcSendByte.\n");
             return STATUS_FAILURE;
         }
@@ -316,10 +356,10 @@ status_e FdcSendByte(uint8_t byte) {
 
 status_e FdcGetByte(uint8_t *const byte) {
     uint32_t timeout = 0;
-    /* Check for DIO and RQM bits */
-    while ((InByte(FDC_ADDR_MAIN_STATUS)) != (BIT(7) | BIT(6))) { /* 11 XXX XXX */
+    /* Check for DIO and RQM bits - 11 XXX XXX*/
+    while ((InByte(FDC_ADDR_MAIN_STATUS)) != (BIT(7) | BIT(6))) {
         timeout++;
-        if (timeout == 1000000) { /* TBD: Figure out a more resonable number */
+        if (timeout >= 1000000) { /* TBD: Figure out a more reasonable number */
             print_string("Timeout error in FdcGetByte.\n");
             return STATUS_FAILURE;
         }

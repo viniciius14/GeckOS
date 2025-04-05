@@ -176,21 +176,23 @@ STATIC_ASSERT(sizeof(fdcRegStatus3_s) == sizeof(uint8_t));
 
 /* ---------- Function prototypes ---------- */
 
-status_e    FdcInit(void);
-status_e    FdcRead(const uint16_t lba, uint8_t *buffer);
-status_e    FdcWrite(const uint16_t lba, uint8_t *buffer);
-status_e    FdcSpecify(void);
-status_e    FdcConfigure(void);
-status_e    FdcRecalibrate(void);
-status_e    FdcSeek(const uint16_t lba);
-status_e    FdcSendByte(const uint8_t byte);
-status_e    FdcGetByte(uint8_t *const byte);
-void        FdcReset(void);
-static void        FdcWaitInterrupt(void);
-static status_e    FdcCheckSt0(const fdcRegStatus0_s st0);
-static status_e    FdcCheckSt1(const fdcRegStatus1_s st1);
-static status_e    FdcCheckSt2(const fdcRegStatus2_s st2);
-static status_e    FdcCheckSt3(const fdcRegStatus3_s st3);
+status_e        FdcInit(void);
+status_e        FdcRead(const uint16_t lba, uint8_t *buffer);
+status_e        FdcWrite(const uint16_t lba, uint8_t *buffer);
+void            FdcReset(void);
+
+static void     FdcWaitForRQM(void);
+static status_e FdcSpecify(void);
+static status_e FdcConfigure(void);
+static status_e FdcRecalibrate(void);
+static status_e FdcSeek(const uint16_t lba);
+static status_e FdcSendByte(const uint8_t byte);
+static status_e FdcGetByte(uint8_t *const byte);
+
+static status_e FdcCheckSt0(const fdcRegStatus0_s st0);
+static status_e FdcCheckSt1(const fdcRegStatus1_s st1);
+static status_e FdcCheckSt2(const fdcRegStatus2_s st2);
+static status_e FdcCheckSt3(const fdcRegStatus3_s st3);
 
 
 

@@ -28,12 +28,12 @@ loadStage2:
     mov cl, al                  ; cl = number of sectors to read = size of root directory
     pop ax                      ; ax = LBA of root directory
     mov dl, [BS_DrvNum]         ; dl = drive number (we saved it previously)
-    mov bx, buffer              ; es:bx = buffer
+    mov bx, ROOT_BUFFER         ; es:bx = ROOT_BUFFER
     call disk_read
 
     ; search for stage 2 bootloader
     xor bx, bx
-    mov di, buffer
+    mov di, ROOT_BUFFER
 
 .search_stage2:
     mov si, file_stage2_bin
@@ -59,7 +59,7 @@ loadStage2:
 
     ; load FAT from disk into memory
     mov ax, [BPB_RsvdSecCnt]
-    mov bx, buffer
+    mov bx, FAT_BUFFER
     mov cl, [BPB_FATSz16]
     mov dl, [BS_DrvNum]
     call disk_read
@@ -89,7 +89,7 @@ loadStage2:
     mov cx, 2
     div cx                      ; ax = index of entry in FAT, dx = cluster mod 2
 
-    mov si, buffer
+    mov si, FAT_BUFFER
     add si, ax
     mov ax, [ds:si]             ; read entry from FAT table at index ax
 

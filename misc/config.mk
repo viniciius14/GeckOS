@@ -24,7 +24,7 @@ ASM_FLAGS=-W+all -W+error -W+orphan-labels -W+macro-params -W+error
 ASM_FORMAT=-f elf32
 
 CC=i386-elf-gcc
-CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mno-red-zone -fdata-sections -ffunction-sections -std=c11
+CC_FLAGS=-m32 -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mgeneral-regs-only -fdata-sections -ffunction-sections -std=c11
 
 LD=ld
 LD_FLAGS=--gc-sections -m elf_i386
@@ -34,5 +34,5 @@ OBJ_CPY=i386-elf-objcopy
 OBJ_FLAGS=-O binary
 
 EMULATOR=qemu-system-i386
-EMUL_FLAGS=-m 128M -serial stdio -no-reboot -no-shutdown -d out_asm,in_asm,op,op_opt,op_ind,int,exec,cpu,cpu_reset,strace -D $(DEBUG_DIR)/QEMU.log
+EMUL_FLAGS=-m 128M -serial stdio
 

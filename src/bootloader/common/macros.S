@@ -1,5 +1,5 @@
-%ifndef __UTILS_S
-%define __UTILS_S
+%ifndef __MACROS_S
+%define __MACROS_S
 
 %macro unreachable 0
     cli             ; disable interrupts

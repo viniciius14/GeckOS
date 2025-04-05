@@ -1,9 +1,6 @@
 [bits 16]
 [org 0x7C00]
 
-%define S2_LOAD_SEGMENT 0x0
-%define S2_LOAD_OFFSET  0x7E00
-
 %ifdef  FAT12
     %include "FAT_header.S"
 %elifdef  FAT16
@@ -15,6 +12,7 @@
 %endif
 
 %include "macros.S"
+%include "constants.S"
 
 _stage1_start:
     ; Clear the screen
@@ -58,4 +56,4 @@ dw 0xAA55
     %include "FSInfo_FAT32.S"
 %endif
 
-buffer:
+ROOT_BUFFER:
