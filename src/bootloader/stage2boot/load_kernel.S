@@ -17,6 +17,7 @@
 [extern print_string_32]
 
 %include "macros.S"
+%include "constants.S"
 
 section .text
 
@@ -27,6 +28,10 @@ _load_kernel:
     call print_string_32
 
     call FdcInit
+
+    push KERNEL_LOAD_AREA
+    push KERNEL_LBA
+    call FdcRead
 
     jmp $
 

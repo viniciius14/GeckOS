@@ -21,7 +21,7 @@ void print_hex(uint8_t num) {
     print_char('x');
 
     // Print each nibble from highest to lowest
-    for (int i = 7; i >= 0; i--) {
+    for (int i = 1; i >= 0; i--) {
         uint8_t nibble = (num >> (i * 4)) & 0xF;
         print_char(hex_digits[nibble]);
     }
@@ -89,40 +89,33 @@ status_e FdcInit(void) {
 
     FdcWaitForRQM();
 
+    FdcPrintRegs();
+
     /* 4 SENSE INTERRUPT STATUS commands need to be issued to clear the status flags for each drive.*/
     for (uint8_t i = 0 ; i < 4 ; i++) {
         fdcRegStatus0_s st0;
         uint8_t pcn = 0;
 
         FdcSendByte(FDC_CMD_SENSE_INTERRUPT);
-        FdcPrintRegs();
 
         result = FdcGetByte((uint8_t *)&st0);
-        print_string("1\n");
 
         /* The top 2 bits are set after a reset procedure.
         Either bit being set at any other time is an error indication. */
         (void) FdcCheckSt0(st0);
 
         result |= FdcGetByte(&pcn);
-        print_string("2\n");
 
         if (result) {
-            print_string("3\n");
             return STATUS_FAILURE;
         }
     }
 
     if (FdcConfigure() || FdcSpecify()) {
-        print_string("SHIT-ERRO config");
-        print_string(" config / spec");
-
         return STATUS_FAILURE;
     }
 
-    print_string("VAMOSSSSSSSSSS");
-    while(1){;}
-
+    print_string("FDC INIT SUCCESS\n");
     return STATUS_SUCCESS;
 }
 
@@ -197,80 +190,39 @@ status_e FdcRecalibrate (void) {
     return STATUS_SUCCESS;
 }
 
-/* TBD: Add further status checks */
+/* TODO: Add further status checks */
 status_e FdcRead(const uint16_t lba, uint8_t *buffer) {
-
-    print_string("FdcRead called.\n");
+    (void)buffer;
 
     for (uint8_t retries = 0 ; retries < 3 ; retries++) {
-        fdcRegStatus0_s st0;
-        fdcRegStatus1_s st1;
-        fdcRegStatus2_s st2;
-        uint8_t bps = 2, result = 0, cyl = 0, head = 0, sector = 0;
-
-        result = FdcRecalibrate();
-
-        ConvertLbaChs(lba, &cyl, &head, &sector);
-
-        if (FdcSeek(lba)) {
-            print_string("Could not seek the sector.\n");
+        print_string("1\n");
+        if (FdcSeek(lba) == STATUS_FAILURE || FdcRecalibrate() == STATUS_FAILURE) {
             continue;
         }
 
         /* Head settling time */
-        for (uint16_t i = 0 ; i < 1500 ; i++) {
+        for (uint16_t i = 0 ; i < (MAX_UINT16 - 1) ; i++) {
             IoWait();
         }
-
-        result |= FdcSendByte(FDC_CMD_READ_DATA);
-
-        /* (head number << 2) | (drive number) */
-        result |= FdcSendByte(((head << 2) | (0)));
-        result |= FdcSendByte(cyl);
-        result |= FdcSendByte(head);
-        result |= FdcSendByte(sector);
-        result |= FdcSendByte(bps);     /* Sector size of 512 bytes (128 * X^2) */
-        result |= FdcSendByte(18);      /* The last sector of the current track */
-        result |= FdcSendByte(0x1B);    /* GAP1 default size*/
-        result |= FdcSendByte(0xFF);    /* Special sector size */
-
-        if (result) {
-            print_string("Error while attempting read command.\n");
-            continue;
+        print_string("2\n");
+        if (FdcSendCmdReadData(lba)) {
+            print_string("send cmd failed");
+            return STATUS_FAILURE;
         }
 
-        FdcWaitForRQM(); // <--- Issue here, it seems to never leave from this call
-
-        result |= FdcGetByte((uint8_t *)&st0);
-        result |= FdcGetByte((uint8_t *)&st1);
-        result |= FdcGetByte((uint8_t *)&st2);
-        result |= FdcGetByte(&cyl);
-        result |= FdcGetByte(&head);
-        result |= FdcGetByte(&sector);
-        result |= FdcGetByte(&bps);
-
-        if (result) {
-            print_string("Error while getting response from read command.\n");
-            continue;
-        }
-
-        result |= FdcCheckSt0(st0);
-        result |= FdcCheckSt1(st1);
-        result |= FdcCheckSt2(st2);
-
-        if (result) {
-            print_string("status_e did not pass.\n");
-            continue;
-        }
+        print_string("3\n");
+        uint8_t local[512] = {0};
 
         for (uint16_t i = 0 ; i < 512 ; i++) {
-            FdcGetByte(&buffer[i]);
+            FdcGetByte(&local[i]);
+            print_hex(local[i]);
         }
 
         print_string("Sucessfull end of FdcRead.\n");
 
         return STATUS_SUCCESS;
     }
+    print_string("\nFAILURE FDC READ\n");
 
     return STATUS_FAILURE;
 }
@@ -342,9 +294,9 @@ status_e FdcSendByte(uint8_t byte) {
     uint32_t timeout = 0;
 
     /* Check for DIO and RQM bits - 10 XXX XXX */
-    while (InByte(FDC_ADDR_MAIN_STATUS) >> 6 != BIT(1)) {
+    while ((InByte(FDC_ADDR_MAIN_STATUS) & (FDC_DIO_RQM_MASK)) != FDC_SEND_BYTE_VALUE) {
         timeout++;
-        if (timeout >= 1000000) { /* TBD: Figure out a more reasonable number */
+        if (timeout >= 1000000) { /* TODO: Figure out a more reasonable number */
             print_string("Timeout error in FdcSendByte.\n");
             return STATUS_FAILURE;
         }
@@ -357,9 +309,9 @@ status_e FdcSendByte(uint8_t byte) {
 status_e FdcGetByte(uint8_t *const byte) {
     uint32_t timeout = 0;
     /* Check for DIO and RQM bits - 11 XXX XXX*/
-    while ((InByte(FDC_ADDR_MAIN_STATUS)) != (BIT(7) | BIT(6))) {
+    while ((InByte(FDC_ADDR_MAIN_STATUS) & (FDC_DIO_RQM_MASK)) != FDC_GET_BYTE_VALUE) {
         timeout++;
-        if (timeout >= 1000000) { /* TBD: Figure out a more reasonable number */
+        if (timeout >= 1000000) { /* TODO: Figure out a more reasonable number */
             print_string("Timeout error in FdcGetByte.\n");
             return STATUS_FAILURE;
         }
@@ -368,7 +320,113 @@ status_e FdcGetByte(uint8_t *const byte) {
 
     return STATUS_SUCCESS;
 }
+/* WIP */
+// static status_e FdcSendCommand(const fdcCommands_e fdcCmd, uint32_t result, ...) {
+//     if (FdcSendByte(fdcCmd) == STATUS_FAILURE) {
+//         return STATUS_FAILURE;
+//     }
 
+//     switch (fdcCmd) {
+//     case FDC_CMD_READ_TRACK:
+//     case FDC_CMD_SPECIFY:
+//     case FDC_CMD_SENSE_DRIVE_STATUS:
+//     case FDC_CMD_WRITE_DATA:
+//     case FDC_CMD_READ_DATA:
+//     case FDC_CMD_RECALIBRATE:
+//     case FDC_CMD_SENSE_INTERRUPT:
+//     case FDC_CMD_WRITE_DELETED_DATA:
+//     case FDC_CMD_READ_ID:
+//     case FDC_CMD_READ_DELETED_DATA:
+//     case FDC_CMD_FORMAT_TRACK:
+//     case FDC_CMD_DUMPREG:
+//     case FDC_CMD_SEEK:
+//     case FDC_CMD_VERSION:
+//     case FDC_CMD_SCAN_EQUAL:
+//     case FDC_CMD_PERPENDICULAR_MODE:
+//     case FDC_CMD_CONFIGURE:
+//     case FDC_CMD_LOCK:
+//     case FDC_CMD_VERIFY:
+//     case FDC_CMD_SCAN_LOW_OR_EQUAL:
+//     case FDC_CMD_SCAN_HIGH_OR_EQUAL:
+//         break;
+//     default:
+//         return STATUS_FAILURE;
+//     }
+
+//     return STATUS_FAILURE;
+// }
+
+
+
+// if (in command phase)
+// send command
+// if (command not valid)
+//     - If it was invalid, the next time the RQM bit in
+//     the MSR register is a ‘‘1’’ the DIO and CB bits will
+//     also be ‘‘1’’, indicating the FIFO must be read
+//     - A result byte of 80H will be read out of the FIFO, indi-
+//     cating an invalid command was issued.
+//     - After reading
+//     the result byte from the FIFO the 82077AA will re-
+//     turn to the command phase.
+
+
+
+status_e FdcSendCmdReadData(uint8_t lba) {
+    FdcSendByte(FDC_CMD_READ_DATA);
+
+    /* Check if the command was valid */
+    {
+        FdcPrintRegs();
+        uint8_t status = 0;
+        FdcWaitForRQM();
+        print_string("2.1\n");
+
+        if ((InByte(FDC_ADDR_MAIN_STATUS) & FDC_DIO_CMDB_MASK) == FDC_DIO_CMDB_MASK) {
+            FdcGetByte(&status);
+        }
+
+        if (status == 0x80) {
+            return STATUS_FAILURE;
+        }
+    }
+
+    uint8_t result = 0, cylinder = 0, head = 0, sector = 0, sectorSize = 2;
+    fdcRegStatus0_s st0; /* Status Register 0*/
+    fdcRegStatus1_s st1; /* Status Register 1*/
+    fdcRegStatus2_s st2; /* Status Register 2*/
+
+    ConvertLbaChs(lba, &cylinder, &head, &sector);
+    print_string("2.2\n");
+
+    result |= FdcSendByte(cylinder);
+    result |= FdcSendByte(head);
+    result |= FdcSendByte(sector);
+    result |= FdcSendByte(sectorSize); /* Sector size of 512 bytes (128 * X^2) */
+    result |= FdcSendByte(18);         /* EOT */
+    result |= FdcSendByte(0x1B);       /* GPL */
+    result |= FdcSendByte(0xFF);       /* DTL */
+
+    if (result) {
+        return STATUS_FAILURE;
+    }
+    print_string("2.3\n");
+
+    FdcGetByte((uint8_t *)&st0);
+    FdcGetByte((uint8_t *)&st1);
+    FdcGetByte((uint8_t *)&st2);
+
+    result |= FdcCheckSt0(st0);
+    result |= FdcCheckSt1(st1);
+    result |= FdcCheckSt2(st2);
+
+    FdcGetByte(&cylinder);
+    FdcGetByte(&head);
+    FdcGetByte(&sector);
+    FdcGetByte(&sectorSize);
+
+    return STATUS_SUCCESS;
+}
 
 
 status_e FdcCheckSt0(const fdcRegStatus0_s st0) {

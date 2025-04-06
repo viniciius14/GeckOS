@@ -13,9 +13,9 @@ uint8_t InByte(uint16_t port){
 }
 
 
-void OutWord(uint16_t port, uint16_t value)
+void OutWord(uint16_t port, uint16_t data)
 {
-    ASM("outw %w0, %1" : : "a" (value), "id" (port) );
+    ASM("outw %w0, %1" : : "a" (data), "id" (port) );
 }
 
 

@@ -11,6 +11,12 @@
 #define FDC_DMA_CHANNEL         (2)
 #define FDC_IRQ                 (6)
 
+#define FDC_DIO_RQM_MASK        (BIT(7) | BIT(6))
+#define FDC_DIO_CMDB_MASK       (BIT(6) | BIT(4))
+
+#define FDC_GET_BYTE_VALUE      (BIT(7) | BIT(6))
+#define FDC_SEND_BYTE_VALUE     (BIT(7))
+
 /* ----------------- Types ----------------- */
 
 typedef enum fdcRegAddresses {
@@ -176,19 +182,34 @@ STATIC_ASSERT(sizeof(fdcRegStatus3_s) == sizeof(uint8_t));
 
 /* ---------- Function prototypes ---------- */
 
+/* Initialize floppy disk controller */
 status_e        FdcInit(void);
+/* Read data from the LBA address into the buffer */
 status_e        FdcRead(const uint16_t lba, uint8_t *buffer);
+/* Write data from the buffer into the LBA address */
 status_e        FdcWrite(const uint16_t lba, uint8_t *buffer);
+/* Reset floppy disk controller */
 void            FdcReset(void);
 
+/* Wait for the RQM bit to be set in the Main Status register */
 static void     FdcWaitForRQM(void);
+
 static status_e FdcSpecify(void);
+
 static status_e FdcConfigure(void);
+
 static status_e FdcRecalibrate(void);
+
 static status_e FdcSeek(const uint16_t lba);
+/* Sends a byte to the FIFO register */
 static status_e FdcSendByte(const uint8_t byte);
+/* Gets a byte from the FIFO register */
 static status_e FdcGetByte(uint8_t *const byte);
 
+/* Sends a READ DATA command to the FDC */
+status_e FdcSendCmdReadData(uint8_t lba);
+
+/* Status register checking functions */
 static status_e FdcCheckSt0(const fdcRegStatus0_s st0);
 static status_e FdcCheckSt1(const fdcRegStatus1_s st1);
 static status_e FdcCheckSt2(const fdcRegStatus2_s st2);

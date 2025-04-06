@@ -34,7 +34,7 @@ void *MemMove(void *const dst, void *const src, const uint32_t n) {
     return dst;
 }
 
-
+/* Convert LBA addressing into CHS addressing */
 INLINE void ConvertLbaChs(const uint32_t lba, uint8_t *cyl, uint8_t *head, uint8_t *sector) {
     *cyl    = lba / (2 * 18);
     *head   = ((lba % (2 * 18)) / 18);
