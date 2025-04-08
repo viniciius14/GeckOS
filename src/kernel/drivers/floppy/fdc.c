@@ -28,15 +28,15 @@ void print_hex(uint8_t num) {
 }
 
 void FdcPrintRegs(void) {
-    print_string("fdcStatA      = "); print_hex(InByte(FDC_ADDR_STATUS_A));      print_char('\n');
-    print_string("fdcStatB      = "); print_hex(InByte(FDC_ADDR_STATUS_B));      print_char('\n');
-    print_string("fdcDigOut     = "); print_hex(InByte(FDC_ADDR_DIGITAL_OUT));   print_char('\n');
-    print_string("fdcTapeDrv    = "); print_hex(InByte(FDC_ADDR_TAPE_DRIVE));    print_char('\n');
-    print_string("fdcMainStat   = "); print_hex(InByte(FDC_ADDR_MAIN_STATUS));   print_char('\n');
-    print_string("fdcDataRate   = "); print_hex(InByte(FDC_ADDR_DATA_RATE_SEL)); print_char('\n');
-    print_string("fifo          = "); print_hex(InByte(FDC_ADDR_DATA_FIFO));     print_char('\n');
-    print_string("fdcDigIn      = "); print_hex(InByte(FDC_ADDR_DIGITAL_IN));    print_char('\n');
-    print_string("fdcConfigCtrl = "); print_hex(InByte(FDC_ADDR_CONFIG_CTRL));   print_char('\n');
+    print_string("Status A              = "); print_hex(InByte(FDC_ADDR_STATUS_A));      print_char('\n');
+    print_string("Status B              = "); print_hex(InByte(FDC_ADDR_STATUS_B));      print_char('\n');
+    print_string("Digital Out           = "); print_hex(InByte(FDC_ADDR_DIGITAL_OUT));   print_char('\n');
+    print_string("Tape Drive            = "); print_hex(InByte(FDC_ADDR_TAPE_DRIVE));    print_char('\n');
+    print_string("Main Status           = "); print_hex(InByte(FDC_ADDR_MAIN_STATUS));   print_char('\n');
+    print_string("Data Rate Sel         = "); print_hex(InByte(FDC_ADDR_DATA_RATE_SEL)); print_char('\n');
+    print_string("FIFO                  = "); print_hex(InByte(FDC_ADDR_DATA_FIFO));     print_char('\n');
+    print_string("Digital In            = "); print_hex(InByte(FDC_ADDR_DIGITAL_IN));    print_char('\n');
+    print_string("Configuration Control = "); print_hex(InByte(FDC_ADDR_CONFIG_CTRL));   print_char('\n');
 }
 
 /* TEMP DELETE LATER */
@@ -74,6 +74,10 @@ void print_char(char letter) {
 status_e FdcInit(void) {
     screen_clear();
 
+    if (InByte(FDC_ADDR_MAIN_STATUS) == 0xFF) {
+        print_string("No controller found.\n");
+        return STATUS_FAILURE;
+    }
 
     /* temp */
     fdcRegStatus3_s temp;
@@ -213,10 +217,12 @@ status_e FdcRead(const uint16_t lba, uint8_t *buffer) {
         print_string("3\n");
         uint8_t local[512] = {0};
 
-        for (uint16_t i = 0 ; i < 512 ; i++) {
-            FdcGetByte(&local[i]);
+        for (int i = 0; i < 512; i++) {
+            FdcWaitForRQM();
+            local[i] = InByte(FDC_ADDR_DATA_FIFO);
             print_hex(local[i]);
         }
+
 
         print_string("Sucessfull end of FdcRead.\n");
 
@@ -238,9 +244,13 @@ status_e FdcSpecify(void) {
 
     result = FdcSendByte(FDC_CMD_SPECIFY);
     /* (SRT_value << 4) | (HUT_value)  */
-    result |= FdcSendByte((8 << 4) | (0));   /* SRT = 8ms, HUT = Maximum */
+    // result |= FdcSendByte((8 << 4) | (0));   /* SRT = 8ms, HUT = Maximum */
     /* (HLT_value << 1) | (NDMA) */
-    result |= FdcSendByte((5 << 1) | (1));   /* HLT = 5ms, NDMA = No */
+    // result |= FdcSendByte((5 << 1) | (1));   /* HLT = 5ms, NDMA = No */
+
+    result |= FdcSendByte(0xBB);
+    result |= FdcSendByte(0x04);
+
 
     if (result) {
         return STATUS_FAILURE;
@@ -258,7 +268,7 @@ status_e FdcConfigure(void) {
     /* Set precompensation value to default */
     result |= FdcSendByte(0x0);
 
-    if (result){
+    if (result) {
         return STATUS_FAILURE;
     }
 
@@ -267,6 +277,8 @@ status_e FdcConfigure(void) {
 
 void FdcReset(void) {
     /* Disable the FDC */
+    /* An I/O from an ISA bus can take as long as 500ns or even more time, so writing it twice will ensure enough time as passed */
+    OutByte(FDC_ADDR_DIGITAL_OUT, 0x00);
     OutByte(FDC_ADDR_DIGITAL_OUT, 0x00);
 
     /* Wait */
@@ -377,9 +389,7 @@ status_e FdcSendCmdReadData(uint8_t lba) {
 
     /* Check if the command was valid */
     {
-        FdcPrintRegs();
         uint8_t status = 0;
-        FdcWaitForRQM();
         print_string("2.1\n");
 
         if ((InByte(FDC_ADDR_MAIN_STATUS) & FDC_DIO_CMDB_MASK) == FDC_DIO_CMDB_MASK) {
@@ -391,7 +401,7 @@ status_e FdcSendCmdReadData(uint8_t lba) {
         }
     }
 
-    uint8_t result = 0, cylinder = 0, head = 0, sector = 0, sectorSize = 2;
+    uint8_t result = 0, cylinder = 0, head = 0, sector = 0, sectorSize = FDC_SECTOR_SIZE_CODE;
     fdcRegStatus0_s st0; /* Status Register 0*/
     fdcRegStatus1_s st1; /* Status Register 1*/
     fdcRegStatus2_s st2; /* Status Register 2*/
@@ -402,15 +412,19 @@ status_e FdcSendCmdReadData(uint8_t lba) {
     result |= FdcSendByte(cylinder);
     result |= FdcSendByte(head);
     result |= FdcSendByte(sector);
-    result |= FdcSendByte(sectorSize); /* Sector size of 512 bytes (128 * X^2) */
-    result |= FdcSendByte(18);         /* EOT */
-    result |= FdcSendByte(0x1B);       /* GPL */
-    result |= FdcSendByte(0xFF);       /* DTL */
+    result |= FdcSendByte(sectorSize);
+    result |= FdcSendByte(18);                      /* EOT */
+    result |= FdcSendByte(0x1B);                    /* GPL */
+    result |= FdcSendByte(0xFF);                    /* DTL */
 
     if (result) {
         return STATUS_FAILURE;
     }
-    print_string("2.3\n");
+    print_string("2.3.1\n");
+    // FdcPrintRegs();
+
+    FdcWaitForRQM();
+    print_string("2.3.2\n");
 
     FdcGetByte((uint8_t *)&st0);
     FdcGetByte((uint8_t *)&st1);
@@ -425,6 +439,7 @@ status_e FdcSendCmdReadData(uint8_t lba) {
     FdcGetByte(&sector);
     FdcGetByte(&sectorSize);
 
+    print_string("READ SUCESS\n");
     return STATUS_SUCCESS;
 }
 

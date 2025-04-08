@@ -12,10 +12,15 @@
 #define FDC_IRQ                 (6)
 
 #define FDC_DIO_RQM_MASK        (BIT(7) | BIT(6))
+/* DIO and CMD BIT */
 #define FDC_DIO_CMDB_MASK       (BIT(6) | BIT(4))
 
 #define FDC_GET_BYTE_VALUE      (BIT(7) | BIT(6))
 #define FDC_SEND_BYTE_VALUE     (BIT(7))
+
+/* Sector size of 512 bytes (128 * X^2) */
+#define FDC_SECTOR_SIZE_CODE    (2)
+
 
 /* ----------------- Types ----------------- */
 
