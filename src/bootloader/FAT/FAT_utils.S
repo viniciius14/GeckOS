@@ -56,7 +56,7 @@ FAT_find_file:
 
 ; Inputs:
 ;   AX = starting cluster
-;   ES:BX = memory address to load file
+;   DS:Si = memory address to load file
 ;   DL = drive number (BIOS drive number)
 ; Returns:
 ;   File loaded into memory at ES:BX
@@ -74,6 +74,11 @@ FAT_load_file:
     add ax, 31                  ; ! calculate LBA (hacky: hardcoded offset)
     mov cl, 1
     mov dl, [BS_DrvNum]
+
+    ; Set ES:BX to point to DS:SI so BIOS_read loads to that address
+    push ds
+    pop es
+    mov bx, si
     call BIOS_read
 
     add bx, [BPB_BytsPerSec]
@@ -98,8 +103,7 @@ FAT_load_file:
     and ax, 0x0FFF
 
 .next_cluster:
-    ; cmp ax, 0xFF
-    cmp ax, 0xFF
+    cmp ax, 0xFF8
     jae .read_finish
 
     mov [current_cluster], ax

@@ -3,15 +3,13 @@ get_stage2:
 
 %ifdef FAT_FS
     call FAT_find_file
-%else
-    %error "No support for finding files in the current filesystem."
 %endif
 
     jc failure
 
-    mov bx, STAGE2_OFFSET
+    mov si, STAGE2_OFFSET
     mov ax, STAGE2_SEGMENT
-    mov es, ax
+    mov ds, ax
     mov dl, [BS_DrvNum]
 
 %ifdef FAT_FS
@@ -19,12 +17,6 @@ get_stage2:
 %endif
 
     jc failure
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov ah, 0x0E
-    mov al, 'A'
-    int 0x10
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     jmp STAGE2_SEGMENT:STAGE2_OFFSET
 

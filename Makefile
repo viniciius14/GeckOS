@@ -35,18 +35,18 @@ bootloader:
 
 image:
 ifeq ($(FS), FAT12)
-	$(MAKE)  FAT_12
+	$(MAKE)  FAT12
 else ifeq ($(FS), FAT16)
-	$(MAKE)  FAT_16
+	$(MAKE)  FAT16
 else ifeq ($(FS), FAT32)
-	$(MAKE)  FAT_32
+	$(MAKE)  FAT32
 else
 	@echo "Error: Invalid FS type $(FS)"
 	exit 1
 endif
 
 
-FAT_12:
+FAT12:
 	@echo "\nCreating FAT 12 image -> $(TARGET) with 1.44MB\n"
 	dd if=/dev/zero                         of=$(TARGET)     bs=512        count=2880
 	mkfs.fat $(TARGET) -a -F 12 -S 512 -s 1 -r 224 -R 1
@@ -58,7 +58,7 @@ FAT_12:
 	mcopy -i $(TARGET) $(OS_FILES)/* ::
 
 
-FAT_16:
+FAT16:
 	@echo "\nCreating FAT 16 image -> $(TARGET) with 128MB\n"
 	dd if=/dev/zero                         of=$(TARGET)     bs=512        count=273042
 	mkfs.fat $(TARGET) -a -F 16 -S 512 -s 8 -r 512 -R 4
@@ -70,7 +70,7 @@ FAT_16:
 	mcopy -i $(TARGET) $(OS_FILES)/* ::
 
 
-FAT_32:
+FAT32:
 	@echo "\nCreating FAT 32 image -> $(TARGET) with 128MB\n"
 	dd if=/dev/zero                         of=$(TARGET)     bs=512        count=273042
 	mkfs.fat $(TARGET) -a -F 32 -S 512 -s 4 -R 32
