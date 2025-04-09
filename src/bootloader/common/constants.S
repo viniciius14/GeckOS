@@ -1,10 +1,19 @@
 %ifndef __CONSTANTS_S
 %define __CONSTANTS_S
 
-FAT_BUFFER          equ 0x00500
-STACK_START         equ 0x07C00
-S2_LOAD_SEGMENT     equ 0x00000
-S2_LOAD_OFFSET      equ 0x07E00
-KERNEL_LOAD_AREA    equ 0x10000
-KERNEL_LBA          equ 0x00001
+%ifdef FAT_FS
+    FAT_BUFFER          equ 0x00500
+    ROOT_DIR_BUFFER     equ 0x07E00
+%endif
+
+STAGE2_STACK            equ 0x07C00
+
+STAGE2_OFFSET           equ 0x07E00
+STAGE2_SEGMENT          equ 0x00000
+
+KERNEL_BUFFER_START     equ 0x6F000
+KERNEL_BUFFER_END       equ 0x7F000
+
+KERNEL_START            equ 0x100000
+
 %endif

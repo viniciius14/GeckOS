@@ -15,7 +15,6 @@ echo:
 dirs:
 	mkdir -p $(KERNEL_BIN)
 	mkdir -p $(KERNEL_OBJ)
-	mkdir -p $(KERNEL_LIB)
 
 # Rule to iterate through each subdirectory and call its Makefile (with exception for the current one)
 kernel_directories:

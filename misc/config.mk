@@ -15,7 +15,6 @@ BOOT_OBJ=$(BUILD_DIR)/bootloader/obj
 
 KERNEL_BIN=$(BUILD_DIR)/kernel/bin
 KERNEL_OBJ=$(BUILD_DIR)/kernel/obj
-KERNEL_LIB=$(BUILD_DIR)/kernel/lib
 
 DEBUG_DIR=$(BUILD_DIR)/debug
 

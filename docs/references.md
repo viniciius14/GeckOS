@@ -29,7 +29,7 @@
 
 # Other
 ### BIOS:
-    https://stanislavs.org/helppc/int_table.html
+    https://stanislavs.org/helppc/idx_interrupt.html
 
 
 # Other OS's

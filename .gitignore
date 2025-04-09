@@ -11,12 +11,6 @@ build/
 # Exceptions
 !docker_run.sh
 
-!QEMU.log
-!stage1_FAT12.bin
-!stage2.bin
-!stage2.elf
-!console.log
-
 # Prerequisites
 *.d
 

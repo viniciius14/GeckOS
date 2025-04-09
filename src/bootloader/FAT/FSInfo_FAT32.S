@@ -1,6 +1,6 @@
 ; File System Information Structure
 
-%ifdef  FAT32
+%ifdef FAT32
     FSI_LeadSig:        dd 0x41615252       ; This lead signature is used to validate the beginning of the FSInfo structure in the sector.
     FSI_Reserved1:      times (480) db 0x0  ; Reserved. Must be set to 0.
     FSI_StrucSig:       dd 0x61417272       ; An additional signature validating the integrity of the FSInfo structure.
