@@ -48,7 +48,7 @@ failure:
 file_stage2_bin:        db "STAGE2  BIN", 0
 error_msg:              db "CRITICAL ERROR ", 0
 current_cluster:        dw 0
-
+data_start_lba:         dw 0
 
 times (510 - ($ - $$)) db 0
 dw 0xAA55

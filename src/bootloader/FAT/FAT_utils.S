@@ -63,32 +63,47 @@ FAT_find_file:
 ;   ZF = 0 on success, 1 on early EOF or error
 ;   AX = last valid cluster
 FAT_load_file:
-    mov ax, [BPB_RsvdSecCnt]    ; FAT starts after reserved sectors
-    mov bx, FAT_BUFFER          ; Buffer for the FAT
-    mov cl, [BPB_FATSz16]       ; Sectors per FAT
-    mov dl, [BS_DrvNum]         ; Drive number
+    mov ax, [BPB_RsvdSecCnt]
+    mov bx, FAT_BUFFER
+    mov cl, [BPB_FATSz16]
+    mov dl, [BS_DrvNum]
     call BIOS_read
+    xor ax, ax                      ; Compute DataStartLBA once
+    mov al, [BPB_NumFATs]
+    mov cx, [BPB_FATSz16]
+    mul cx                          ; AX = NumFATs * SectorsPerFAT
+    mov cx, ax
+    mov ax, [BPB_RootEntCnt]
+    mov bx, 32
+    mul bx                          ; AX = RootDir size in bytes
+    mov bx, [BPB_BytsPerSec]
+    add ax, bx
+    dec ax
+    xor dx, dx
+    div bx                          ; AX = RootDir size in sectors
+    add ax, cx                      ; AX += FAT size in sectors
+    add ax, [BPB_RsvdSecCnt]        ; AX += Reserved sector count
+    mov [data_start_lba], ax        ; Store DataStartLBA
 
 .read_file_loop:
-    mov ax, [current_cluster]
-    add ax, 31                  ; ! calculate LBA (hacky: hardcoded offset)
+    mov ax, [current_cluster]       ; Compute LBA for current cluster
+    sub ax, 2                       ; Adjust because cluster 2 = first cluster
+    mov bx, [data_start_lba]
+    add ax, bx                      ; AX = LBA
     mov cl, 1
     mov dl, [BS_DrvNum]
-
-    ; Set ES:BX to point to DS:SI so BIOS_read loads to that address
     push ds
     pop es
     mov bx, si
     call BIOS_read
-
-    add bx, [BPB_BytsPerSec]
+    add si, [BPB_BytsPerSec]        ; Advance SI for next sector
 
 .find_next_cluster:
     mov ax, [current_cluster]
     mov cx, 3
     mul cx
     mov cx, 2
-    div cx                      ; ax = index, dx = cluster mod 2
+    div cx                          ; AX = index into FAT, DX = cluster mod 2
     mov si, FAT_BUFFER
     add si, ax
     mov ax, [ds:si]
@@ -98,10 +113,8 @@ FAT_load_file:
 .odd:
     shr ax, 4
     jmp .next_cluster
-
 .even:
     and ax, 0x0FFF
-
 .next_cluster:
     cmp ax, 0xFF8
     jae .read_finish
@@ -111,5 +124,6 @@ FAT_load_file:
 
 .read_finish:
     ret
+
 
 %endif
