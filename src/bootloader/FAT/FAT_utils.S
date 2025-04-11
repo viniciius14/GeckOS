@@ -8,7 +8,11 @@
 ;   AX = starting cluster (if found)
 ;   ZF = 1 if not found, 0 if found
 FAT_find_file:
+%ifdef FAT32
+    mov ax, [BPB_FATSz32]
+%else
     mov ax, [BPB_FATSz16]       ; ax = sectors per FAT
+%endif
     mov bl, [BPB_NumFATs]       ; number of FATs (usually 2)
     xor bh, bh
     mul bx                      ; ax = (number of FATs *  sectors per FAT)
@@ -65,12 +69,20 @@ FAT_find_file:
 FAT_load_file:
     mov ax, [BPB_RsvdSecCnt]
     mov bx, FAT_BUFFER
+%ifdef FAT32
+    mov cl, [BPB_FATSz32]
+%else
     mov cl, [BPB_FATSz16]
+%endif
     mov dl, [BS_DrvNum]
     call BIOS_read
     xor ax, ax                      ; Compute DataStartLBA once
     mov al, [BPB_NumFATs]
+%ifdef FAT32
+    mov cx, [BPB_FATSz32]
+%else
     mov cx, [BPB_FATSz16]
+%endif
     mul cx                          ; AX = NumFATs * SectorsPerFAT
     mov cx, ax
     mov ax, [BPB_RootEntCnt]
@@ -116,7 +128,13 @@ FAT_load_file:
 .even:
     and ax, 0x0FFF
 .next_cluster:
-    cmp ax, 0xFF8
+%ifdef FAT12
+    cmp ax, 0x0FF8
+%elifdef FAT16
+    cmp ax, 0xFFF8
+%elifdef FAT32
+    cmp ax, 0xFFF8
+%endif
     jae .read_finish
 
     mov [current_cluster], ax

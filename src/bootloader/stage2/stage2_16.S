@@ -3,7 +3,6 @@
 [extern _stage2_32]
 
 %include "common.S"
-%include "BIOS_print.S"
 
 section _stage2_16.text
 
@@ -25,10 +24,6 @@ _stage2_16:
 
     ; call BIOS_relocate
 
-
-
-
-
     ; pusha                       ; save registers
     ; lgdt [GDT_Descriptor]       ; load GDT
     ; popa                        ; restore registers
@@ -46,9 +41,20 @@ _stage2_16:
 
     ; jmp CODE_SEG:_stage2_32
 
+failure:
     unreachable
 
+section .text
+
+%include "BIOS_utils.S"
+%include "FAT_utils.S"
+
 section .data
+
+current_cluster:        dw 0
+data_start_lba:         dw 0
+
+section .rodata
 
 stage2msg1: db "Got to stage 2 of the bootloader. (16 bits)", 0
 
@@ -57,14 +63,14 @@ stage2msg1: db "Got to stage 2 of the bootloader. (16 bits)", 0
 ;         dd  0
 ;         dd  0
 ;     code_descriptor:
-;         dw 0xffff
+;         dw 0xFFFF
 ;         dw 0                    ; 16 bits +
 ;         db 0                    ; 8 bits = 24
 ;         db 0b10011010           ; type flags
 ;         db 0b11001111           ; other flags
 ;         db 0                    ; last 8 bits of base
 ;     data_descriptor:
-;         dw 0xffff
+;         dw 0xFFFF
 ;         dw 0
 ;         db 0
 ;         db 0b10010010
@@ -75,3 +81,5 @@ stage2msg1: db "Got to stage 2 of the bootloader. (16 bits)", 0
 ; GDT_Descriptor:
 ;     dw GDT_End - GDT_Start - 1  ; size
 ;     dd GDT_Start                ; start
+
+%include "FAT_header.S"

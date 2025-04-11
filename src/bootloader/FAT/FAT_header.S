@@ -1,7 +1,10 @@
 ; BIOS Parameter Block
 
-jmp strict short _stage1_start
-nop
+%ifdef STAGE_1
+    jmp strict short _stage1_start
+    nop
+%endif
+
 BS_OEMName:                 db "GECKOS  "               ; OEM Name Identifier. 8 bytes.
 
 %ifdef FAT12

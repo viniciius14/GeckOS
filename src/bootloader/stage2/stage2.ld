@@ -7,19 +7,19 @@ SECTIONS {
     .text : {
         *(_stage2_16.text)
         *(_stage2_32.text)
-        *(.text)
+        *(.text*)
     } : text
 
     .data : {
-        *(.data)
+        *(.data*)
     } : data
 
     .rodata : {
-        *(.rodata)
+        *(.rodata*)
     } : rodata
 
     .bss : {
-        *(.bss)
+        *(.bss*)
     } : bss
 }
 

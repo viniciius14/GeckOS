@@ -3,6 +3,8 @@
 
 section .text
 
+%define STAGE_1
+
 %include "common.S"
 
 %ifdef FAT_FS
