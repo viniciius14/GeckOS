@@ -65,7 +65,7 @@ FAT16:
 # Add stage1 bootloader
 	dd if=$(BOOT_BIN)/stage1_FAT16.bin      of=$(TARGET)     bs=512 seek=0 conv=notrunc
 # Add stage2 bootloader
-	dd if=$(BOOT_BIN)/stage2.bin            of=$(TARGET)     bs=512 seek=1 conv=notrunc
+	mcopy -i $(TARGET) $(BOOT_BIN)/stage2.bin ::
 # Add files to the OS
 	mcopy -i $(TARGET) $(OS_FILES)/* ::
 
@@ -79,7 +79,7 @@ FAT32:
 # Add copy of bootsector (FsInfo struct already comes with the stage1 binary)
 	dd if=$(BOOT_BIN)/stage1_FAT32.bin      of=$(TARGET)     bs=512 seek=6 conv=notrunc
 # Add stage2 bootloader
-	dd if=$(BOOT_BIN)/stage2.bin            of=$(TARGET)     bs=512	seek=2 conv=notrunc
+	mcopy -i $(TARGET) $(BOOT_BIN)/stage2.bin ::
 # Add files to the OS
 	mcopy -i $(TARGET) $(OS_FILES)/* ::
 

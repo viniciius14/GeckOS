@@ -43,18 +43,18 @@ _stage1_start:
 
 ; Common label to jump to when a critical error is found
 failure:
-    mov si, error_msg
+    mov si, errorMsg
     jmp BIOS_print
     unreachable
 
-file_stage2_bin:        db "STAGE2  BIN", 0
-error_msg:              db "CRITICAL ERROR ", 0
-current_cluster:        dw 0
-data_start_lba:         dw 0
+fileStage2Bin:          db "STAGE2  BIN", 0
+errorMsg:               db "CRITICAL ERROR", 0
+currentCluster:         dw 0
+dataRegionStart:        dw FAT_DATA_START
 
 times (510 - ($ - $$)) db 0
 dw 0xAA55
 
-%ifdef  FAT32
+%ifdef FAT32
     %include "FSInfo_FAT32.S"
 %endif

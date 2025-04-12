@@ -18,10 +18,6 @@ _stage2_16:
 
     jmp $
 
-    ; call FAT_find_file
-
-    ; call FAT_load_file
-
     ; call BIOS_relocate
 
     ; pusha                       ; save registers
@@ -42,6 +38,8 @@ _stage2_16:
     ; jmp CODE_SEG:_stage2_32
 
 failure:
+    mov si, error_msg
+    jmp BIOS_print
     unreachable
 
 section .text
@@ -51,12 +49,15 @@ section .text
 
 section .data
 
-current_cluster:        dw 0
+currentCluster:         dw 0
 data_start_lba:         dw 0
+dataRegionStart:        dw FAT_DATA_START
 
 section .rodata
 
-stage2msg1: db "Got to stage 2 of the bootloader. (16 bits)", 0
+stage2msg1:         db "Got to stage 2 of the bootloader. (16 bits)", 0
+file_kernel:        db "KERNEL  BIN", 0
+error_msg:          db "CRITICAL ERROR", 0
 
 ; GDT_Start:
 ;     null_descriptor:

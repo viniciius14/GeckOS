@@ -1,4 +1,16 @@
+/* --------------- Includes ---------------- */
+
 #include "io.h"
+
+/* ---------- Function Prototypes ---------- */
+
+/* None */
+
+/* ----------- Global Variables ------------ */
+
+/* None */
+
+/* -------- Function Implementations ------- */
 
 void OutByte(uint16_t port, uint8_t data){
     ASM("outb %0, %1" : : "a"(data), "Nd"(port));

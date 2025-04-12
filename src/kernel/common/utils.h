@@ -75,7 +75,6 @@ typedef enum status {
 
 /* ---------- Function prototypes ---------- */
 
-/* First function that's ran */
-void _kernel_main(void);
+/* None */
 
 #endif /* __UTILS_H */

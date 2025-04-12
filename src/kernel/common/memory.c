@@ -1,4 +1,16 @@
+/* --------------- Includes ---------------- */
+
 #include "memory.h"
+
+/* ---------- Function Prototypes ---------- */
+
+/* None */
+
+/* ----------- Global Variables ------------ */
+
+/* None */
+
+/* -------- Function Implementations ------- */
 
 void MemSet(void *const dst, const uint8_t value, uint32_t n) {
     uint8_t *d = dst;

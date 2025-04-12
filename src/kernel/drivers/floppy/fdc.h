@@ -195,32 +195,8 @@ status_e        FdcRead(const uint16_t lba, uint8_t *buffer);
 status_e        FdcWrite(const uint16_t lba, uint8_t *buffer);
 /* Reset floppy disk controller */
 void            FdcReset(void);
-
-/* Wait for the RQM bit to be set in the Main Status register */
-static void     FdcWaitForRQM(void);
-
-static status_e FdcSpecify(void);
-
-static status_e FdcConfigure(void);
-
-static status_e FdcRecalibrate(void);
-
-static status_e FdcSeek(const uint16_t lba);
-/* Sends a byte to the FIFO register */
-static status_e FdcSendByte(const uint8_t byte);
-/* Gets a byte from the FIFO register */
-static status_e FdcGetByte(uint8_t *const byte);
-
 /* Sends a READ DATA command to the FDC */
 status_e FdcSendCmdReadData(uint8_t lba);
-
-/* Status register checking functions */
-static status_e FdcCheckSt0(const fdcRegStatus0_s st0);
-static status_e FdcCheckSt1(const fdcRegStatus1_s st1);
-static status_e FdcCheckSt2(const fdcRegStatus2_s st2);
-static status_e FdcCheckSt3(const fdcRegStatus3_s st3);
-
-
 
 
 /* TEMP DELETE LATER */

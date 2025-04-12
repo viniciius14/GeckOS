@@ -1,5 +1,33 @@
+/* --------------- Includes ---------------- */
+
 #include "fdc.h"
 
+/* ---------- Function Prototypes ---------- */
+
+/* Wait for the RQM bit to be set in the Main Status register */
+static void     FdcWaitForRQM(void);
+
+static status_e FdcSpecify(void);
+
+static status_e FdcConfigure(void);
+
+static status_e FdcRecalibrate(void);
+
+static status_e FdcSeek(const uint16_t lba);
+
+/* Sends a byte to the FIFO register */
+static status_e FdcSendByte(const uint8_t byte);
+
+/* Gets a byte from the FIFO register */
+static status_e FdcGetByte(uint8_t *const byte);
+
+/* Status register checking functions */
+static status_e FdcCheckSt0(const fdcRegStatus0_s st0);
+static status_e FdcCheckSt1(const fdcRegStatus1_s st1);
+static status_e FdcCheckSt2(const fdcRegStatus2_s st2);
+static status_e FdcCheckSt3(const fdcRegStatus3_s st3);
+
+/* ----------- Global Variables ------------ */
 
 // static fdcRegStatusA_s     *fdcStatA;
 // static fdcRegStatusB_s     *fdcStatB;
@@ -10,6 +38,9 @@
 // static uint8_t             *fifo;
 // static fdcRegDigInp_s      *fdcDigIn;
 // static fdcRegConfigCtrl_s  *fdcConfigCtrl;
+
+/* -------- Function Implementations ------- */
+
 
 
 
@@ -295,7 +326,7 @@ void FdcReset(void) {
     }
 }
 
-void FdcWaitForRQM(void) {
+static void FdcWaitForRQM(void) {
     /* Check for RQM bit */
     while (InByte(FDC_ADDR_MAIN_STATUS) != (BIT(7))) {
         ; /* Polling loop, wait until the FDC is ready */
