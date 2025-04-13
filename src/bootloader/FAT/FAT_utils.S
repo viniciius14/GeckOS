@@ -106,27 +106,48 @@ FAT_load_chain:
     add bx, ax
 %endif
 
-; Check chain for EOF
+; Move to next cluster in the chain
     mov ax, [currentCluster]
 %ifdef FAT12
+; FAT12 entries are 12-bit values packed together so every two clusters take up 3 bytes, meaning:
+;   - If cluster number is even: use low 12 bits
+;   - If odd: use high 12 bits (shifted right 4)
+    mov bx, 3
+    mul bx                      ; ax = currentCluster * 3
+    mov bx, 2
+    div bx                      ; ax = (currentCluster * 3) / 2
 
+    add ax, FAT_BUFFER          ; add base address of FAT
+    mov si, ax
+    mov ax, [si]                ; read 2 bytes (covers 1.5 bytes entry)
+
+    test dx, dx
+    jnz .odd                     ; if remainder != 0, jump
+
+.even:
+    and ax, 0x0FFF
+    jmp .after
+.odd:
+    shr ax, 4
+
+.after:
 %else
     mov di, FAT_ENTRY_SIZE      ; 2 for FAT16 and 4 for FAT32
     mul di                      ; ax = starting cluster * FAT_ENTRY_SIZE => Offset of our cluster
     add ax, FAT_BUFFER          ; memory location of our files next cluster in the FAT
 %endif
-    mov si, ax
-    mov ax, [si]
+    mov si, ax                  ; ax = pointer to File Allocation Table [currentCluster]
+    mov ax, [si]                ; ax = content of File Allocation Table [currentCluster]
+; Check current cluster EOF
 %ifdef FAT12
+    and ax, 0x0FFF              ; optional
     cmp word ax, 0x0FF8
 %else
-    cmp word ax, 0xFFF8            ; Since ax can only read 16bits we'll leave it as it for FAT32 aswell
+    and ax, 0xFFFF              ; optional
+    cmp word ax, 0xFFF8         ; Since ax can only read 16bits we'll leave it as it for FAT32 aswell
 %endif
     jae .done                   ; if greater than or equal
 
-    mov si, ax                  ; ax = content of File Allocation Table (next cluster in the chain)
-    mov ax, [si]
-    mov [currentCluster], ax
     jmp FAT_load_chain
 
 .done:

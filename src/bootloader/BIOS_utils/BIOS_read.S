@@ -1,8 +1,6 @@
 %ifndef __DISK_S
 %define __DISK_S
 
-%include "BIOS_print.S"
-
 ; Use BIOS interrupts to read sectors from disk into RAM
 ; Inputs:
 ;   - AX = LBA address
