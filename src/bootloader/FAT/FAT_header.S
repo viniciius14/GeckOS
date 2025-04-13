@@ -79,3 +79,20 @@ BS_OEMName:                 db "GECKOS  "               ; OEM Name Identifier. 8
     BS_VolLab:              db "GECKOS     "            ; Volume label. This field matches the 11-byte volume label recorded in the root directory.
     BS_FilSysType:          db "FAT32   "               ; This string is informational only and does not determine the FAT type.
 %endif
+
+; Sanity check to ensure size of header
+%define BPB_START               BS_OEMName
+; 8 is the number of bytes in BS_FilSysType
+%define BPB_END                 BS_FilSysType + 8
+; 3 for the jmp + nop instructions
+%define BPB_SIZE                (BPB_END - BPB_START) + 3
+
+%ifdef FAT32
+    %define FAT_HEADER_SIZE     90
+%else
+    %define FAT_HEADER_SIZE     62
+%endif
+
+%if BPB_SIZE != FAT_HEADER_SIZE
+    %error "Incorrect header size."
+%endif

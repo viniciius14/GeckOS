@@ -44,7 +44,7 @@ _stage1_start:
 ; Common label to jump to when a critical error is found
 failure:
     mov si, errorMsg
-    jmp BIOS_print
+    call BIOS_print
     unreachable
 
 fileStage2Bin:          db "STAGE2  BIN", 0

@@ -2,21 +2,19 @@ get_stage2:
     mov si, fileStage2Bin
 
 %ifdef FAT_FS
-    mov dl, [BS_DrvNum]
+    mov dx, [BS_DrvNum]
 
     call FAT_find_file
 
-    jc failure
-
-    mov si, STAGE2_OFFSET
-    mov bx, STAGE2_SEGMENT
-    mov ds, bx
+    xor bx, bx
+    mov es, bx
+    mov bx, STAGE2_OFFSET
 
     call FAT_load_chain
 
-    jc failure
 %endif
 
+    print_letter "J"
 
     jmp STAGE2_SEGMENT:STAGE2_OFFSET
 

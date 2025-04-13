@@ -16,7 +16,7 @@ BIOS_read:
     push cx                 ; temporarily save CL (number of sectors to read)
     call lba_to_chs         ; compute CHS
     pop ax                  ; AL = number of sectors to read
-    mov ah, 02h
+    mov ah, 0x2
     mov di, 3               ; retry count
 
 .retry:
@@ -60,7 +60,7 @@ BIOS_disk_reset:
 
 ; Converts an LBA address to a CHS address
 ; Inputs:
-;   - AX = LBA address
+;   - AL = LBA address
 ; Outputs:
 ;   - CX [bits 0-5] = sector number
 ;   - CX [bits 6-15] = cylinder
