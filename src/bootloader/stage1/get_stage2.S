@@ -1,6 +1,9 @@
+; Find and load the stage 2 file in the current filesystem
+; Inputs:
+;   SI = pointer to 11-byte filename of stage 2
+; Outputs:
+;   Loads file into 0x7E00 if found, else jumps to failure
 get_stage2:
-    mov si, fileStage2Bin
-
 %ifdef FAT_FS
     mov dx, [BS_DrvNum]
 
@@ -11,15 +14,14 @@ get_stage2:
     mov bx, STAGE2_OFFSET
 
     call FAT_load_chain
-
 %endif
 
-    print_letter "J"
+    ret
 
-    jmp STAGE2_SEGMENT:STAGE2_OFFSET
-
-    jmp failure
-
-%ifdef FAT_FS
-    %include "FAT_utils.S"
+%ifdef FAT12
+    %include "FAT12_utils.S"
+%elifdef FAT16
+    %include "FAT16_utils.S"
+%elifdef FAT32
+    %include "FAT32_utils.S"
 %endif

@@ -45,7 +45,7 @@ failure:
 section .text
 
 %include "BIOS_utils.S"
-%include "FAT_utils.S"
+; %include "FAT_utils.S"
 
 section .data
 

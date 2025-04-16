@@ -34,18 +34,24 @@ _stage1_start:
     mov ss, ax
     mov sp, STAGE2_STACK
 
-    ; Find stage 2 of the bootloader and then load it into memory
-    jmp get_stage2
+    mov si, fileStage2Bin
 
-%include "BIOS_read.S"
-%include "BIOS_print.S"
-%include "get_stage2.S"
+    ; Find stage 2 of the bootloader and then load it into memory
+    call get_stage2
+
+    print_letter "2"
+
+    jmp STAGE2_SEGMENT:STAGE2_OFFSET
 
 ; Common label to jump to when a critical error is found
 failure:
     mov si, errorMsg
     call BIOS_print
     unreachable
+
+%include "BIOS_read.S"
+%include "BIOS_print.S"
+%include "get_stage2.S"
 
 fileStage2Bin:          db "STAGE2  BIN", 0
 errorMsg:               db "CRITICAL ERROR", 0
