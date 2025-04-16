@@ -7,19 +7,29 @@
     ROOT_DIR_BUFFER         equ 0x07E00
     FILE_NAME_SIZE          equ 11
     CLUSTER_LOW_OFFSET      equ 26
+    CLUSTER_HIGH_OFFSET     equ 20
     DIR_ENTRY_SIZE          equ 32
 
+; To delete in the future and replace with runtime calculation
     %ifdef FAT12            ; BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz16) + ((BPB_RootEntCnt * 32) + BPB_BytsPerSec - 1) / BPB_BytsPerSec
         FAT_DATA_START      equ (0x1 + (0x2 * 0x9) + ((0xE * 32) + 0x200 - 1) / 0x200)
     %elifdef FAT16          ; BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz16) + ((BPB_RootEntCnt * 32) + BPB_BytsPerSec - 1) / BPB_BytsPerSec
         FAT_DATA_START      equ (0x4 + (0x2 * 0x86) + ((0x200 * 32) + 0x200 - 1) / 0x200)
-        FAT_ENTRY_SIZE      equ 2
     %elifdef FAT32          ; BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz32)
         FAT_DATA_START      equ (0x20 + (0x2 * 0x214))
+    %endif
+
+    %ifdef FAT12
+        FAT_EOF             equ 0xFF8
+    %elifdef FAT16
+        FAT_ENTRY_SIZE      equ 2
+        FAT_EOF             equ 0xFFF8
+    %elifdef FAT32
         FAT_ENTRY_SIZE      equ 4
+        FAT_EOF_HIGH        equ 0xFFFF
+        FAT_EOF_LOW         equ 0xFFF8
     %endif
 %endif
-
 
 STAGE2_STACK            equ 0x07C00
 

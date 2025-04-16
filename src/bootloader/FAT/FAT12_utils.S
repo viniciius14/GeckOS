@@ -1,3 +1,7 @@
+%ifdef FAT12
+%ifndef __FAT12_UTILS_S
+%define __FAT12_UTILS_S
+
 ; Find a file in a FAT filesystem
 ; Inputs:
 ;   SI = pointer to 11-byte filename
@@ -54,7 +58,6 @@ FAT_find_file:
 
 .get_start_cluster:
     mov ax, [di + CLUSTER_LOW_OFFSET]
-    print_letter "X"
     ret
 
 
@@ -64,23 +67,19 @@ FAT_find_file:
 ; Assumptions
 ;   FAT has been loaded into RAM at FAT_BUFFER
 ;   ES = 0
-;   DL = Drive Number
 FAT_load_chain:
-    print_letter "L"
     mov [currentCluster], ax
 
 ; read cluster into memory
-    ; ? consider doing xor cx, cx here
+    xor cx, cx
     mov cl, [BPB_SecPerClus]
+    mov dl, [BS_DrvNum]
     call BIOS_read
-    print_letter "M"
 
 ; Update mem address pointed to by ES:BX
     add bx, [BPB_BytsPerSec]    ; assuming Sectors per Cluster will always be 1 for FAT12
     push bx                     ; save memory pointer
 
-; Move to next cluster in the chain
-    mov ax, [currentCluster] ; ? can be removed for FAT12
 ; FAT12 entries are 12-bit values packed together so every two clusters take up 3 bytes, meaning:
 ;   - If cluster number is even: use low 12 bits
 ;   - If odd: use high 12 bits (shifted right 4)
@@ -102,10 +101,10 @@ FAT_load_chain:
     shr ax, 4
 
 .after:
-    print_letter "N"
 ; Check current cluster EOF
-    ; and ax, 0x0FFF              ; optional
     cmp word ax, 0xFF
+; Move to next cluster in the chain
+    mov ax, [currentCluster]
     pop bx                      ; get back out memory pointer to restore the stack
     jae .done                   ; if greater than or equal
 
@@ -114,5 +113,7 @@ FAT_load_chain:
     jmp FAT_load_chain
 
 .done:
-    print_letter "R"
     ret
+
+%endif
+%endif

@@ -51,7 +51,7 @@ section .data
 
 currentCluster:         dw 0
 data_start_lba:         dw 0
-dataRegionStart:        dw FAT_DATA_START
+dataRegionSector:        dw FAT_DATA_START
 
 section .rodata
 

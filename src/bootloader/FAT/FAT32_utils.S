@@ -1,3 +1,7 @@
+%ifdef FAT32
+%ifndef __FAT32_UTILS_S
+%define __FAT32_UTILS_S
+
 ; Find a file in a FAT filesystem
 ; Inputs:
 ;   SI = pointer to 11-byte filename
@@ -50,16 +54,17 @@ FAT_find_file:
 ; Assumptions
 ;   FAT has been loaded into RAM at FAT_BUFFER
 ;   ES = 0
-;   DL = Drive Number
 FAT_load_chain:
     print_letter "L"
     mov [currentCluster], ax
-; read cluster into memory    ; sub ax, 2 ; ! im not sure if i believe this
-    mov cx, [BPB_SecPerClus]
-    mul cx                      ; ax = cluster number * BPB_SecPerClus
-    add ax, [dataRegionStart]   ; ax += dataRegionStart => cluster start address (LBA)
-    ; ? consider doing xor cx, cx here
+; read cluster into memory
+    xor cx, cx
     mov cl, [BPB_SecPerClus]
+    mul cx                      ; ax = cluster number * BPB_SecPerClus
+    add ax, [dataRegionSector]  ; ax += dataRegionSector => cluster start address (LBA)
+    xor cx, cx
+    mov cl, [BPB_SecPerClus]
+    mov dl, [BS_DrvNum]
     call BIOS_read
     print_letter "M"
 
@@ -90,3 +95,6 @@ FAT_load_chain:
 .done:
     print_letter "R"
     ret
+
+%endif
+%endif

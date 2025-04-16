@@ -1,3 +1,7 @@
+%ifdef FAT16
+%ifndef __FAT16_UTILS_S
+%define __FAT16_UTILS_S
+
 ; Find a file in a FAT filesystem
 ; Inputs:
 ;   SI = pointer to 11-byte filename
@@ -7,17 +11,16 @@
 ;   Direction flag is cleared
 ;   DL = Drive Number
 FAT_find_file:
-; Load the File Allocation Table into memory
+; Find the File Allocation Table on the disk
     mov ax, [BPB_RsvdSecCnt]    ; ax = File Allocation Table region start sector
-    ; Since each File Allocation Table is too big to be loaded in it's entirety in FAT16 and FAT32 we'll load it only partially
+; Load the File Allocation Table into memory
+    ; Since each File Allocation Table is too big to be loaded in it's entirety in FAT16 we'll load it only partially
     ; 0x7C00 - STACK_SIZE (+/- 500 bytes) - FAT_BUFFER(0x500) => 0x6C00 / BPB_BytsPerSec => +/- 54 sectors that we can read
     mov cl, 50                  ; load 50 sectors into memory
     mov bx, FAT_BUFFER          ; es:bx points to destination
     call BIOS_read
 
 ; Find the Root Directory on the disk
-    ; xor dx, dx
-    push dx                     ; store drive number
     mov ax, [BPB_RootEntCnt]    ; Count of directory entries in the Root Directory
     mov bx, DIR_ENTRY_SIZE      ; 32 bytes per entry
     mul bx                      ; ax = BPB_RootEntCnt * 32 BYTE
@@ -31,11 +34,11 @@ FAT_find_file:
     mov ax, [BPB_FATSz16]       ; Sectors per FAT
     mov bl, [BPB_NumFATs]       ; Number of FATs
     mul bx                      ; ax = (BPB_NumFATs * BPB_FATSz16) => FAT Region Size
-    add ax, [BPB_RsvdSecCnt]    ; ax += ReservedSectorCount => Root Directory start location (For FAT12 & FAT16)
+    add ax, [BPB_RsvdSecCnt]    ; ax += ReservedSectorCount => Root Directory start location
 
 ; Load the Root Directory into memory
     pop cx                      ; Save Root Directory size (in number of sectors)
-    pop dx                      ; get back drive number
+    mov dx, [BS_DrvNum]         ; Set back drive number
     mov bx, ROOT_DIR_BUFFER
     call BIOS_read
 
@@ -45,9 +48,13 @@ FAT_find_file:
 
 .search_file:
     mov cx, FILE_NAME_SIZE
-    push di                     ; cmpsb modifies DI so save it
+    push cx
+    push di
+    push si                     ; cmpsb will modify DI and SI while repe will modify CX, so save them before use
     repe cmpsb                  ; Compares byte at address DS:SI with byte at address ES:DI and sets the status flags accordingly
+    pop si
     pop di
+    pop cx
     je .get_start_cluster
 
     add di, DIR_ENTRY_SIZE      ; move to next directory entry
@@ -59,7 +66,6 @@ FAT_find_file:
 
 .get_start_cluster:
     mov ax, [di + CLUSTER_LOW_OFFSET]
-    print_letter "X"
     ret
 
 
@@ -69,44 +75,53 @@ FAT_find_file:
 ; Assumptions
 ;   FAT has been loaded into RAM at FAT_BUFFER
 ;   ES = 0
-;   DL = Drive Number
 FAT_load_chain:
-    print_letter "L"
     mov [currentCluster], ax
-; read cluster into memory
-    ; sub ax, 2 ; ! im not sure if i believe this
-    mov cx, [BPB_SecPerClus]
-    mul cx                      ; ax = cluster number * BPB_SecPerClus
-    add ax, [dataRegionStart]   ; ax += dataRegionStart => cluster start address (LBA)
-    ; ? consider doing xor cx, cx here
+
+; Read cluster into memory
+    xor cx, cx                  ; clear out cx
     mov cl, [BPB_SecPerClus]
+    mul cx                      ; ax = cluster number * BPB_SecPerClus => starting sector number
+    add ax, [dataRegionSector]  ; ax += dataRegionSector => actual starting sector address (LBA)
+; ! replace dataRegionSector in the future
+; ! BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz16) + ((BPB_RootEntCnt * 32) + BPB_BytsPerSec - 1) / BPB_BytsPerSec
+; ! FAT_DATA_START      equ (0x4 + (0x2 * 0x86) + ((0x200 * 32) + 0x200 - 1) / 0x200)
+;
+    mov dl, [BS_DrvNum]
     call BIOS_read
-    print_letter "M"
+
+; Get cluster offset into the File Allocation Table
+    mov ax, [currentCluster]
+    xor cx, cx
+    mov cl, [FAT_ENTRY_SIZE]    ; cl = 2
+    mul cx                      ; ax = current cluster * 2 => Cluster offset in bytes
+    add ax, FAT_BUFFER          ; ax = 0x500 + Cluster offset in bytes
+    mov di, ax
+
+; Check current cluster EOF
+    cmp word [di], FAT_EOF      ; Check the current cluster for EOF
+
+    jae .chain_end              ; if greater than or equal
+
+; Move to next cluster in the chain
+    mov ax, [di]
+    mov [currentCluster], ax
 
 ; Update mem address pointed to by ES:BX
     mov ax, [BPB_BytsPerSec]
-    mov cx, [BPB_SecPerClus]
+    xor cx, cx
+    mov cl, [BPB_SecPerClus]
     mul cx                      ; ax = bytes per cluster
-    add bx, ax
-    push bx                     ; save memory pointer
+    add bx, ax                  ; offset the memoryy pointer by bytes per cluster (since we read an entire cluster)
 
-; Move to next cluster in the chain
+; Set starting cluster number for next call
     mov ax, [currentCluster]
-    mov di, FAT_ENTRY_SIZE      ; 2 for FAT16
-    mul di                      ; ax = starting cluster * FAT_ENTRY_SIZE => Offset of our cluster
-    add ax, FAT_BUFFER          ; memory location of our files next cluster in the FAT
-    print_letter "N"
 
-; Check current cluster EOF
-    and ax, 0xFFFF              ; ? optional
-    cmp word ax, 0xFFF8         ; Since ax can only read 16bits we'll leave it as it for FAT32 aswell
-    pop bx                      ; get back out memory pointer to restore the stack
-    jae .done                   ; if greater than or equal
-
-    print_letter "O"
-    mov [currentCluster], ax
     jmp FAT_load_chain
 
-.done:
-    print_letter "R"
+.chain_end:
     ret
+
+
+%endif
+%endif

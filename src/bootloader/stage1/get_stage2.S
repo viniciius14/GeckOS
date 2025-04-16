@@ -5,15 +5,13 @@
 ;   Loads file into 0x7E00 if found, else jumps to failure
 get_stage2:
 %ifdef FAT_FS
-    mov dx, [BS_DrvNum]
-
     call FAT_find_file
 
     xor bx, bx
     mov es, bx
     mov bx, STAGE2_OFFSET
-
     call FAT_load_chain
+
 %endif
 
     ret

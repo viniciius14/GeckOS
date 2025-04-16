@@ -23,16 +23,17 @@ _stage1_start:
     ; mov al, 0x13
     ; int 0x10
 
-    cli                 ; Clear interrupt flag
-    cld                 ; Clear direction flag
-    xor ax, ax          ; Clear main registers
+    cli                     ; Clear interrupt flag
+    cld                     ; Clear direction flag
+    xor ax, ax              ; Clear main registers
     mov bx, ax
     mov cx, ax
-    mov dx, ax
     mov ds, ax
     mov es, ax
     mov ss, ax
     mov sp, STAGE2_STACK
+
+    mov [BS_DrvNum], dx     ; Overwrite the drive number with the one the BIOS gives us
 
     mov si, fileStage2Bin
 
@@ -53,10 +54,10 @@ failure:
 %include "BIOS_print.S"
 %include "get_stage2.S"
 
-fileStage2Bin:          db "STAGE2  BIN", 0
+fileStage2Bin:          db "STAGE2  BIN"
 errorMsg:               db "CRITICAL ERROR", 0
 currentCluster:         dw 0
-dataRegionStart:        dw FAT_DATA_START
+dataRegionSector:       dw FAT_DATA_START
 
 times (510 - ($ - $$)) db 0
 dw 0xAA55
