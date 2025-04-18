@@ -6,7 +6,7 @@
 ; Checks for conflicting defines
 %ifdef BITS32
     %ifdef BITS64
-        %error "Conflicting flags defined."
+        %error "Conflicting flag BITS defined."
     %endif
 %endif
 

@@ -19,7 +19,6 @@ FAT_find_file:
     mov cl, 50                  ; load 50 sectors into memory
     mov bx, FAT_BUFFER          ; es:bx points to destination
     call BIOS_read
-
 ; Find the Root Directory on the disk
     mov ax, [BPB_RootEntCnt]    ; Count of directory entries in the Root Directory
     mov bx, DIR_ENTRY_SIZE      ; 32 bytes per entry
@@ -41,7 +40,6 @@ FAT_find_file:
     mov dx, [BS_DrvNum]         ; Set back drive number
     mov bx, ROOT_DIR_BUFFER
     call BIOS_read
-
 ; Find the file in the root directory
     mov di, ROOT_DIR_BUFFER
     mov ax, 1                   ; counter for number of entries checked
@@ -86,16 +84,15 @@ FAT_load_chain:
 ; ! replace dataRegionSector in the future
 ; ! BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz16) + ((BPB_RootEntCnt * 32) + BPB_BytsPerSec - 1) / BPB_BytsPerSec
 ; ! FAT_DATA_START      equ (0x4 + (0x2 * 0x86) + ((0x200 * 32) + 0x200 - 1) / 0x200)
-;
+
     mov dl, [BS_DrvNum]
     call BIOS_read
-
-; Get cluster offset into the File Allocation Table
+; Get Cluster Offset into the File Allocation Table
     mov ax, [currentCluster]
     xor cx, cx
     mov cl, [FAT_ENTRY_SIZE]    ; cl = 2
-    mul cx                      ; ax = current cluster * 2 => Cluster offset in bytes
-    add ax, FAT_BUFFER          ; ax = 0x500 + Cluster offset in bytes
+    mul cx                      ; ax = current cluster * 2 => Cluster Offset in bytes
+    add ax, FAT_BUFFER          ; ax = 0x500 + Cluster Offset in bytes
     mov di, ax
 
 ; Check current cluster EOF

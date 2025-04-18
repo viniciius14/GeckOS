@@ -31,6 +31,8 @@
     %endif
 %endif
 
+MAX_SECTORS_READ        equ 127
+
 STAGE2_STACK            equ 0x07C00
 
 STAGE2_OFFSET           equ 0x07E00

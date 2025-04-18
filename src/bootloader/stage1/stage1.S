@@ -32,9 +32,7 @@ _stage1_start:
     mov es, ax
     mov ss, ax
     mov sp, STAGE2_STACK
-
     mov [BS_DrvNum], dx     ; Overwrite the drive number with the one the BIOS gives us
-
     mov si, fileStage2Bin
 
     ; Find stage 2 of the bootloader and then load it into memory
@@ -44,15 +42,14 @@ _stage1_start:
 
     jmp STAGE2_SEGMENT:STAGE2_OFFSET
 
+%include "BIOS_utils.S"
+%include "get_stage2.S"
+
 ; Common label to jump to when a critical error is found
 failure:
     mov si, errorMsg
     call BIOS_print
     unreachable
-
-%include "BIOS_read.S"
-%include "BIOS_print.S"
-%include "get_stage2.S"
 
 fileStage2Bin:          db "STAGE2  BIN"
 errorMsg:               db "CRITICAL ERROR", 0

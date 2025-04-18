@@ -1,10 +1,10 @@
-%ifndef __DISK_S
-%define __DISK_S
+%ifndef __BIOS_READ_S
+%define __BIOS_READ_S
 
-; Use BIOS interrupts to read sectors from disk into RAM
+; Use BIOS INT13h to read sectors from disk into RAM
 ; Inputs:
 ;   - AX = LBA address
-;   - CL = number of sectors to read (up to 128)
+;   - CL = number of sectors to read (up to 127)
 ;   - DL = drive number
 ;   - ES:BX = memory address where to store read data
 BIOS_read:

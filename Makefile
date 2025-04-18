@@ -74,9 +74,9 @@ FAT32:
 	@echo "\nCreating FAT 32 image -> $(TARGET) with 128MB\n"
 	dd if=/dev/zero                         of=$(TARGET)     bs=512        count=273042
 	mkfs.fat $(TARGET) -a -F 32 -S 512 -s 4 -R 32
-# Add stage1 bootloader
+# Add stage1 bootloader and File System Information Structure
 	dd if=$(BOOT_BIN)/stage1_FAT32.bin      of=$(TARGET)     bs=512	seek=0 conv=notrunc
-# Add copy of bootsector (FsInfo struct already comes with the stage1 binary)
+# Add copy of stage1 bootloader and File System Information Structure
 	dd if=$(BOOT_BIN)/stage1_FAT32.bin      of=$(TARGET)     bs=512 seek=6 conv=notrunc
 # Add stage2 bootloader
 	mcopy -i $(TARGET) $(BOOT_BIN)/stage2.bin ::
