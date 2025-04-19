@@ -74,21 +74,20 @@ FAT_find_file:
 ;   FAT has been loaded into RAM at FAT_BUFFER
 ;   ES = 0
 FAT_load_chain:
-    mov [currentCluster], ax
-
 ; Read cluster into memory
     xor cx, cx                  ; clear out cx
     mov cl, [BPB_SecPerClus]
     mul cx                      ; ax = cluster number * BPB_SecPerClus => starting sector number
     add ax, [dataRegionSector]  ; ax += dataRegionSector => actual starting sector address (LBA)
+    mov dl, [BS_DrvNum]
 ; ! replace dataRegionSector in the future
 ; ! BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz16) + ((BPB_RootEntCnt * 32) + BPB_BytsPerSec - 1) / BPB_BytsPerSec
 ; ! FAT_DATA_START      equ (0x4 + (0x2 * 0x86) + ((0x200 * 32) + 0x200 - 1) / 0x200)
 
-    mov dl, [BS_DrvNum]
     call BIOS_read
 ; Get Cluster Offset into the File Allocation Table
     mov ax, [currentCluster]
+    add ax, 2                   ; add 2 to take into account the reserved entries
     xor cx, cx
     mov cl, [FAT_ENTRY_SIZE]    ; cl = 2
     mul cx                      ; ax = current cluster * 2 => Cluster Offset in bytes
@@ -97,7 +96,6 @@ FAT_load_chain:
 
 ; Check current cluster EOF
     cmp word [di], FAT_EOF      ; Check the current cluster for EOF
-
     jae .chain_end              ; if greater than or equal
 
 ; Move to next cluster in the chain
@@ -109,7 +107,7 @@ FAT_load_chain:
     xor cx, cx
     mov cl, [BPB_SecPerClus]
     mul cx                      ; ax = bytes per cluster
-    add bx, ax                  ; offset the memoryy pointer by bytes per cluster (since we read an entire cluster)
+    add bx, ax                  ; offset the memory pointer by bytes per cluster (since we read an entire cluster)
 
 ; Set starting cluster number for next call
     mov ax, [currentCluster]
@@ -118,7 +116,6 @@ FAT_load_chain:
 
 .chain_end:
     ret
-
 
 %endif
 %endif

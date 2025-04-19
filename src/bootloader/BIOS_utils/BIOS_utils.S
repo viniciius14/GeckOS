@@ -10,6 +10,7 @@
     %include "BIOS_read_ext.S"
 %endif
 
+%include "BIOS_disk_reset.S"
 %include "BIOS_relocate.S"
 
 %endif

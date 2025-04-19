@@ -68,28 +68,28 @@ FAT_find_file:
 ;   FAT has been loaded into RAM at FAT_BUFFER
 ;   ES = 0
 FAT_load_chain:
-    mov [currentCluster], ax
-
-; read cluster into memory
-    xor cx, cx
+; Read cluster into memory
+    xor cx, cx                  ; clear out cx
     mov cl, [BPB_SecPerClus]
+    mul cx                      ; ax = cluster number * BPB_SecPerClus => starting sector number
+    add ax, [dataRegionSector]  ; ax += dataRegionSector => actual starting sector address (LBA)
+    ; ! replace dataRegionSector in the future
     mov dl, [BS_DrvNum]
     call BIOS_read
 
-; Update mem address pointed to by ES:BX
-    add bx, [BPB_BytsPerSec]    ; assuming Sectors per Cluster will always be 1 for FAT12
-    push bx                     ; save memory pointer
-
-; FAT12 entries are 12-bit values packed together so every two clusters take up 3 bytes, meaning:
+; Get Cluster Offset into the File Allocation Table
+; FAT12 entries are 12-bit values packed together so every 2 clusters take up 3 bytes, meaning:
 ;   - If cluster number is even: use low 12 bits
 ;   - If odd: use high 12 bits (shifted right 4)
+    mov ax, [currentCluster]
+    add ax, 2                   ; add 2 to take into account the reserved entries
     mov bx, 3
     mul bx                      ; ax = currentCluster * 3
     mov bx, 2
     div bx                      ; ax = (currentCluster * 3) / 2 => File Allocation Table offset
-    add ax, FAT_BUFFER          ; add base address of FAT
-    mov si, ax
-    mov ax, [si]                ; read 2 bytes from File Allocation Table offset
+    add ax, FAT_BUFFER          ; ax = 0x500 + Cluster Offset in bytes
+    mov di, ax
+    mov ax, [di]                ; read 2 bytes from File Allocation Table offset
     test dx, dx                 ; check division remainder
     jnz .odd                    ; if remainder != 0, jump
 
@@ -102,17 +102,23 @@ FAT_load_chain:
 
 .after:
 ; Check current cluster EOF
-    cmp word ax, 0xFF
-; Move to next cluster in the chain
-    mov ax, [currentCluster]
-    pop bx                      ; get back out memory pointer to restore the stack
-    jae .done                   ; if greater than or equal
+    cmp word ax, FAT_EOF        ; Check the current cluster for EOF
+    jae .chain_end              ; if greater than or equal
 
-    print_letter "O"
+; Move to next cluster in the chain
     mov [currentCluster], ax
+
+; Update mem address pointed to by ES:BX
+    mov ax, [BPB_BytsPerSec]
+    xor cx, cx
+    mov cl, [BPB_SecPerClus]
+    mul cx                      ; ax = bytes per cluster
+    add bx, ax                  ; offset the memory pointer by bytes per cluster (since we read an entire cluster)
+    mov ax, [currentCluster]    ; Set starting cluster number for next call
+
     jmp FAT_load_chain
 
-.done:
+.chain_end:
     ret
 
 %endif

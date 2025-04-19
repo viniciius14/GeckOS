@@ -44,20 +44,6 @@ BIOS_read:
     ret
 
 
-; Resets disk controller
-; Inputs:
-;   DL = drive number
-;
-BIOS_disk_reset:
-    pusha
-    mov ah, 0
-    stc
-    int 13h
-    jc failure          ; if an error occurs during a reset, give up
-
-    popa
-    ret
-
 ; Converts an LBA address to a CHS address
 ; Inputs:
 ;   - AL = LBA address

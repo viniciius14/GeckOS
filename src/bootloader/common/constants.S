@@ -12,7 +12,7 @@
 
 ; To delete in the future and replace with runtime calculation
     %ifdef FAT12            ; BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz16) + ((BPB_RootEntCnt * 32) + BPB_BytsPerSec - 1) / BPB_BytsPerSec
-        FAT_DATA_START      equ (0x1 + (0x2 * 0x9) + ((0xE * 32) + 0x200 - 1) / 0x200)
+        FAT_DATA_START      equ (0x1 + (0x2 * 0x9) + ((0xE0 * 32) + 0x200 - 1) / 0x200)
     %elifdef FAT16          ; BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz16) + ((BPB_RootEntCnt * 32) + BPB_BytsPerSec - 1) / BPB_BytsPerSec
         FAT_DATA_START      equ (0x4 + (0x2 * 0x86) + ((0x200 * 32) + 0x200 - 1) / 0x200)
     %elifdef FAT32          ; BPB_RsvdSecCnt + (BPB_NumFATs * BPB_FATSz32)

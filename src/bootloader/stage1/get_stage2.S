@@ -9,6 +9,7 @@ get_stage2:
     print_letter "X"
 
     sub ax, 2                   ; clusters are numbered starting from 2, not from 0
+    mov [currentCluster], ax
     xor bx, bx
     mov es, bx
     mov bx, STAGE2_OFFSET
