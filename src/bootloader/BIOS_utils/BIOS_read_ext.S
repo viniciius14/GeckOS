@@ -1,8 +1,6 @@
 %ifndef __BIOS_READ_EXT_S
 %define __BIOS_READ_EXT_S
 
-; ! TODO: Add a disk reset on failure?
-
 ; Use BIOS INT13h Extensions to read sectors from disk into RAM
 ; Inputs:
 ;   - AX = LBA address

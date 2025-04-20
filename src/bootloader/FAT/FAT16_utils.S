@@ -89,7 +89,7 @@ FAT_load_chain:
     mov ax, [currentCluster]
     add ax, 2                   ; add 2 to take into account the reserved entries
     xor cx, cx
-    mov cl, [FAT_ENTRY_SIZE]    ; cl = 2
+    mov cl, FAT_ENTRY_SIZE      ; cl = 2
     mul cx                      ; ax = current cluster * 2 => Cluster Offset in bytes
     add ax, FAT_BUFFER          ; ax = 0x500 + Cluster Offset in bytes
     mov di, ax

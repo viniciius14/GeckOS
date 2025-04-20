@@ -38,8 +38,6 @@ _stage1_start:
     ; Find stage 2 of the bootloader and then load it into memory
     call get_stage2
 
-    print_letter "2"
-
     jmp STAGE2_SEGMENT:STAGE2_OFFSET
 
 %include "BIOS_utils.S"
