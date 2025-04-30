@@ -1,4 +1,3 @@
-%ifdef FAT32
 %ifndef __FAT32_UTILS_S
 %define __FAT32_UTILS_S
 
@@ -104,33 +103,4 @@ FAT_load_chain:
 .chain_end:
     ret
 
-
-
-
-; ; Update mem address pointed to by ES:BX
-;     mov ax, [BPB_BytsPerSec]
-;     mov cx, [BPB_SecPerClus]
-;     mul cx                      ; ax = bytes per cluster
-;     add bx, ax
-;     push bx                     ; save memory pointer
-
-; ; Move to next cluster in the chain
-;     mov ax, [currentCluster]
-;     mov di, FAT_ENTRY_SIZE      ; 4 for FAT32
-;     mul di                      ; ax = starting cluster * FAT_ENTRY_SIZE => Offset of our cluster
-;     add ax, FAT_BUFFER          ; memory location of our files next cluster in the FAT
-
-; ; Check current cluster EOF
-;     and ax, 0xFFFF              ; optional
-;     cmp word ax, 0xFFF8         ; Since ax can only read 16bits we'll leave it as it for FAT32 aswell
-;     pop bx                      ; get back out memory pointer to restore the stack
-;     jae .done                   ; if greater than or equal
-
-;     mov [currentCluster], ax
-;     jmp FAT_load_chain
-
-; .done:
-;     ret
-
-%endif
 %endif

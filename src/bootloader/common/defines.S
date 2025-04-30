@@ -1,8 +1,6 @@
 %ifndef __DEFINES_S
 %define __DEFINES_S
 
-%assign FS_COUNT 0
-
 ; Checks for conflicting defines
 %ifdef BITS32
     %ifdef BITS64
@@ -10,12 +8,15 @@
     %endif
 %endif
 
-; Checks for conflicting defines
+%assign FS_COUNT 0
+
 %ifdef FAT12
     %assign FS_COUNT FS_COUNT + 1
-%elifdef FAT16
+%endif
+%ifdef FAT16
     %assign FS_COUNT FS_COUNT + 1
-%elifdef FAT32
+%endif
+%ifdef FAT32
     %assign FS_COUNT FS_COUNT + 1
 %endif
 

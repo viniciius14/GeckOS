@@ -22,10 +22,10 @@
     %ifdef FAT12
         FAT_EOF             equ 0xFF8
     %elifdef FAT16
-        FAT_ENTRY_SIZE      equ 2
+        FAT_ENTRY_SIZE      equ 0x2
         FAT_EOF             equ 0xFFF8
     %elifdef FAT32
-        FAT_ENTRY_SIZE      equ 4
+        FAT_ENTRY_SIZE      equ 0x4
         FAT_EOF_HIGH        equ 0xFFFF
         FAT_EOF_LOW         equ 0xFFF8
     %endif
@@ -42,5 +42,7 @@ KERNEL_BUFFER_START     equ 0x6F000
 KERNEL_BUFFER_END       equ 0x7F000
 
 KERNEL_START            equ 0x100000
+
+KERNEL_STACK_SIZE       equ 0x1000
 
 %endif

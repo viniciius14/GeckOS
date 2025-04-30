@@ -13,10 +13,7 @@
 
 section _stage2_32.text
 
-KERNEL_STACK_SIZE equ 4096
-
 _stage2_32:
-    mov esp, kernel_stack + KERNEL_STACK_SIZE
 
     mov	ax, 0x10            ; set data segments to data selector (0x10)
 	mov	ds, ax
@@ -27,6 +24,7 @@ _stage2_32:
     mov ebx, 160
 
     call print_string_32
+
 
 %ifdef BITS64
 ;     call _stage2_64        ; switch to long mode
@@ -39,8 +37,3 @@ _stage2_32:
 section .data
 
 stage2msg2: db "Got to stage 2 of the bootloader. (32 bits)", 0
-
-section .bss
-align 16
-kernel_stack:
-    resb KERNEL_STACK_SIZE

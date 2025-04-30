@@ -1,4 +1,3 @@
-%ifdef FAT16
 %ifndef __FAT16_UTILS_S
 %define __FAT16_UTILS_S
 
@@ -117,5 +116,4 @@ FAT_load_chain:
 .chain_end:
     ret
 
-%endif
 %endif
