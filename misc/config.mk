@@ -1,5 +1,6 @@
 # Directories
-PROJECT=$(CURDIR)
+PROJECT=/root/GeckOS
+
 BUILD_DIR=$(PROJECT)/build
 DOCS_DIR=$(PROJECT)/docs
 MISC_DIR=$(PROJECT)/misc

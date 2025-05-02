@@ -1,6 +1,6 @@
 include $(CONFIG_PATH)
 
-KERNEL_SUBDIRS = $(shell find $(KERNEL_DIR) -mindepth 1 -type d)
+KERNEL_SUBDIRS = $(shell find . -mindepth 2 -type d)
 export KERNEL_INCLUDES = $(foreach dir, $(KERNEL_SUBDIRS), -I $(dir))
 
 
@@ -31,8 +31,8 @@ clean:
 
 
 echo:
-	@echo "\n--- Kernel ---\n"
-
+	@echo "1111111111111 $(KERNEL_SUBDIRS)"
+	@echo " 22222222222222222 $(KERNEL_INCLUDES)"
 
 dirs:
 	mkdir -p $(BIN_DIR)

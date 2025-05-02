@@ -14,33 +14,21 @@ SUPPORTED_TARGET_BITS  := BITS32 BITS64
 # Current target
 TARGET = $(OUTPUT_DIR)/GeckOS_$(FS)_$(BITS).img
 
-# Include all directories while compiling each unit
-KERNEL_SUBDIRS = $(shell find $(KERNEL_DIR) -mindepth 1 -type d)
-export KERNEL_INCLUDES = $(foreach dir, $(KERNEL_SUBDIRS), -I $(dir))
-
+OBJS=$(wildcard $(OBJ_DIR)/*.o)
 
 GeckOS: bootloader kernel #stats image
 
 
 bootloader:
-	$(MAKE) -C GBL/
+	$(MAKE) -C GBL/ PROJECT="$(CURDIR)/GBL"
 
 
-kernel: echo dirs link
-	$(OBJ_CPY) $(OBJ_FLAGS) $(OBJ)/kernel.elf $(BIN)/kernel.bin
-
-
-link: entry kernel_directories
-	$(LD) $(LD_FLAGS) -T kernel.ld $(wildcard $(OBJ)/*.o) -o $(OBJ)/kernel.elf
-
-
-entry:
-	$(CC) $(CC_FLAGS) $(KERNEL_INCLUDES) -c kernel_main.c -o $(OBJ)/kernel_main.o
-
-
-# Rule to iterate through each subdirectory and call its Makefile (with exception for the current one)
-kernel_directories:
+kernel: echo dirs
 	$(foreach subdir, $(shell find . -mindepth 2 -type f -name Makefile -exec dirname {} \;), $(MAKE) -C $(subdir);)
+# Link
+	$(LD) $(LD_FLAGS) -T $(SRC_DIR)/kernel.ld $(OBJS) -o $(OBJ_DIR)/kernel.elf
+# Extract
+	$(OBJ_CPY) $(OBJ_FLAGS) $(OBJ)/kernel.elf $(BIN)/kernel.bin
 
 
 clean:
