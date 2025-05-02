@@ -1,30 +1,10 @@
-include misc/config.mk
+include $(CONFIG_PATH)
 
-# Define the path to config.mk
-export CONFIG_PATH := $(PWD)/misc/config.mk
-
-# Default inputs
-export FS   ?= FAT12
-export BITS ?= BITS32
-
-# Input options
-SUPPORTED_FILE_SYSTEMS := FAT12 FAT16 FAT32
-SUPPORTED_TARGET_BITS  := BITS32 BITS64
-
-# Current target
-TARGET = $(OUTPUT_DIR)/GeckOS_$(FS)_$(BITS).img
-
-# Include all directories while compiling each unit
 KERNEL_SUBDIRS = $(shell find $(KERNEL_DIR) -mindepth 1 -type d)
 export KERNEL_INCLUDES = $(foreach dir, $(KERNEL_SUBDIRS), -I $(dir))
 
 
-GeckOS: bootloader kernel #stats image
-
-
-bootloader:
-	$(MAKE) -C GBL/
-
+GeckOS: kernel #stats image
 
 kernel: echo dirs link
 	$(OBJ_CPY) $(OBJ_FLAGS) $(OBJ)/kernel.elf $(BIN)/kernel.bin
@@ -43,13 +23,15 @@ kernel_directories:
 	$(foreach subdir, $(shell find . -mindepth 2 -type f -name Makefile -exec dirname {} \;), $(MAKE) -C $(subdir);)
 
 
+
 clean:
 	rm -rf $(BUILD_DIR)
 	clear
 
 
+
 echo:
-	@echo "\n--- GeckOS Kernel ---\n"
+	@echo "\n--- Kernel ---\n"
 
 
 dirs:

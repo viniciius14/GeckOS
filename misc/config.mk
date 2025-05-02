@@ -1,22 +1,16 @@
 # Directories
-PROJECT=/root/os
+PROJECT=$(CURDIR)
 BUILD_DIR=$(PROJECT)/build
 DOCS_DIR=$(PROJECT)/docs
 MISC_DIR=$(PROJECT)/misc
 SRC_DIR=$(PROJECT)/src
 
-BOOT_DIR=$(SRC_DIR)/bootloader
-KERNEL_DIR=$(SRC_DIR)/kernel
+BIN_DIR=$(BUILD_DIR)/bin
+OBJ_DIR=$(BUILD_DIR)/obj
+DEBUG_DIR=$(BUILD_DIR)/debug
 
 OS_FILES=$(MISC_DIR)/osfiles
 
-BOOT_BIN=$(BUILD_DIR)/bootloader/bin
-BOOT_OBJ=$(BUILD_DIR)/bootloader/obj
-
-KERNEL_BIN=$(BUILD_DIR)/kernel/bin
-KERNEL_OBJ=$(BUILD_DIR)/kernel/obj
-
-DEBUG_DIR=$(BUILD_DIR)/debug
 
 ASM=nasm
 ASM_FLAGS=-W+all -W+error -W+orphan-labels -W+macro-params -W+error
