@@ -31,6 +31,24 @@ kernel:
 	$(OBJ_CPY) $(OBJ_FLAGS) $(OBJ_DIR)/kernel.elf $(BIN_DIR)/kernel.bin
 
 
+run: GeckOS
+ifeq ($(FS), FAT12)
+	$(MAKE) run_floppy
+else ifeq ($(FS), FAT16)
+	$(MAKE) run_hard_disk
+else ifeq ($(FS), FAT32)
+	$(MAKE) run_hard_disk
+endif
+
+
+run_floppy:
+	$(EMULATOR) -drive file=$(TARGET),format=raw,index=0,if=floppy $(EMUL_FLAGS)
+
+
+run_hard_disk:
+	$(EMULATOR) -drive file=$(TARGET),format=raw,index=0,if=ide $(EMUL_FLAGS)
+
+
 stats:
 	@echo "--- TARGET -> $(TARGET) ---" >> $(STATS)
 	$(call obj_count)
@@ -41,8 +59,10 @@ stats:
 image:
 	mcopy -i $(TARGET) $(BIN_DIR)/kernel.bin ::
 
+
 clean:
 	rm -rf $(BUILD_DIR)
+	(make -C GBL/ clean)
 	clear
 
 
