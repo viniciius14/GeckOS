@@ -1,19 +1,16 @@
 include $(CONFIG_PATH)
 
 SRCS := $(wildcard *.c)
-OBJS := $(patsubst %.c, $(OBJ)/%.o, $(SRCS))
+OBJS := $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-default: echo floppy
+default: echo $(OBJS)
 
 
 echo:
 	@echo "\nFloppy Driver\n"
 
 
-floppy: $(OBJS)
-
-
-$(OBJ)/%.o: %.c
+$(OBJ_DIR)/%.o: %.c
 	$(CC) $(CC_FLAGS) $(KERNEL_INCLUDES) -c $< -o $@
 
 

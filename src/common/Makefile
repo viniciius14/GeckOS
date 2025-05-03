@@ -1,19 +1,16 @@
 include $(CONFIG_PATH)
 
 SRCS := $(wildcard *.c)
-OBJS := $(patsubst %.c, $(OBJ)/%.o, $(SRCS))
+OBJS := $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-default: echo common
+default: echo $(OBJS)
 
 
 echo:
 	@echo "\nCommon\n"
 
 
-common: $(OBJS)
-
-
-$(OBJ)/%.o: %.c
+$(OBJ_DIR)/%.o: %.c
 	$(CC) $(CC_FLAGS) $(KERNEL_INCLUDES) -c $< -o $@
 
 
