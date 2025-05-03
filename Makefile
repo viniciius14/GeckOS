@@ -1,7 +1,7 @@
 include misc/config.mk
 
 # Define the path to config.mk
-export CONFIG_PATH := $(PWD)/misc/config.mk
+export CONFIG_PATH := $(PROJECT)/misc/config.mk
 
 # Default inputs
 export FS   ?= FAT12
@@ -20,7 +20,7 @@ GeckOS: bootloader kernel #stats image
 
 
 bootloader:
-	$(MAKE) -C GBL/ PROJECT="$(CURDIR)/GBL"
+	(make -C GBL/ FS=$(FS) BITS=$(BITS) OUTPUT_DIR=$(BUILD_DIR))
 
 
 kernel: echo dirs
