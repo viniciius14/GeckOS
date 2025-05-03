@@ -12,6 +12,7 @@ DEBUG_DIR=$(BUILD_DIR)/debug
 
 OS_FILES=$(MISC_DIR)/osfiles
 
+STATS=$(DEBUG_DIR)/stats.log
 
 ASM=nasm
 ASM_FLAGS=-W+all -W+error -W+orphan-labels -W+macro-params -W+error
