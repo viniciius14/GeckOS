@@ -19,7 +19,6 @@ void MemSet(void *const dst, const uint8_t value, uint32_t n) {
     }
 }
 
-
 void *MemCpy(void *const dst, const void *src, uint32_t n) {
     uint8_t *d = dst;
     const uint8_t *s = src;
@@ -30,7 +29,6 @@ void *MemCpy(void *const dst, const void *src, uint32_t n) {
     return dst;
 }
 
-
 void *MemMove(void *const dst, void *const src, const uint32_t n) {
     if (src > dst) {
         return MemCpy(dst, src, n);
@@ -39,7 +37,7 @@ void *MemMove(void *const dst, void *const src, const uint32_t n) {
     uint8_t *d = dst;
     const uint8_t *s = src;
 
-    for (uint32_t i = n ; i > 0 ; i--) {
+    for (uint32_t i = n; i > 0; i--) {
         d[i - 1] = s[i - 1];
     }
 
@@ -47,8 +45,9 @@ void *MemMove(void *const dst, void *const src, const uint32_t n) {
 }
 
 /* Convert LBA addressing into CHS addressing */
-INLINE void ConvertLbaChs(const uint32_t lba, uint8_t *cyl, uint8_t *head, uint8_t *sector) {
-    *cyl    = lba / (2 * 18);
-    *head   = ((lba % (2 * 18)) / 18);
+INLINE void ConvertLbaChs(const uint32_t lba, uint8_t *cyl, uint8_t *head,
+                          uint8_t *sector) {
+    *cyl = lba / (2 * 18);
+    *head = ((lba % (2 * 18)) / 18);
     *sector = ((lba % (2 * 18)) % 18 + 1);
 }

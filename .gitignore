@@ -1,19 +1,7 @@
 build/
-/.vscode
-
 *.log
-*.drawio
 *.bin
-*.md
 *.img
-*.sh
-*.json
-
-# Exceptions
-!docker_run.sh
-
-# Prerequisites
-*.d
 
 # Object files
 *.o
@@ -34,12 +22,6 @@ build/
 *.a
 *.la
 *.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
 
 # Executables
 *.exe

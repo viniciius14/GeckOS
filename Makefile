@@ -1,11 +1,10 @@
-include misc/config.mk
+export PROJECT:=$(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
-# Define the path to config.mk
-export CONFIG_PATH := $(PROJECT)/misc/config.mk
+include $(PROJECT)/misc/config.mk
 
-# Default inputs
-export FS ?= FAT12
-export BITS ?= BITS32
+# User inputs
+export FILE_SYSTEM ?=FAT12
+export ARCH_BITS   ?=BITS32
 
 # Input options
 SUPPORTED_FILE_SYSTEMS := FAT12 FAT16 FAT32
@@ -16,10 +15,8 @@ TARGET = $(BUILD_DIR)/GeckOS_$(FS)_$(BITS).img
 
 GeckOS: bootloader kernel stats image
 
-
 bootloader: dirs
 	(make -C GBL/ FS=$(FS) BITS=$(BITS) OUTPUT_DIR=$(BUILD_DIR))
-
 
 kernel:
 	@echo "\n--- GeckOS Kernel ---\n"
@@ -71,14 +68,7 @@ dirs:
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(DEBUG_DIR)
 
-
-define bin_size_stat
-	@wc -c $1 | awk '{ if ($$2 != "total") { n=split($$2,a,"/"); printf "%s - %s bytes\n", a[n], $$1 } }' >> $(STATS)
-endef
-
-
-define obj_count
-	@echo "Object unit count -> $$(ls $(OBJ_DIR)/*.o | wc -l)" >> $(STATS)
-endef
+format:
+	clang-format -style=file:$(MISC_DIR)/formatter/.clang-format -i $(shell find src -name '*.c' -o -name '*.h')
 
 .PHONY: GeckOS
