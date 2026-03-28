@@ -68,7 +68,16 @@ dirs:
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(DEBUG_DIR)
 
+SOURCE_FILES = $(shell find src -name '*.c' -o -name '*.h')
+
 format:
-	clang-format -style=file:$(MISC_DIR)/formatter/.clang-format -i $(shell find src -name '*.c' -o -name '*.h')
+	clang-format -style=file:$(MISC_DIR)/formatter/.clang-format -i $(SOURCE_FILES)
+
+lint:
+	bear --output $(BUILD_DIR)/compile_commands.json -- make
+	clang-tidy -p $(BUILD_DIR) $(SOURCE_FILES)
+
+static:
+	cppcheck --enable=all $(SOURCE_FILES)
 
 .PHONY: GeckOS
