@@ -3,6 +3,7 @@ export BUILD_DIR := $(PROJECT)/build
 export DOCS_DIR  := $(PROJECT)/docs
 export MISC_DIR  := $(PROJECT)/misc
 export SRC_DIR   := $(PROJECT)/src
+export BOOT_DIR  := $(PROJECT)/boot
 
 export BIN_DIR    := $(BUILD_DIR)/bin
 export OBJ_DIR    := $(BUILD_DIR)/obj
@@ -60,7 +61,7 @@ export ASM_FLAGS     = -W+all -W+error -W+orphan-labels -W+macro-params
 export ASM_FORMAT32  = -f elf32
 export ASM_FORMAT64  = -f elf64
 export CC_FLAGS      = -Wall -Wextra -Werror -nostdlib -fno-builtin -ffreestanding -mgeneral-regs-only -fdata-sections -ffunction-sections -pedantic -mno-red-zone -fno-pic -fno-pie -static  -std=c11
-# TODO -mcmodel=small  only supported for 64-bit
+# @TODO -mcmodel=small  only supported for 64-bit
 
 export CC_FORMAT32   = -m32
 export CC_FORMAT64   = -m64
@@ -76,5 +77,3 @@ export FS_FAT32_ARGS = -a -F 32 -S 512 -s 4        -R 32
 
 # Extra stuff for the build process
 export USER_INPUTS = -D$(FILE_SYSTEM) -D$(ARCH_BITS) -DKERNEL_NAME='"$(KERNEL_NAME)"'
-
-export COMMON_LIBS := $(foreach dir,$(shell find $(LIBS_DIR) -mindepth 1 -type d),$(dir))

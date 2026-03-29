@@ -1,4 +1,4 @@
-ENTRY(_kernel_main)
+ENTRY(start)
 OUTPUT_FORMAT(elf32-i386)
 
 SECTIONS {
