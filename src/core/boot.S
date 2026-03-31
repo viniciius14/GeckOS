@@ -1,15 +1,15 @@
 BITS 32
 
 ; @TODO: Add an %ifdef GRUB
-; %ifdef GRUB
-;     %include "grub.S"
-; %endif
+%ifdef GRUB
+    %include "grub.S"
+%endif
 
 section .text
-    align 4
-    dd 0x1BADB002 ; Magic number
-    dd 0x00       ; Flags
-    dd -(0x1BADB002 + 0x00) ; Checksum
+    ; align 4
+    ; dd 0x1BADB002 ; Magic number
+    ; dd 0x00       ; Flags
+    ; dd -(0x1BADB002 + 0x00) ; Checksum
 global start
 extern KernelMain
 
