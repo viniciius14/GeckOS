@@ -1,3 +1,16 @@
+/* --------------- Includes ---------------- */
+
+/* None */
+
+/* ---------- Function Prototypes ---------- */
+
+/* None */
+
+/* ----------- Global Variables ------------ */
+
+/* None */
+
+/* -------- Function Implementations ------- */
 
 void KernelMain(void) {
     // Pointer to the start of the VGA text buffer

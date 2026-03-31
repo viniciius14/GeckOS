@@ -1,3 +1,5 @@
+BITS 32
+
 %ifdef GRUB
 
 section .text
