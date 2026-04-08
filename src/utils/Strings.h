@@ -1,20 +1,17 @@
-#ifndef __{{nameConstant}}_H
-#define __{{nameConstant}}_H
+#ifndef __STRINGS_H
+#define __STRINGS_H
 
 /* --------------- Includes ---------------- */
 
-/* None */
+#include "Standard.h"
 
 /* ---------------- Defines ---------------- */
 
-/* None */
-
 /* ----------------- Types ----------------- */
-
-/* None */
 
 /* ---------- Function prototypes ---------- */
 
+uint32_t strlen(const char *str);
+void     kprint(const char *str, ...);
 
-
-#endif /* __{{nameConstant}}_H */
+#endif /* __STRINGS_H */

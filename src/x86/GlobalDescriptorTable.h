@@ -1,20 +1,12 @@
-#ifndef __{{nameConstant}}_H
-#define __{{nameConstant}}_H
+#ifndef __GLOBAL_DESCRIPTOR_TABLE_H
+#define __GLOBAL_DESCRIPTOR_TABLE_H
 
 /* --------------- Includes ---------------- */
 
-/* None */
-
 /* ---------------- Defines ---------------- */
-
-/* None */
 
 /* ----------------- Types ----------------- */
 
-/* None */
-
 /* ---------- Function prototypes ---------- */
 
-
-
-#endif /* __{{nameConstant}}_H */
+#endif /* __GLOBAL_DESCRIPTOR_TABLE_H */
