@@ -11,8 +11,5 @@ utils:$(C_OBJS)
 	@echo ""
 
 $(OBJ_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) \
-	$(USER_INPUTS) \
-	$(LIB_INCLUDES) \
-	-c $< -o $@
-	@echo ""
+	@echo "Compiling $(notdir $@)..."
+	@$(CC) $(CC_FORMAT) $(CC_FLAGS) $(DEFINES) -c $< -o $(OBJ_DIR)/$(basename $(notdir $@)).o

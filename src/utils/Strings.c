@@ -4,83 +4,68 @@
 
 /* ---------- Function Prototypes ---------- */
 
-static void       print(const char *str);
+static void printChar(const char letter);
 
 /* ----------- Global Variables ------------ */
 
-const char *const textBuffer = (char *)0xB8000;
-uint32_t          currX      = 0;
+char *const textBuffer = (char *)0xB8000;
+uint32_t    currX      = 0;
+uint8_t     currColour = 0x0A;
 
 /* -------- Function Implementations ------- */
 
-uint32_t          strlen(const char *str) {
-             uint32_t strSize = 0;
-             if (str != NULL) {
-                 for (uint32_t i; str[i] != '\0'; i++) {
-                     strSize++;
+// @TODO: Add colour support for this file
+
+uint32_t strlen(const char *str) {
+    uint32_t strSize = 0;
+    if (str != NULL) {
+        for (uint32_t i = 0; str[i] != '\0'; i++) {
+            strSize++;
         }
     }
-             return strSize;
-}
-
-void printf(const char *str, ...) {
-    if (str == NULL) {
-        return;
-    }
-
-    // vaArg_t *args;
-
-    // vaArgs_start(&args, str);
-
-    for (int i = 0 ; str[i] != '\0'; i++) {
-        if (str[i] != '%') {
-            printChar(*str);
-        } else {
-			i++;
-            switch (str[i]) {
-                case 'd': {
-                    int i = VA_ARGS_NEXT(args, int);
-                    printf("%d\n", i);
-                    break;
-                }
-                case 'c': {
-                    // A 'char' variable will be promoted to 'int'
-                    // A character literal in C is already 'int' by itself
-                    int c = VA_ARGS_NEXT(args, int);
-                    printf("%c\n", c);
-                    break;
-                }
-                case 'f': {
-                    double d = VA_ARGS_NEXT(args, double);
-                    printf("%f\n", d);
-                    break;
-                }
-				// case '!': {
-				// 	colour_t = 0;
-				// }
-				// case '#': {
-				// 	colour_t = 0;
-				// }
-				// case '?': {
-				// 	colour_t = 0;
-				// }
-                default: {
-                    printChar(str[i]);
-                }
-            }
-
-        }
-    }
-    va_end(args);
+    return strSize;
 }
 
 void print(const char *str) {
+    if (str == NULL) {
+        return;
+    }
+    uint32_t i = 0;
+    while (str[i] != '\0') {
+        textBuffer[i * 2]     = str[i]; // The character
+        textBuffer[i * 2 + 1] = 0x0A;   // Color: Light Green (0x0A) on Black (0x0)
+        i++;
+    }
+    (void)printChar;
 }
 
 void printChar(const char letter) {
-    // Write the string to the top-left of the screen
     if (letter != '\0') {
-        vga_buffer[currX * 2]     = str[i]; // The character
-        vga_buffer[currX * 2 + 1] = 0x0A;   // Color: Light Green (0x0A) on Black (0x0)
+        if (letter == '\n') {
+            // @TODO Jump to the beginning of the next row
+            // currX +=;
+        } else {
+            textBuffer[currX++ * 2]     = letter;
+            textBuffer[currX++ * 2 + 1] = currColour; // Colour
+            currX++;
+        }
     }
+}
+
+// @TODO: Implement me
+void printInteger(int num) {
+    print("Integer");
+    (void)num;
+}
+
+// @TODO: Implement me
+void printDouble(double num) {
+    print("Double");
+    (void)num;
+}
+
+// @TODO: Implement me
+void printHex(uint64_t num) {
+    print("Hex");
+    (void)num;
 }

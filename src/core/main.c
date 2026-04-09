@@ -1,6 +1,6 @@
 /* --------------- Includes ---------------- */
 
-/* None */
+#include "../utils/Strings.h"
 
 /* ---------- Function Prototypes ---------- */
 
@@ -14,14 +14,14 @@
 
 void KernelMain(void) {
     // Pointer to the start of the VGA text buffer
-    char        *vga_buffer = (char *)0xb8000;
+    char *vga_buffer = (char *)0xb8000;
     // Each character on screen takes 2 bytes: [ASCII Char][Attribute/Color]
     // Console_init();
     // Console_printString(VGA_WHITE, "ABC");
 
-    const char  *str        = "Hello from GeckOS!";
-    unsigned int i          = 0;
-    unsigned int j          = 0;
+    const char  *str = "Hello from GeckOS!";
+    unsigned int i   = 0;
+    unsigned int j   = 0;
 
     // Clear the screen (optional, but good practice)
     // 80 columns * 25 lines * 2 bytes per character = 4000 bytes

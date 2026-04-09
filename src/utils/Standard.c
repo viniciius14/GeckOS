@@ -34,13 +34,13 @@ int32_t strToInt(const char *str) {
     return result;
 }
 
-inline void vaArgs_start(vaArg_t **arg, const char *str) {
-    *arg = str + strlen(str);
-}
+// inline void vaArgs_start(vaArg_t **arg, const char *str) {
+//     *arg = str + strlen(str);
+// }
 
-inline void vaArgs_next(vaArg_t *arg, uint32_t argSize) {
-    arg += argSize;
-}
+// inline void vaArgs_next(vaArg_t *arg, uint32_t argSize) {
+//     arg += argSize;
+// }
 
-void vaArgs_end(vaArg_t *arg) {
-}
+// void vaArgs_end(vaArg_t *arg) {
+// }

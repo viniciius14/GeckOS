@@ -64,18 +64,19 @@ else ifeq ($(BOOTLOADER), GBL)
 endif
 
 format:
-	clang-format -style=file:$(MISC_DIR)/formatter/.clang-format -i $(SOURCE_FILES)
+	@clang-format -style=file:$(MISC_DIR)/formatter/.clang-format -i $(SOURCE_FILES)
+	@echo "Formatting all .c and .h files..."
 
 lint: compDatabase
-	clang-tidy -p $(BUILD_DIR) $(SOURCE_FILES)
+	@clang-tidy -p $(BUILD_DIR) $(SOURCE_FILES)
 
 analyze: compDatabase
-	cppcheck --project=$(BUILD_DIR)/compile_commands.json --enable=all --inconclusive --quiet $(SOURCE_FILES)
+	@cppcheck --project=$(BUILD_DIR)/compile_commands.json --enable=all --inconclusive --quiet $(SOURCE_FILES)
 
 clean:
 	@rm -rf $(BUILD_DIR)
 
-############################## End of user target ##############################
+############################## End of user targets ##############################
 
 runGrub:
 	$(EMULATOR) -cdrom $(TARGET) $(EMUL_FLAGS)
@@ -103,9 +104,6 @@ kernel:
 # Link the object files
 	@echo "Linking $$(cd $(OBJ_DIR) && echo *.o)"
 	@$(LD) $(LD_FORMAT32) -T $(SRC_DIR)/linker.ld $(OBJ_DIR)/*.o -o $(BUILD_DIR)/kernel
-
-# Extract the binary
-# 	$(OBJ_CPY) $(OBJ_FLAGS) $(OBJ_DIR)/kernel.elf $(BIN_DIR)/kernel.bin
 
 dirs:
 	@mkdir -p $(BIN_DIR)
