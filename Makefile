@@ -13,6 +13,8 @@ SUPPORTED_TARGET_BITS  := BITS32 BITS64
 SUPPORTED_BOOTLOADERS  := GRUB # GBL LIMINE
 
 export DEFINES = -D$(FILE_SYSTEM) -D$(ARCH_BITS) -D$(BOOTLOADER)
+# Dubious design choice, however, if we ensure that there are no files with the same name we can do this
+export INCLUDE_DIRS = $(foreach dir, $(shell find $(SRC_DIR) -type d), -I$(dir))
 
 # Current target
 ifeq ($(BOOTLOADER), GRUB)
@@ -71,7 +73,7 @@ lint: compDatabase
 	@clang-tidy -p $(BUILD_DIR) $(SOURCE_FILES)
 
 analyze: compDatabase
-	@cppcheck --project=$(BUILD_DIR)/compile_commands.json --enable=all --inconclusive --quiet $(SOURCE_FILES)
+	@cppcheck --project=$(BUILD_DIR)/compile_commands.json --enable=all --inconclusive --quiet --suppress=unusedFunction:src/core/main.c
 
 clean:
 	@rm -rf $(BUILD_DIR)
@@ -100,10 +102,9 @@ endif
 kernel:
 	@echo "\n--- GeckOS Kernel ---\n"
 	$(MAKE) -C $(SRC_DIR)
-# $(foreach subdir, $(shell find $(SRC_DIR) -mindepth 2 -type f -name Makefile -exec dirname {} \;), $(MAKE) -C $(subdir);)
 # Link the object files
 	@echo "Linking $$(cd $(OBJ_DIR) && echo *.o)"
-	@$(LD) $(LD_FORMAT32) -T $(SRC_DIR)/linker.ld $(OBJ_DIR)/*.o -o $(BUILD_DIR)/kernel
+	@$(LD) $(LD_FORMAT) -T $(SRC_DIR)/linker.ld $(OBJ_DIR)/*.o -o $(BUILD_DIR)/kernel
 
 dirs:
 	@mkdir -p $(BIN_DIR)
@@ -111,4 +112,4 @@ dirs:
 	@mkdir -p $(DEBUG_DIR)
 
 compDatabase: clean dirs
-	@bear --output $(BUILD_DIR)/compile_commands.json -- make
+	@bear --output $(BUILD_DIR)/compile_commands.json -- make -B

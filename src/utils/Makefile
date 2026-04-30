@@ -12,4 +12,4 @@ utils:$(C_OBJS)
 
 $(OBJ_DIR)/%.o: %.c
 	@echo "Compiling $(notdir $@)..."
-	@$(CC) $(CC_FORMAT) $(CC_FLAGS) $(DEFINES) -c $< -o $(OBJ_DIR)/$(basename $(notdir $@)).o
+	@$(CC) $(CC_FORMAT) $(CC_FLAGS) $(DEFINES) $(INCLUDE_DIRS) -c $< -o $(OBJ_DIR)/$(basename $(notdir $@)).o

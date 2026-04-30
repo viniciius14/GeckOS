@@ -3,14 +3,15 @@
 
 /* --------------- Includes ---------------- */
 
-#include "Standard.h"
-#include "Types.h"
+#include "standard.h"
+#include "types.h"
 
 /* ---------------- Defines ---------------- */
 
 /* ----------------- Types ----------------- */
 
 /* ---------- Function prototypes ---------- */
+
 uint32_t strlen(const char *str);
 void     print(const char *str);
 void     printInteger(int num);
