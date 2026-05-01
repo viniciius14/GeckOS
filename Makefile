@@ -71,7 +71,7 @@ lint: compDatabase
 	@clang-tidy -p $(BUILD_DIR) $(SOURCE_FILES)
 
 analyze: compDatabase
-	@cppcheck --project=$(BUILD_DIR)/compile_commands.json --enable=all --inconclusive --quiet $(SOURCE_FILES)
+	@cppcheck --project=$(BUILD_DIR)/compile_commands.json --enable=all --inconclusive --quiet
 
 clean:
 	@rm -rf $(BUILD_DIR)
