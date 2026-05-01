@@ -3,8 +3,8 @@
 
 /* --------------- Includes ---------------- */
 
-#include "Strings.h"
-#include "Types.h"
+#include "strings.h"
+#include "types.h"
 
 /* ---------------- Defines ---------------- */
 

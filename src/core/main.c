@@ -1,6 +1,6 @@
 /* --------------- Includes ---------------- */
 
-#include "../utils/Strings.h"
+#include "strings.h"
 
 /* ---------- Function Prototypes ---------- */
 
@@ -12,6 +12,7 @@
 
 /* -------- Function Implementations ------- */
 
+// cppcheck-suppress unusedFunction
 void KernelMain(void) {
     // Pointer to the start of the VGA text buffer
     char *vga_buffer = (char *)0xb8000;

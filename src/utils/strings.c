@@ -1,6 +1,6 @@
 /* --------------- Includes ---------------- */
 
-#include "Strings.h"
+#include "strings.h"
 
 /* ---------- Function Prototypes ---------- */
 

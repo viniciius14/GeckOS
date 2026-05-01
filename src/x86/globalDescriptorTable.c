@@ -1,6 +1,6 @@
 /* --------------- Includes ---------------- */
 
-#include "GlobalDescriptorTable.h"
+#include "globalDescriptorTable.h"
 
 /* ---------- Function Prototypes ---------- */
 
