@@ -4,18 +4,22 @@
 /* --------------- Includes ---------------- */
 
 #include "standard.h"
-#include "types.h"
 
 /* ---------------- Defines ---------------- */
 
+#define CHARS_PER_LINE      (80)
+
 /* ----------------- Types ----------------- */
+
+/* None */
 
 /* ---------- Function prototypes ---------- */
 
-uint32_t strlen(const char *str);
-void     print(const char *str);
-void     printInteger(int num);
-void     printDouble(double num);
-void     printHex(uint64_t num);
+void PrintString(const char *str);
+void PrintInt(int num);
+void PrintDouble(double num);
+void PrintHex(Ulong num);
+
+Uint StrLen(const char *str);
 
 #endif /* __STRINGS_H */

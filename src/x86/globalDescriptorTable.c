@@ -11,3 +11,6 @@
 /* None */
 
 /* -------- Function Implementations ------- */
+
+Ubyte myByte = 0;
+

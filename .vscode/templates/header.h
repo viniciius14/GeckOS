@@ -15,6 +15,6 @@
 
 /* ---------- Function prototypes ---------- */
 
-
+/* None */
 
 #endif /* __{{nameConstant}}_H */
