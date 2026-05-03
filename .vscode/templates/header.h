@@ -1,5 +1,5 @@
-#ifndef __{{nameConstant}}_H
-#define __{{nameConstant}}_H
+#ifndef {{nameConstant}}_H
+#define {{nameConstant}}_H
 
 /* --------------- Includes ---------------- */
 
@@ -17,4 +17,4 @@
 
 /* None */
 
-#endif /* __{{nameConstant}}_H */
+#endif /* {{nameConstant}}_H */

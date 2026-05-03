@@ -1,5 +1,5 @@
-#ifndef __INTERRUPT_DESCRIPTOR_TABLE_H
-#define __INTERRUPT_DESCRIPTOR_TABLE_H
+#ifndef INTERRUPT_DESCRIPTOR_TABLE_H
+#define INTERRUPT_DESCRIPTOR_TABLE_H
 
 /* --------------- Includes ---------------- */
 
@@ -38,13 +38,15 @@ typedef struct {
     Uint ss;
 } PACKED IntFrame;
 
+typedef void (*IsrFnPtr)(void);
+
 /* ---------- Function prototypes ---------- */
 
 /* Initializes the interrupt descriptor table */
 void InitIdt(void);
 
 /* Add an ISR to the IDT */
-void IdtSetDescriptor(Ubyte entryNumber, void(isr)(void), Ubyte flags);
+void IdtSetDescriptor(Ubyte entryNumber, IsrFnPtr isr, Ubyte flags);
 
 /* Default handler that is triggered when an interrupt occurs */
 void IntHandler(IntFrame *frame) INTERRUPT;
@@ -55,4 +57,4 @@ void ExcpHandler(IntFrame *frame) INTERRUPT;
 /* Default handler that is triggered when an exception with an error code occurs  */
 void ExcpHandlerError(IntFrame *frame, Uint errorCode) INTERRUPT;
 
-#endif /* __INTERRUPT_DESCRIPTOR_TABLE_H */
+#endif /* INTERRUPT_DESCRIPTOR_TABLE_H */

@@ -1,5 +1,5 @@
-#ifndef __GLOBAL_DESCRIPTOR_TABLE_H
-#define __GLOBAL_DESCRIPTOR_TABLE_H
+#ifndef GLOBAL_DESCRIPTOR_TABLE_H
+#define GLOBAL_DESCRIPTOR_TABLE_H
 
 /* --------------- Includes ---------------- */
 
@@ -15,6 +15,6 @@
 
 /* ---------- Function prototypes ---------- */
 
-/* None  */
+void InitGdt(void);
 
-#endif /* __GLOBAL_DESCRIPTOR_TABLE_H */
+#endif /* GLOBAL_DESCRIPTOR_TABLE_H */

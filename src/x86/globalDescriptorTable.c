@@ -14,3 +14,6 @@
 
 Ubyte myByte = 0;
 
+void InitGdt(void) {
+
+}

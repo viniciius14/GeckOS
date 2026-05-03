@@ -1,5 +1,5 @@
-#ifndef __STANDARD_H
-#define __STANDARD_H
+#ifndef STANDARD_H
+#define STANDARD_H
 
 /* --------------- Includes ---------------- */
 
@@ -97,4 +97,4 @@ typedef unsigned char *VaList;
 void PrintString(const char *str);
 Int  StrToInt(const char *str);
 
-#endif /* __STANDARD_H */
+#endif /* STANDARD_H */

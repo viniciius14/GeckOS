@@ -36,7 +36,6 @@ export DISK_DIR	 := $(DRIVERS_DIR)/disk
 export VIDEO_DIR := $(DRIVERS_DIR)/video
 export FS_DIR    := $(DRIVERS_DIR)/filesystem
 
-
 # Targets
 export BOOT16 = $(BIN_DIR)/boot16.bin
 export BOOT32 = $(BIN_DIR)/boot32.bin

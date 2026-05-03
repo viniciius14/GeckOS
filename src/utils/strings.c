@@ -32,8 +32,6 @@ void PrintString(const char *str) {
         textBuffer[currX * 2 + 1] = 0x0A;   // Color: Light Green (0x0A) on Black (0x0)
         currX++;
         i++;
-
-
     }
     (void)PrintChar;
 }

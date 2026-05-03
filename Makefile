@@ -66,11 +66,11 @@ else ifeq ($(BOOTLOADER), GBL)
 endif
 
 format:
-	@clang-format -style=file:$(MISC_DIR)/formatter/.clang-format -i $(SOURCE_FILES)
+	@clang-format -style=file:$(MISC_DIR)/clang/.clang-format -i $(SOURCE_FILES)
 	@echo "Formatting all .c and .h files..."
 
 lint: compDatabase
-	@clang-tidy -p $(BUILD_DIR) $(SOURCE_FILES)
+	@clang-tidy --config-file=$(MISC_DIR)/clang/.clang-tidy -fix -p $(BUILD_DIR) $(SOURCE_FILES)
 
 analyze: compDatabase
 	@cppcheck --project=$(BUILD_DIR)/compile_commands.json --enable=all --inconclusive --quiet

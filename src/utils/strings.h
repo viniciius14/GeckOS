@@ -1,5 +1,5 @@
-#ifndef __STRINGS_H
-#define __STRINGS_H
+#ifndef STRINGS_H
+#define STRINGS_H
 
 /* --------------- Includes ---------------- */
 
@@ -7,7 +7,7 @@
 
 /* ---------------- Defines ---------------- */
 
-#define CHARS_PER_LINE      (80)
+#define CHARS_PER_LINE (80)
 
 /* ----------------- Types ----------------- */
 
@@ -22,4 +22,4 @@ void PrintHex(Ulong num);
 
 Uint StrLen(const char *str);
 
-#endif /* __STRINGS_H */
+#endif /* STRINGS_H */

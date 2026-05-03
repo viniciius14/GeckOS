@@ -1,7 +1,8 @@
 /* --------------- Includes ---------------- */
 
-#include "strings.h"
 #include "interruptDescriptorTable.h"
+#include "globalDescriptorTable.h"
+#include "strings.h"
 
 /* ---------- Function Prototypes ---------- */
 
@@ -16,5 +17,7 @@
 // cppcheck-suppress unusedFunction
 void KernelMain(void) {
     PrintString("Hello from GeckOS!\n");
+
     InitIdt();
+    InitGdt();
 }
