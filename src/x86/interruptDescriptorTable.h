@@ -3,14 +3,18 @@
 
 /* --------------- Includes ---------------- */
 
+#include "io.h"
 #include "standard.h"
 #include "strings.h"
 
 /* ---------------- Defines ---------------- */
 
-#define TRAP_GATE_FLAGS (0x8F)
-#define INT_GATE_FLAGS  (0x8E)
-#define SIZEOF_IDT      (256)
+#define TRAP_GATE_FLAGS  (0x8F)
+#define INT_GATE_FLAGS   (0x8E)
+#define SIZEOF_IDT       (256)
+#define PIC1_COMMAND     (0x20)
+#define PIC_EOI          (0x20)
+#define INT_START_OFFSET (32)
 
 /* ----------------- Types ----------------- */
 
@@ -38,6 +42,13 @@ typedef struct {
     Uint ss;
 } PACKED IntFrame;
 
+typedef struct {
+    Uint     ds;                                     /* Data segment selector */
+    Uint     edi, esi, ebp, esp, ebx, edx, ecx, eax; /* Pushed by pusha */
+    Uint     intNb, errCode;                         /* Pushed by us */
+    IntFrame intFrame;                               /* Pushed by CPU automatically */
+} PACKED InterruptStack;
+
 typedef void (*IsrFnPtr)(void);
 
 /* ---------- Function prototypes ---------- */
@@ -49,12 +60,12 @@ void InitIdt(void);
 void IdtSetDescriptor(Ubyte entryNumber, IsrFnPtr isr, Ubyte flags);
 
 /* Default handler that is triggered when an interrupt occurs */
-void IntHandler(IntFrame *frame) INTERRUPT;
+void DftIntHandler(InterruptStack *intStack) INTERRUPT;
 
 /* Default handler that is triggered when an exception without an error code occurs */
-void ExcpHandler(IntFrame *frame) INTERRUPT;
+void DftExcpHandler(IntFrame *frame) INTERRUPT;
 
 /* Default handler that is triggered when an exception with an error code occurs  */
-void ExcpHandlerError(IntFrame *frame, Uint errorCode) INTERRUPT;
+void DftExcpHandlerError(IntFrame *frame, Uint errorCode);
 
 #endif /* INTERRUPT_DESCRIPTOR_TABLE_H */

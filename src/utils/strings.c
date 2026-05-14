@@ -70,10 +70,33 @@ Uint StrLen(const char *str) {
     return strSize;
 }
 
+#define MAX_CHARS_INT (10)
 // @TODO: Implement me
-void PrintInt(int num) {
-    PrintString("Integer");
-    (void)num;
+void PrintInt(Int num) {
+    Char buffer[MAX_CHARS_INT] = { 0 };
+    Int  i                     = MAX_CHARS_INT - 1;
+
+    /* Handle the case when the num is 0 separately */
+    if (num == 0) {
+        buffer[i] = '0';
+        i--;
+    } else {
+        while (num > 0) {
+            buffer[i] = '0' + (num % 10);
+            num /= 10;
+            i--;
+        }
+    }
+
+    /* Move the characters to the beginning of the buffer */
+    for (Int j = i + 1; j < MAX_CHARS_INT; j++) {
+        buffer[j - i - 1] = buffer[j];
+    }
+
+    /* Null-terminate the string */
+    buffer[MAX_CHARS_INT - i - 1] = '\0';
+
+    PrintString(buffer);
 }
 
 // @TODO: Implement me

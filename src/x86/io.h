@@ -1,5 +1,5 @@
-#ifndef STRINGS_H
-#define STRINGS_H
+#ifndef IO_H
+#define IO_H
 
 /* --------------- Includes ---------------- */
 
@@ -7,7 +7,7 @@
 
 /* ---------------- Defines ---------------- */
 
-#define CHARS_PER_LINE (80)
+/* None */
 
 /* ----------------- Types ----------------- */
 
@@ -15,11 +15,9 @@
 
 /* ---------- Function prototypes ---------- */
 
-void PrintString(const char *str);
-void PrintInt(Int num);
-void PrintDouble(double num);
-void PrintHex(Ulong num);
+void  OutByte(Ushort port, Ubyte data);
+Ubyte InByte(Ushort port);
+void  OutWord(Ushort port, Ushort data);
+void  Wait(void);
 
-Uint StrLen(const char *str);
-
-#endif /* STRINGS_H */
+#endif /* IO_H */

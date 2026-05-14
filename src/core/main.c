@@ -2,6 +2,7 @@
 
 #include "globalDescriptorTable.h"
 #include "interruptDescriptorTable.h"
+#include "pic.h"
 #include "strings.h"
 
 /* ---------- Function Prototypes ---------- */
@@ -18,8 +19,12 @@ void KernelMain(void) {
     CLI();
     PrintString("Hello from GeckOS!\n");
 
-    InitIdt();
     InitGdt();
+    InitIdt();
+    PicRemap();
 
     STI();
+
+    for (;;) {
+    }
 }

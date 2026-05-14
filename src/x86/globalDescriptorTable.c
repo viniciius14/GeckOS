@@ -4,11 +4,14 @@
 
 /* ---------- Function Prototypes ---------- */
 
-/* None */
+extern void setGDT(Ushort size, Uint base);
 
 /* ----------- Global Variables ------------ */
 
-/* None */
+#define GDT_KERNEL_CODE_SEG (0b1 << 3)
+#define GDT_KERNEL_DATA_SEG (0b11 << 3)
+#define GDT_USER_CODE_SEG   (0b111 << 3)
+#define GDT_USER_DATA_SEG   (0b111 << 3)
 
 /* -------- Function Implementations ------- */
 
@@ -74,11 +77,7 @@ const GdtEntry globalDescriptorTable[] = {
 #endif
 };
 
-const GdtPtr tablePtr = {
-    .base = (Uint)&globalDescriptorTable[0],
-    .size = sizeof(globalDescriptorTable) / sizeof(GdtEntry),
-};
-
-void InitGdt(void) {
-    ASM("lgdt %0" : : "memory"(tablePtr));
+/* @TODO: Confirm this function is being inlined */
+INLINE void InitGdt(void) {
+    setGDT(sizeof(globalDescriptorTable) - 1, (Uint)&globalDescriptorTable[0]);
 }
