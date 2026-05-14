@@ -1,5 +1,5 @@
-#ifndef GLOBAL_DESCRIPTOR_TABLE_H
-#define GLOBAL_DESCRIPTOR_TABLE_H
+#ifndef GDT_H
+#define GDT_H
 
 /* --------------- Includes ---------------- */
 
@@ -7,7 +7,10 @@
 
 /* ---------------- Defines ---------------- */
 
-/* None  */
+#define GDT_KERNEL_CODE_SEG (1 << 3)
+#define GDT_KERNEL_DATA_SEG (3 << 3)
+#define GDT_USER_CODE_SEG   (7 << 3)
+#define GDT_USER_DATA_SEG   (15 << 3)
 
 /* ----------------- Types ----------------- */
 
@@ -36,4 +39,4 @@ typedef struct {
 
 void InitGdt(void);
 
-#endif /* GLOBAL_DESCRIPTOR_TABLE_H */
+#endif /* GDT_H */

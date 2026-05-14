@@ -1,7 +1,7 @@
 /* --------------- Includes ---------------- */
 
-#include "globalDescriptorTable.h"
-#include "interruptDescriptorTable.h"
+#include "gdt.h"
+#include "idt.h"
 #include "pic.h"
 #include "strings.h"
 

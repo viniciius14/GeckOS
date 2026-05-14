@@ -1,6 +1,6 @@
 /* --------------- Includes ---------------- */
 
-#include "globalDescriptorTable.h"
+#include "gdt.h"
 
 /* ---------- Function Prototypes ---------- */
 
@@ -8,16 +8,13 @@ extern void setGDT(Ushort size, Uint base);
 
 /* ----------- Global Variables ------------ */
 
-#define GDT_KERNEL_CODE_SEG (0b1 << 3)
-#define GDT_KERNEL_DATA_SEG (0b11 << 3)
-#define GDT_USER_CODE_SEG   (0b111 << 3)
-#define GDT_USER_DATA_SEG   (0b111 << 3)
+/* None */
 
 /* -------- Function Implementations ------- */
 
-Ubyte myByte = 0;
+GdtPtr gdtPtr = { 0 };
 
-const GdtEntry globalDescriptorTable[] = {
+static const GdtEntry globalDescriptorTable[] = {
     /* Null Descriptor */
     {
         .lowLimit  = 0,

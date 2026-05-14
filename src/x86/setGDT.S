@@ -7,18 +7,18 @@
 
 global setGDT
 
-gdtr DW 0 ; For limit storage
-     DD 0 ; For base storage
+extern gdtPtr
 
 setGDT:
    mov   ax, [esp + 4]
-   mov   [gdtr], ax
+   mov   [gdtPtr], ax
    mov   eax, [esp + 8]
-   mov   [gdtr + 2], eax
-   lgdt  [gdtr]
+   mov   [gdtPtr + 2], eax
+   lgdt  [gdtPtr]
 
 .reloadSegments:
    jmp   GDT_KERNEL_CODE_SEG:.reloadCS ; 0x08-> kernel code segment
+
 .reloadCS:
    mov   ax, GDT_KERNEL_DATA_SEG ; 0x10 -> kernel data segment
    mov   ds, ax

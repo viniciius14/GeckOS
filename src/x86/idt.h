@@ -3,18 +3,19 @@
 
 /* --------------- Includes ---------------- */
 
+#include "gdt.h"
 #include "io.h"
 #include "standard.h"
 #include "strings.h"
 
 /* ---------------- Defines ---------------- */
 
-#define TRAP_GATE_FLAGS  (0x8F)
-#define INT_GATE_FLAGS   (0x8E)
-#define SIZEOF_IDT       (256)
-#define PIC1_COMMAND     (0x20)
-#define PIC_EOI          (0x20)
-#define INT_START_OFFSET (32)
+#define TRAP_GATE_FLAGS (0x8F)
+#define INT_GATE_FLAGS  (0x8E)
+#define SIZEOF_IDT      (256)
+#define PIC1_COMMAND    (0x20)
+#define PIC_EOI         (0x20)
+#define IRQ_BASE_OFFSET (32)
 
 /* ----------------- Types ----------------- */
 
@@ -34,22 +35,26 @@ typedef struct {
 } PACKED IdtPtr;
 
 /* Interrupt frame to pass to interrupt handlers */
+/* @TODO: Rename me */
 typedef struct {
     Uint eip;
     Uint cs;
     Uint eFlags;
-    Uint sp;
-    Uint ss;
-} PACKED IntFrame;
+    // The following are only valid if a privilege switch occurred:
+    Uint userEsp;
+    Uint UserSs;
+} PACKED InterruptState;
 
 typedef struct {
-    Uint     ds;                                     /* Data segment selector */
-    Uint     edi, esi, ebp, esp, ebx, edx, ecx, eax; /* Pushed by pusha */
-    Uint     intNb, errCode;                         /* Pushed by us */
-    IntFrame intFrame;                               /* Pushed by CPU automatically */
-} PACKED InterruptStack;
+    // Pushed by your assembly stub (InterruptRouter)
+    Uint ds;
+    Uint edi, esi, ebp, esp, ebx, edx, ecx, eax; // GPRs
+    Uint vector, errorCode;
+    // Pushed by the CPU hardware
+    InterruptState intState;
+} PACKED CpuState;
 
-typedef void (*IsrFnPtr)(void);
+typedef void (*HandlerFn)(CpuState *);
 
 /* ---------- Function prototypes ---------- */
 
@@ -57,15 +62,21 @@ typedef void (*IsrFnPtr)(void);
 void InitIdt(void);
 
 /* Add an ISR to the IDT */
-void IdtSetDescriptor(Ubyte entryNumber, IsrFnPtr isr, Ubyte flags);
+void IdtSetDescriptor(Ubyte entryNumber, HandlerFn isr, Ubyte flags);
 
 /* Default handler that is triggered when an interrupt occurs */
-void DftIntHandler(InterruptStack *intStack) INTERRUPT;
+void InterruptDispatcher(CpuState *CpuState);
 
 /* Default handler that is triggered when an exception without an error code occurs */
-void DftExcpHandler(IntFrame *frame) INTERRUPT;
+void DftExcpHandler(CpuState *CpuState);
 
 /* Default handler that is triggered when an exception with an error code occurs  */
-void DftExcpHandlerError(IntFrame *frame, Uint errorCode);
+void DftExcpHandlerError(CpuState *CpuState, Uint errorCode);
+
+extern void PicIntHandler(CpuState *intStack);
+
+void RegisterInterruptHandler(Ushort entry, HandlerFn handler);
+
+void SendEOI(Ubyte vector);
 
 #endif /* INTERRUPT_DESCRIPTOR_TABLE_H */
