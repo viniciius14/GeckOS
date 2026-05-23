@@ -3,6 +3,8 @@
 #include "gdt.h"
 #include "idt.h"
 #include "pic.h"
+#include "pit.h"
+
 #include "strings.h"
 
 /* ---------- Function Prototypes ---------- */
@@ -21,7 +23,8 @@ void KernelMain(void) {
 
     InitGdt();
     InitIdt();
-    PicRemap();
+    InitPic();
+    InitPit(10);
 
     STI();
 

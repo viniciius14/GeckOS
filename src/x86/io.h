@@ -3,7 +3,7 @@
 
 /* --------------- Includes ---------------- */
 
-#include "utils/standard.h"
+#include "standard.h"
 
 /* ---------------- Defines ---------------- */
 
@@ -18,6 +18,6 @@
 void  OutByte(Ushort port, Ubyte data);
 Ubyte InByte(Ushort port);
 void  OutWord(Ushort port, Ushort data);
-void  Wait(void);
+void  IoWait(void);
 
 #endif /* IO_H */

@@ -33,6 +33,6 @@ Ushort InWord(Ushort port) {
     return ret;
 }
 
-void Wait(void) {
+void IoWait(void) {
     ASM("outb %%al, $0x80" : : "a"(0));
 }

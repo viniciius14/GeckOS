@@ -71,7 +71,8 @@ ISR_NO_ERR 19
 ISR_NO_ERR 20
 ISR_WITH_ERR 21
 
-; From 21 - 32 it's exception
+; @TODO: Verify this comment + improve it
+; From 21 - 32 it's exception without and opcode
 ; From 32 - 255 it's interrupts
 %assign i 22
 %rep (256 - 22)

@@ -4,10 +4,15 @@
 /* --------------- Includes ---------------- */
 
 #include "idt.h"
+#include "pic.h"
 
 /* ---------------- Defines ---------------- */
 
-/* None */
+#define PIT_COMMAND (0x43)
+#define PIT_DATA0   (0x40)
+
+// The oscillator frequency of the internal PIT chip
+#define PIT_BASE_FREQUENCY (1193182)
 
 /* ----------------- Types ----------------- */
 
@@ -15,6 +20,6 @@
 
 /* ---------- Function prototypes ---------- */
 
-void PicIntHandler(CpuState *intStack);
+void InitPit(Uint frequency);
 
 #endif /* PIT_H */
