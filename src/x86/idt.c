@@ -54,15 +54,15 @@ static const char *exceptionName[IRQ_BASE_OFFSET] = {
 
 /* -------- Function Implementations ------- */
 
-void InterruptDispatcher(CpuState *intStack) {
+void InterruptDispatcher(CpuState *cpuState) {
     PrintString("InterruptDispatcher was called! Int Number :");
-    PrintInt(intStack->vector);
+    PrintInt(cpuState->vector);
 
-    if (intStack->vector < IRQ_BASE_OFFSET) {
+    if (cpuState->vector < IRQ_BASE_OFFSET) {
         PrintString("Fatal Exception: ");
-        PrintString(exceptionName[intStack->vector]);
+        PrintString(exceptionName[cpuState->vector]);
         PrintString(" Number: ");
-        PrintInt(intStack->vector);
+        PrintInt(cpuState->vector);
         PrintString("\n");
         /* @TODO: Implement in the future a kernelPanic function */
         while (TRUE) {
@@ -72,13 +72,13 @@ void InterruptDispatcher(CpuState *intStack) {
 
     PrintString("\n");
 
-    if (irqHandlers[intStack->vector] != NULL) {
-        irqHandlers[intStack->vector](intStack);
+    if (irqHandlers[cpuState->vector] != NULL) {
+        irqHandlers[cpuState->vector](cpuState);
     }
 
     /* @TODO: Create a define for 47 and explain why that's a limit */
-    if (intStack->vector >= IRQ_BASE_OFFSET && intStack->vector <= 47) {
-        SendEOI(intStack->vector);
+    if (cpuState->vector >= IRQ_BASE_OFFSET && cpuState->vector <= 47) {
+        SendEOI(cpuState->vector);
     }
 }
 
@@ -112,7 +112,7 @@ void InitIdt(void) {
     ASM("lidt %0" : : "memory"(idtPtr));
 }
 
-INLINE void RegisterInterruptHandler(Ushort entry, HandlerFn handler) {
+void RegisterInterruptHandler(Ushort entry, HandlerFn handler) {
     irqHandlers[entry] = handler;
 }
 

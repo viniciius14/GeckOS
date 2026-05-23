@@ -4,7 +4,7 @@
 
 /* ---------- Function Prototypes ---------- */
 
-extern void setGDT(Ushort size, Uint base);
+extern void SetGdt(Ushort size, Uint base);
 
 /* ----------- Global Variables ------------ */
 
@@ -75,6 +75,6 @@ static const GdtEntry globalDescriptorTable[] = {
 };
 
 /* @TODO: Confirm this function is being inlined */
-INLINE void InitGdt(void) {
-    setGDT(sizeof(globalDescriptorTable) - 1, (Uint)&globalDescriptorTable[0]);
+void InitGdt(void) {
+    SetGdt(sizeof(globalDescriptorTable) - 1, (Uint)&globalDescriptorTable[0]);
 }

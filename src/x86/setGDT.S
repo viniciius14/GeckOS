@@ -5,11 +5,11 @@
 %define GDT_KERNEL_CODE_SEG (0x8)
 %define GDT_KERNEL_DATA_SEG (0x10)
 
-global setGDT
+global SetGdt
 
 extern gdtPtr
 
-setGDT:
+SetGdt:
    mov   ax, [esp + 4]
    mov   [gdtPtr], ax
    mov   eax, [esp + 8]

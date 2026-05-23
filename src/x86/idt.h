@@ -65,13 +65,13 @@ void InitIdt(void);
 void IdtSetDescriptor(Ubyte entryNumber, HandlerFn isr, Ubyte flags);
 
 /* Default handler that is triggered when an interrupt occurs */
-void InterruptDispatcher(CpuState *CpuState);
+void InterruptDispatcher(CpuState *cpuState);
 
 /* Default handler that is triggered when an exception without an error code occurs */
-void DftExcpHandler(CpuState *CpuState);
+void DftExcpHandler(CpuState *cpuState);
 
 /* Default handler that is triggered when an exception with an error code occurs  */
-void DftExcpHandlerError(CpuState *CpuState, Uint errorCode);
+void DftExcpHandlerError(CpuState *cpuState, Uint errorCode);
 
 extern void PicIntHandler(CpuState *intStack);
 
