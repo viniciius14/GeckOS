@@ -55,9 +55,7 @@ typedef struct {
 
 typedef void (*HandlerFn)(CpuState *);
 
-typedef enum {
-    E_PIC_INT = 0
-} InterruptSourceE;
+typedef enum { E_PIC_INT = 0 } InterruptSourceE;
 
 /* ---------- Function prototypes ---------- */
 

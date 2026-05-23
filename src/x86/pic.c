@@ -68,17 +68,17 @@ void PicRemap(int offset1, int offset2) {
     OutByte(PIC2_DATA, offset2); // ICW2: Slave PIC vector offset
     IoWait();
 
-    OutByte(PIC1_DATA, 4);       // ICW3: tell Master PIC there is a slave PIC at IRQ2
+    OutByte(PIC1_DATA, 4); // ICW3: tell Master PIC there is a slave PIC at IRQ2
     IoWait();
-    OutByte(PIC2_DATA, 2);       // ICW3: tell Slave PIC its cascade identity
+    OutByte(PIC2_DATA, 2); // ICW3: tell Slave PIC its cascade identity
     IoWait();
 
-    OutByte(PIC1_DATA, 0x01);    // ICW4: 8086/88 (MCS-80/85) mode
+    OutByte(PIC1_DATA, 0x01); // ICW4: 8086/88 (MCS-80/85) mode
     IoWait();
     OutByte(PIC2_DATA, 0x01);
     IoWait();
 
-    OutByte(PIC1_DATA, a1);      // Restore saved masks
+    OutByte(PIC1_DATA, a1); // Restore saved masks
     OutByte(PIC2_DATA, a2);
 }
 

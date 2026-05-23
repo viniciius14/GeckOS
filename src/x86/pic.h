@@ -3,8 +3,8 @@
 
 /* --------------- Includes ---------------- */
 
-#include "io.h"
 #include "idt.h"
+#include "io.h"
 
 /* ---------------- Defines ---------------- */
 
