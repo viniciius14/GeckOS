@@ -1,12 +1,12 @@
-#ifndef INTERRUPT_DESCRIPTOR_TABLE_H
-#define INTERRUPT_DESCRIPTOR_TABLE_H
+#ifndef IDT_H
+#define IDT_H
 
 /* --------------- Includes ---------------- */
 
 #include "gdt.h"
 #include "io.h"
+#include "pic.h"
 #include "standard.h"
-#include "strings.h"
 
 /* ---------------- Defines ---------------- */
 
@@ -34,28 +34,7 @@ typedef struct {
     Uint   base;
 } PACKED IdtPtr;
 
-/* Interrupt frame to pass to interrupt handlers */
-/* @TODO: Rename me */
-typedef struct {
-    Uint eip;
-    Uint cs;
-    Uint eFlags;
-    // The following are only valid if a privilege switch occurred:
-    Uint userEsp;
-    Uint UserSs;
-} PACKED InterruptState;
-
-typedef struct {
-    Uint ds;
-    Uint edi, esi, ebp, esp, ebx, edx, ecx, eax; // GPRs
-    Uint vector, errorCode;
-    // Pushed by the CPU hardware
-    InterruptState intState;
-} PACKED CpuState;
-
-typedef void (*HandlerFn)(CpuState *);
-
-typedef enum { E_PIC_INT = 0 } InterruptSourceE;
+typedef void (*Isr)(void *);
 
 /* ---------- Function prototypes ---------- */
 
@@ -63,6 +42,6 @@ typedef enum { E_PIC_INT = 0 } InterruptSourceE;
 void InitIdt(void);
 
 /* Add an ISR to the IDT */
-void IdtSetDescriptor(Ubyte entryNumber, HandlerFn isr, Ubyte flags);
+void IdtSetDescriptor(Ubyte entryNumber, Isr isr, Ubyte flags);
 
 #endif /* INTERRUPT_DESCRIPTOR_TABLE_H */

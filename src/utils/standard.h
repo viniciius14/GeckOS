@@ -30,52 +30,42 @@
 #define STATIC_ASSERT(_cond)                                                                       \
     _Static_assert(_cond, #_cond " failed at line " TOSTRING(__LINE__) " of file " __FILE__)
 
-#define UNREACHABLE()           __builtin_unreachable()
+#define UNREACHABLE()        __builtin_unreachable()
 
-#define STI()                   __asm__ __volatile__("sti")
-#define CLI()                   __asm__ __volatile__("cli")
-#define ASM                     __asm__ __volatile__
+#define STI()                __asm__ __volatile__("sti")
+#define CLI()                __asm__ __volatile__("cli")
+#define ASM                  __asm__ __volatile__
 
-#define BIT(_n)                 (1ULL << (_n))
-#define BIT_SET(_x, _mask)      ((_x) |= (_mask))
-#define BIT_CLEAR(_x, _mask)    ((_x) &= ~(_mask))
-#define BIT_FLIP(_x, _mask)     ((_x) ^= (_mask))
-#define BIT_TEST(_x, _mask)     ((_x) & (_mask))
+#define BIT(_n)              (1ULL << (_n))
+#define BIT_SET(_x, _mask)   ((_x) |= (_mask))
+#define BIT_CLEAR(_x, _mask) ((_x) &= ~(_mask))
+#define BIT_FLIP(_x, _mask)  ((_x) ^= (_mask))
+#define BIT_TEST(_x, _mask)  ((_x) & (_mask))
 
-/* width of stack == width of int */
-#define STACKITEM               (int)
+#define MAX_UINT08           (0xFF)
+#define MAX_UINT16           (0xFFFF)
+#define MAX_UINT32           (0xFFFFFFFF)
+#define MAX_UINT64           (0xFFFFFFFFFFFFFFFF)
 
-/* round up width of objects pushed on stack. The expression before the
-& ensures that we get 0 for objects of size 0. */
-#define VA_SIZE(_type)          ((sizeof(_type) + sizeof(STACKITEM) - 1) & ~(sizeof(STACKITEM) - 1))
+#define MAX_INT08            (0x7F)
+#define MAX_INT16            (0x7FFF)
+#define MAX_INT32            (0x7FFFFFFF)
+#define MAX_INT64            (0x7FFFFFFFFFFFFFFF)
 
-/* &(_lastArg) points to the LEFTMOST argument of the function call (before the ...) */
-#define VA_START(_ap, _lastArg) (_ap = ((VaList) & (_lastArg) + VA_SIZE(_lastArg)))
+#define MIN_INT08            (0x80)
+#define MIN_INT16            (0x8000)
+#define MIN_INT32            (0x80000000)
+#define MIN_INT64            (0x8000000000000000)
 
-#define VA_ARG(_ap, _type)      (_ap += VA_SIZE(_type), *((_type *)(_ap - VA_SIZE(_type))))
+#define MAX_FLOAT32          (3.402823466e+38f)
+#define MAX_FLOAT64          (1.7976931348623158e+308f)
 
-#define MAX_UINT08              (0xFF)
-#define MAX_UINT16              (0xFFFF)
-#define MAX_UINT32              (0xFFFFFFFF)
-#define MAX_UINT64              (0xFFFFFFFFFFFFFFFF)
-
-#define MAX_INT08               (0x7F)
-#define MAX_INT16               (0x7FFF)
-#define MAX_INT32               (0x7FFFFFFF)
-#define MAX_INT64               (0x7FFFFFFFFFFFFFFF)
-
-#define MIN_INT08               (0x80)
-#define MIN_INT16               (0x8000)
-#define MIN_INT32               (0x80000000)
-#define MIN_INT64               (0x8000000000000000)
-
-#define MAX_FLOAT32             (3.402823466e+38f)
-#define MAX_FLOAT64             (1.7976931348623158e+308f)
-
-#define MIN_FLOAT32             (1.175494351e-38f)
-#define MIN_FLOAT64             (2.2250738585072014e-308f)
+#define MIN_FLOAT32          (1.175494351e-38f)
+#define MIN_FLOAT64          (2.2250738585072014e-308f)
 
 /* ----------------- Types ----------------- */
+
+/* @TODO: Add unsigned long and long */
 
 typedef unsigned char      Ubyte;
 typedef unsigned short     Ushort;
@@ -90,11 +80,16 @@ typedef double             Double;
 typedef unsigned char      Bool;
 typedef char               Char;
 
-typedef unsigned char *VaList;
+#if defined(BITS64)
+typedef Ulong UintPtr;
+typedef Long  IntPtr;
+#else
+typedef Uint UintPtr;
+typedef Int  IntPtr;
+#endif
 
 /* ---------- Function prototypes ---------- */
 
-void PrintString(const char *str);
-Int  StrToInt(const char *str);
+/* None */
 
 #endif /* STANDARD_H */

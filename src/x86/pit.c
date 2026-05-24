@@ -4,7 +4,7 @@
 
 /* ---------- Function Prototypes ---------- */
 
-static void PitIntHandler(CpuState *cpuState);
+static void PitIntHandler(const CpuState *cpuState);
 
 /* ----------- Global Variables ------------ */
 
@@ -23,10 +23,10 @@ void InitPit(Uint frequency) {
     OutByte(PIT_DATA0, (Ubyte)((divisor >> 0) & 0xFF));
     OutByte(PIT_DATA0, (Ubyte)((divisor >> 8) & 0xFF));
 
-    RegisterInterruptHandler(E_PIC_INT, PitIntHandler);
+    RegisterInterruptHandler(E_PIC_INT, (HandlerFn)PitIntHandler);
 }
 
-static void PitIntHandler(CpuState *cpuState) {
+static void PitIntHandler(const CpuState *cpuState) {
     ticks++;
     SendEOI(cpuState->vector);
 }

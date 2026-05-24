@@ -15,11 +15,11 @@
 
 /* ---------- Function prototypes ---------- */
 
-void PrintString(const char *str);
-void PrintInt(Int num);
-void PrintDouble(double num);
-void PrintHex(Ulong num);
-
-Uint StrLen(const char *str);
+void  PrintString(const Char *format, ...);
+Int   StrToInt(const Char *str);
+Uint  StrLen(const Char *str);
+void  StrReverse(Char *str);
+Char *IntToStr(Long num, Char *str, Uint base);
+void  VarArgPrint(const Char *format, __builtin_va_list args);
 
 #endif /* STRINGS_H */

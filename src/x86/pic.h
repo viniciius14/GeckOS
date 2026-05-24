@@ -5,6 +5,7 @@
 
 #include "idt.h"
 #include "io.h"
+#include "strings.h"
 
 /* ---------------- Defines ---------------- */
 
@@ -17,7 +18,27 @@
 
 /* ----------------- Types ----------------- */
 
-/* None */
+/* Interrupt frame to pass to interrupt handlers */
+/* @TODO: Rename me / not is use atm */
+typedef struct {
+    Uint eip;
+    Uint cs;
+    Uint eFlags;
+    // The following are only valid if a privilege switch occurred:
+    Uint userEsp;
+    Uint UserSs;
+} PACKED InterruptState;
+
+typedef struct {
+    Uint ds;
+    Uint edi, esi, ebp, esp, ebx, edx, ecx, eax; // GPRs
+    Uint vector, errorCode;
+    // Pushed by the CPU hardware
+    InterruptState intState;
+} PACKED CpuState;
+
+typedef void (*HandlerFn)(CpuState *);
+typedef enum { E_PIC_INT = 0 } InterruptSourceE;
 
 /* ---------- Function prototypes ---------- */
 

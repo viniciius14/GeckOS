@@ -3,10 +3,14 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/src/**"
             ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/src"
+                ]
+            },
             "defines": [],
-            "compilerPath": "/usr/bin/clang-18",
             "cStandard": "c11",
             "intelliSenseMode": "linux-clang-x64"
         }

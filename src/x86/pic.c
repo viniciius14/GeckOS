@@ -10,7 +10,7 @@
 
 ALIGNED(16) static HandlerFn irqHandlers[SIZEOF_IDT - IRQ_BASE_OFFSET] = { 0 };
 
-static const char *exceptionName[IRQ_BASE_OFFSET] = {
+static const Char *exceptionName[IRQ_BASE_OFFSET] = {
     "Divide by zero",
     "Debug",
     "NMI",
@@ -83,15 +83,13 @@ void PicRemap(int offset1, int offset2) {
 }
 
 void InterruptDispatcher(CpuState *cpuState) {
-    // PrintString("InterruptDispatcher was called! Int Number: ");
-    // PrintInt(cpuState->vector);
-    // PrintString("\n");
 
     if (cpuState->vector < IRQ_BASE_OFFSET) {
         PrintString("Fatal Exception: ");
         PrintString(exceptionName[cpuState->vector]);
         PrintString("\n");
-        /* @TODO: Implement in the future a kernelPanic function */
+
+        /* @TODO: Implement in the future a KernelPanic function */
         while (TRUE) {
             ;
         }
@@ -116,6 +114,7 @@ void RegisterInterruptHandler(InterruptSourceE entry, HandlerFn handler) {
 INLINE void SendEOI(Ubyte vector) {
     /* @TODO: Turn 40 into a define */
     if (vector >= 40) {
+        /* @TODO: Create defines/macro for these values */
         OutByte(0xA0, 0x20); // Slave PIC
     }
     OutByte(0x20, 0x20); // Master PIC
