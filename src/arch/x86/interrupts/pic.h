@@ -38,7 +38,7 @@ typedef struct {
 } PACKED CpuState;
 
 typedef void (*HandlerFn)(CpuState *);
-typedef enum { E_PIC_INT = 0 } InterruptSourceE;
+typedef enum { E_PIC_INT, E_KEYBOARD_INT } InterruptSourceE;
 
 /* ---------- Function prototypes ---------- */
 
@@ -50,7 +50,5 @@ void PicRemap(int offset1, int offset2);
 void InterruptDispatcher(CpuState *cpuState);
 
 void RegisterInterruptHandler(InterruptSourceE entry, HandlerFn handler);
-
-void SendEOI(Ubyte vector);
 
 #endif /* PIC_H */

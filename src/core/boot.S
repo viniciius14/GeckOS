@@ -21,6 +21,6 @@ HaltKernel:
 
 section .bss
 
-resb 8192
+resb 8192 * 2
 
 stack_space:

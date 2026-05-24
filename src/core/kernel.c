@@ -19,7 +19,9 @@ NORETURN void KernelMain(void) {
     InitGdt();
     InitIdt();
     InitPic();
+
     InitPit(10);
+    InitKeyboard();
 
     STI();
 
@@ -30,14 +32,14 @@ NORETURN void KernelMain(void) {
 NORETURN void KernelPanic(const Char *format, ...) {
     PrintString("\n!!! KERNEL PANIC !!!\n");
 
-    __builtin_va_list args;
-    __builtin_va_start(args, format);
+    VA_LIST args;
+    VA_START(args, format);
 
     VarArgPrint(format, args);
 
-    __builtin_va_end(args);
+    VA_END(args);
 
-    while (1) {
+    while (TRUE) {
         ASM("hlt");
     }
 }

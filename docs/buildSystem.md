@@ -80,3 +80,17 @@ bootloader/
     GBL/
     limine/
     GRUB/
+
+kernel/
+├── arch/
+│   └── x86/
+│       └── drivers/      <-- x86 dependent driver
+│           └── input
+│              └── ps2.c
+│              └── COM1/COM2 (mouse)
+│
+├── drivers/              <-- (Generic or cross-platform drivers)
+│   ├── input/
+│   │   ├── keyboard.c    <-- Generic keyboard logic (interprets scancodes to ASCII)
+│   └── usb/ uart/ ...
+│       └── ...

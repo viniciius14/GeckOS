@@ -11,21 +11,25 @@
 #define NULL ((void *)0)
 #endif
 
-#define TRUE                (1)
-#define FALSE               (0)
+#define TRUE                   (1)
+#define FALSE                  (0)
 
-#define PACKED              __attribute__((packed))
-#define INTERRUPT           __attribute__((interrupt))
-#define NORETURN            __attribute__((noreturn))
-#define WEAK                __attribute__((weak))
-#define INLINE              __attribute__((always_inline)) inline
-#define NO_INLINE           __attribute__((noinline))
-#define NO_DISCARD          __attribute__((warn_unused_result))
-#define ALIGNED(_alignment) __attribute__((aligned(_alignment)))
-#define SECTION(_section)   __attribute__((section(_section)))
+#define PACKED                 __attribute__((packed))
+#define INTERRUPT              __attribute__((interrupt))
+#define NORETURN               __attribute__((noreturn))
+#define WEAK                   __attribute__((weak))
+#define INLINE                 __attribute__((always_inline)) inline
+#define NO_INLINE              __attribute__((noinline))
+#define NO_DISCARD             __attribute__((warn_unused_result))
+#define ALIGNED(_alignment)    __attribute__((aligned(_alignment)))
+#define SECTION(_section)      __attribute__((section(_section)))
 
-#define STRINGIFY(x)        #x
-#define TOSTRING(x)         STRINGIFY(x)
+#define VA_LIST                __builtin_va_list
+#define VA_START(_arg, _stack) __builtin_va_start(_arg, _stack)
+#define VA_END(_arg)           __builtin_va_end(_arg)
+
+#define STRINGIFY(x)           #x
+#define TOSTRING(x)            STRINGIFY(x)
 
 #define STATIC_ASSERT(_cond)                                                                       \
     _Static_assert(_cond, #_cond " failed at line " TOSTRING(__LINE__) " of file " __FILE__)

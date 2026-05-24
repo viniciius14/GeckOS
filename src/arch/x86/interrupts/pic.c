@@ -8,7 +8,7 @@
 
 /* ----------- Global Variables ------------ */
 
-ALIGNED(16) static HandlerFn irqHandlers[SIZEOF_IDT - IRQ_BASE_OFFSET] = { 0 };
+static HandlerFn irqHandlers[SIZEOF_IDT - IRQ_BASE_OFFSET] = { 0 };
 
 static const Char *exceptionName[IRQ_BASE_OFFSET] = {
     "Divide by zero",
@@ -42,6 +42,8 @@ static const Char *exceptionName[IRQ_BASE_OFFSET] = {
     "RESERVED",
     "RESERVED",
 };
+
+static void SendEOI(Ubyte vector);
 
 /* -------- Function Implementations ------- */
 
@@ -111,7 +113,7 @@ void RegisterInterruptHandler(InterruptSourceE entry, HandlerFn handler) {
     irqHandlers[entry] = handler;
 }
 
-INLINE void SendEOI(Ubyte vector) {
+INLINE static void SendEOI(Ubyte vector) {
     /* @TODO: Turn 40 into a define */
     if (vector >= 40) {
         /* @TODO: Create defines/macro for these values */

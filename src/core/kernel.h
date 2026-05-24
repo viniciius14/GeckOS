@@ -5,6 +5,7 @@
 
 #include "gdt.h"
 #include "idt.h"
+#include "keyboard.h"
 #include "pic.h"
 #include "pit.h"
 #include "strings.h"

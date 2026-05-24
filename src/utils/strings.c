@@ -4,8 +4,6 @@
 
 /* ---------- Function Prototypes ---------- */
 
-static void PrintChar(Char letter);
-
 /* ----------- Global Variables ------------ */
 
 static Uint                 cursorPos  = 0;
@@ -21,12 +19,12 @@ void PrintString(const Char *format, ...) {
         return;
     }
 
-    __builtin_va_list args;
-    __builtin_va_start(args, format); // Initialize here!
+    VA_LIST args;
+    VA_START(args, format); // Initialize here!
 
     VarArgPrint(format, args); // Pass it safely here
 
-    __builtin_va_end(args); // Clean up here
+    VA_END(args); // Clean up here
 }
 
 Int StrToInt(const Char *str) {
@@ -106,7 +104,7 @@ Char *IntToStr(Long num, Char *str, Uint base) {
     return str;
 }
 
-void VarArgPrint(const Char *format, __builtin_va_list args) {
+void VarArgPrint(const Char *format, VA_LIST args) {
     for (const Char *p = format; *p != '\0'; p++) {
         if (*p == '%') {
             p++;
@@ -207,7 +205,7 @@ void VarArgPrint(const Char *format, __builtin_va_list args) {
     }
 }
 
-static void PrintChar(Char letter) {
+void PrintChar(Char letter) {
     if (letter == '\n') {
         cursorPos += CHARS_PER_LINE - (cursorPos % CHARS_PER_LINE);
     } else {
