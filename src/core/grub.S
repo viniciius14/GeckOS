@@ -5,7 +5,8 @@ BITS 32
 section .text
     align 4
     dd 0x1BADB002 ; Magic number
-    dd 0x00       ; Flags
-    dd -(0x1BADB002 + 0x00) ; Checksum
+    dd 0x00000003 ; Flags
+    dd -(0x1BADB002 + 0x00000003) ; Checksum
 
 %endif
+ 

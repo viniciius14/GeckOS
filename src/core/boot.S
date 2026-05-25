@@ -12,6 +12,12 @@ section .text
 start:
     cli
     mov esp, stack_space
+
+; Push the multiboot information structure to the stack
+%ifdef GRUB
+    push ebx
+    push eax
+%endif
     call KernelMain
     hlt
 HaltKernel:

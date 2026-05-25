@@ -37,16 +37,16 @@ void KeyboardHandler(const CpuState *cpuState) {
 
     // Only process key presses (Ignore break codes where bit 7 is set)
     if (!(tempKey & 0x80)) {
-        
+
         // Ensure we don't read out of bounds of our layout array
-        if (tempKey < 0x3A) { 
+        if (tempKey < 0x3A) {
             currKey = keyboardLayoutPT[tempKey];
         } else {
             currKey = keyboardLayoutPT[0]; // Fallback/Unknown
         }
 
         // Only print if it's a valid printable character
-        if (currKey != 0) {
+        if (currKey != KEY_NULL) {
             PrintChar(currKey);
         }
     }

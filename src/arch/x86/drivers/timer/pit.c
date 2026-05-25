@@ -13,6 +13,11 @@ Uint ticks = 0;
 /* -------- Function Implementations ------- */
 
 void InitPit(Uint frequency) {
+    if (frequency == 0) {
+        KERNEL_PANIC();
+        return;
+    }
+
     Uint divisor = PIT_BASE_FREQUENCY / frequency;
 
     // Command byte: Channel 0, access mode low/high byte, square wave mode, 16-bit binary

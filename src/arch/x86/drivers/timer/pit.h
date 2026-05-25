@@ -4,6 +4,7 @@
 /* --------------- Includes ---------------- */
 
 #include "idt.h"
+#include "kernel.h"
 #include "pic.h"
 
 /* ---------------- Defines ---------------- */

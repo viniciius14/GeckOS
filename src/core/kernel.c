@@ -3,8 +3,11 @@
 #include "kernel.h"
 
 /* ---------- Function Prototypes ---------- */
-
+#ifdef GRUB
+void KernelMain(Uint magic, MultiBootInfo *mbi);
+#else
 void KernelMain(void);
+#endif
 
 /* ----------- Global Variables ------------ */
 
@@ -12,13 +15,22 @@ void KernelMain(void);
 
 /* -------- Function Implementations ------- */
 
+#ifdef GRUB
+NORETURN void KernelMain(Uint magic, MultiBootInfo *mbi) {
+#else
 NORETURN void KernelMain(void) {
+#endif
     CLI();
     PrintString("Hello from GeckOS!\n");
 
     InitGdt();
     InitIdt();
     InitPic();
+
+#ifdef GRUB
+    (void)magic;
+    InitMemory(mbi);
+#endif
 
     InitPit(10);
     InitKeyboard();

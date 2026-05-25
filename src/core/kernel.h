@@ -10,9 +10,14 @@
 #include "pit.h"
 #include "strings.h"
 
+#ifdef GRUB
+#include "memory.h"
+#include "multiboot.h"
+#endif
+
 /* ---------------- Defines ---------------- */
 
-/* None */
+#define KERNEL_PANIC() KernelPanic("Kernel panic at %s:%d!", __FILE__, __LINE__)
 
 /* ----------------- Types ----------------- */
 
