@@ -28,8 +28,8 @@
 #define VA_START(_arg, _stack) __builtin_va_start(_arg, _stack)
 #define VA_END(_arg)           __builtin_va_end(_arg)
 
-#define STRINGIFY(x)           #x
-#define TOSTRING(x)            STRINGIFY(x)
+#define STRINGIFY(_x)          (#_x)
+#define CONCAT(_x, _y)         (_x##_y)
 
 #define STATIC_ASSERT(_cond)                                                                       \
     _Static_assert(_cond, #_cond " failed at line " TOSTRING(__LINE__) " of file " __FILE__)
@@ -45,6 +45,10 @@
 #define BIT_CLEAR(_x, _mask) ((_x) &= ~(_mask))
 #define BIT_FLIP(_x, _mask)  ((_x) ^= (_mask))
 #define BIT_TEST(_x, _mask)  ((_x) & (_mask))
+
+#define ROUND_UP(_x, _ali)   ((_x + _ali) & ~_ali)
+#define ROUND_DOWN(_x, _ali) (_x & ~_ali)
+#define ALIGN(_x, _ali)      ((_x + ((_ali / 2) + 1)) & (_ali - 1))
 
 #define MAX_UINT08           (0xFF)
 #define MAX_UINT16           (0xFFFF)
@@ -66,6 +70,10 @@
 
 #define MIN_FLOAT32          (1.175494351e-38f)
 #define MIN_FLOAT64          (2.2250738585072014e-308f)
+
+#define KB(_n)               ((_n) * 1024)
+#define MB(_n)               (KB(_n) * 1024)
+#define BITS_IN_BYTE         (8)
 
 /* ----------------- Types ----------------- */
 

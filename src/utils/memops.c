@@ -12,7 +12,7 @@
 
 /* -------- Function Implementations ------- */
 
-void *Memset(void *dest, Int val, Int len) {
+void *MemSet(void *dest, Int val, Int len) {
     Ubyte *ptr = (Ubyte *)dest;
     while (len-- > 0) {
         *ptr++ = (Ubyte)val;
@@ -20,7 +20,7 @@ void *Memset(void *dest, Int val, Int len) {
     return dest;
 }
 
-void *Memcpy(void *dest, const void *src, Int len) {
+void *MemCpy(void *dest, const void *src, Int len) {
     Char       *d = (Char *)dest;
     const Char *s = (const Char *)src;
     while (len-- > 0) {
@@ -29,7 +29,7 @@ void *Memcpy(void *dest, const void *src, Int len) {
     return dest;
 }
 
-Int Memcmp(const void *s1, const void *s2, Int len) {
+Int MemCmp(const void *s1, const void *s2, Int len) {
     const Ubyte *p1 = (const Ubyte *)s1;
     const Ubyte *p2 = (const Ubyte *)s2;
     while (len-- > 0) {

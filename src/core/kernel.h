@@ -17,7 +17,7 @@
 
 /* ---------------- Defines ---------------- */
 
-#define KERNEL_PANIC() KernelPanic("Kernel panic at %s:%d!", __FILE__, __LINE__)
+#define KERNEL_PANIC(_str) KernelPanic("Kernel panic at %s:%d!\n" _str, __FILE__, __LINE__)
 
 /* ----------------- Types ----------------- */
 

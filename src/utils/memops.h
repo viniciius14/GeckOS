@@ -15,8 +15,8 @@
 
 /* ---------- Function prototypes ---------- */
 
-void *Memset(void *dest, Int val, Int len);
-void *Memcpy(void *dest, const void *src, Int len);
-Int   Memcmp(const void *s1, const void *s2, Int len);
+void *MemSet(void *dest, Int val, Int len);
+void *MemCpy(void *dest, const void *src, Int len);
+Int   MemCmp(const void *s1, const void *s2, Int len);
 
 #endif /* MEMOPS_H */
