@@ -97,8 +97,6 @@ void InterruptDispatcher(CpuState *cpuState) {
         }
     }
 
-    PrintString("\n");
-
     if (irqHandlers[cpuState->vector - IRQ_BASE_OFFSET] != NULL) {
         irqHandlers[cpuState->vector - IRQ_BASE_OFFSET](cpuState);
     }

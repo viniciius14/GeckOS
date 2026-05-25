@@ -8,7 +8,7 @@ static void PitIntHandler(CpuState *cpuState);
 
 /* ----------- Global Variables ------------ */
 
-Ulong ticks = 0;
+Uint ticks = 0;
 
 /* -------- Function Implementations ------- */
 
@@ -22,7 +22,7 @@ void InitPit(Uint frequency) {
     // Set the frequency divisor (split into low/high bytes)
     OutByte(PIT_DATA0, (Ubyte)((divisor >> 0) & 0xFF));
     OutByte(PIT_DATA0, (Ubyte)((divisor >> 8) & 0xFF));
-    (void)PitIntHandler;
+
     RegisterInterruptHandler(E_PIC_INT, (HandlerFn)PitIntHandler);
 }
 
