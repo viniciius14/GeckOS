@@ -38,7 +38,23 @@ typedef struct {
 } PACKED CpuState;
 
 typedef void (*HandlerFn)(CpuState *);
-typedef enum { E_PIC_INT, E_KEYBOARD_INT } InterruptSourceE;
+typedef enum { 
+E_PIT_INT,
+E_KEYBOARD_INT
+E_CASCADE_SLAVE_PIC_INT,
+E_COM2,
+E_COM1_INT,
+E_LPT2_INT,
+E_FLOPPY_INT,
+E_LPT1_INT,
+E_RTC_INT,
+E_ACPI_INT,
+E_PCI_INT,
+E_PS2_MOUSE_INT,
+E_FPU_INT,
+E_PRIMARY_ATA_INT,
+E_SECONDARY_ATA_INT
+} InterruptSourceE;
 
 /* ---------- Function prototypes ---------- */
 
